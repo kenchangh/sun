@@ -1,0 +1,14 @@
+{
+  "name": "jlang",
+  "version": "1.0.0",
+  "description": "Implementation of dr juan's pseudocode language",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "keywords": [
+    "language"
+  ],
+  "author": "mavenave",
+  "license": "MIT"
+}
