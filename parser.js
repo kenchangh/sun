@@ -19,6 +19,7 @@ var grammar = {
      ["\\^",                        "return '^';"],
      ["\\(",                        "return '(';"],
      ["\\)",                        "return ')';"],
+     ["=",                          "return '=';"],
      ["Print",                      "return 'PRINT';"],
      ["Enter",                      "return 'ENTER';"],
      ["$",                          "return 'EOF';"]
@@ -26,6 +27,7 @@ var grammar = {
   },
 
   "operators": [
+    ["right", "="],
     ["left", "+", "-"],
     ["left", "*", "/"],
     ["left", "^"],
@@ -34,15 +36,15 @@ var grammar = {
   ],
 
   "bnf": {
-    "expressions": [["statement EOF", "return $1"]],
+    "program": [["statement EOF", "return $1"]],
 
     "statement": [
       ["e",               "return $1;"],
-      ["variable = e",    "$$ = new yy.Value('assignment', $1, $3);"],
+      ["variable = e",    "return $3;"],
     ],
 
     "variable": [
-      ["identifier",              "$$ = new yy.Value('variable', $1);"],
+      ["identifier",              "$$ = yytext"],
       // ["variable [ expression ]", "$$ = $1; $$.indices.push($3);"]
     ],
 
