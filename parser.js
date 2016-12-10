@@ -38,7 +38,7 @@ var grammar = {
 
     "statement": [
       ["e",               "return $1;"],
-      // ["variable = e",    "$$ = new yy.Value('assignment', $1, $3);"],
+      ["variable = e",    "$$ = new yy.Value('assignment', $1, $3);"],
     ],
 
     "variable": [
@@ -49,8 +49,6 @@ var grammar = {
     "identifier": [
       ["IDENTIFIER", "$$ = yytext;"]
     ],
-
-    // "expressions": [[ "e EOF", "return $1;"  ]],
 
     "e": [
       [ "e + e",   "$$ = $1 + $3;" ],
