@@ -1,126 +1,162 @@
-function TypeValueObj(type, value) {
+// function TwoSideObj(lhsTypeValue, operator, rhsTypeValue) {
+//   this.lhs = lhsTypeValue;
+//   this.operator = operator;
+//   this.rhs = rhsTypeValue;
+//   return this;
+// }
+
+// function lexObject(str) {
+//   var typeChecks = [
+//     lexInt,
+//   ];
+
+//   for (var i=0; i < typeChecks.length; i++) {
+//     var typeValue = typeChecks[i](str);
+//     if (typeValue) {
+//       return new TypeValueObj('object', typeValue);
+//     }
+//   }
+
+//   return false;
+// }
+
+// function lexOperator(str) {
+//   var operators = ['+', '-', '*', '/', '^'];
+//   // var spaceSeparedOperators = ['OR', 'AND']
+//   var re = /^(?:\+|-|\*|\/|\^)$/;
+//   if (!str.match(re)) return false;
+//   return new TypeValueObj('operator', str);
+// }
+
+
+var Lexer = require('lex');
+var lexer = new Lexer();
+
+module.exports = lexer;
+
+
+function Token(type, value) {
   this.type = type;
   this.value = value;
   return this;
 }
 
-function TwoSideObj(lhsTypeValue, operator, rhsTypeValue) {
-  this.lhs = lhsTypeValue;
-  this.operator = operator;
-  this.rhs = rhsTypeValue;
-  return this;
-}
 
-function lexVariable(str) {
-  var re = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
-  if (!str.match(re)) return false;
-  return new TypeValueObj('variable', str);
-}
+lexer.addRule(/ +/, function (lexeme) {
+});
 
-function lexInt(str) {
-  var re = /^-?[0-9]+$/;
-  if (!str.match(re)) return false;
-  return new TypeValueObj('int', parseInt(str, 10));
-}
+lexer.addRule(/[a-zA-Z_][a-zA-Z_0-9]*/, function (lexeme) {
+  return new Token('ID', lexeme);
+});
 
-function lexObject(str) {
-  var typeChecks = [
-    lexInt,
-  ];
+lexer.addRule(/[-\+]?\d+/, function (lexeme) {
+  return new Token('INT', parseInt(lexeme, 10));
+});
 
-  for (var i=0; i < typeChecks.length; i++) {
-    var typeValue = typeChecks[i](str);
-    if (typeValue) {
-      return new TypeValueObj('object', typeValue);
-    }
-  }
+lexer.addRule(/[-\+]?\d+(?:\.\d+)?/, function (lexeme) {
+  return new Token('FLOAT', parseFloat(lexeme, 10));
+});
 
-  return false;
-}
+lexer.addRule(/\[/, function () {
+  col++;
+  return "[";
+});
 
-function lexOperator(str) {
-  var operators = ['+', '-', '*', '/', '^'];
-  // var spaceSeparedOperators = ['OR', 'AND']
-  var re = /^(?:\+|-|\*|\/|\^)$/;
-  if (!str.match(re)) return false;
-  return new TypeValueObj('operator', str);
-}
+lexer.addRule(/\]/, function () {
+  col++;
+  return "]";
+});
 
-function tokenizeExpr(str) {
-  var lexChecks = [
-    lexObject,
-    lexVariable,
-    lexOperator,
-  ];
+lexer.addRule(/\(/, function () {
+  col++;
+  return "(";
+});
 
-  str = str.trim();
-  var i = 0;
-  var accumulator = str[i];
-  var tokens = [];
+lexer.addRule(/\)/, function () {
+  col++;
+  return ")";
+});
 
-  while (i < str.length) {
-    // console.log('acc: '+accumulator)
+lexer.addRule(/\+/, function () {
+  col++;
+  return "";
+});
 
-    for (var j=0; j < lexChecks.length; j++) {
-      var cur = lexChecks[j](accumulator);
+lexer.addRule(/\-/, function () {
+    col++;
+    return "-";
+});
 
-      if (cur) {
-        var validToken;
-        i++;
+lexer.addRule(/\*/, function () {
+    col++;
+    return "*";
+});
 
-        do {
-          if (str[i] === ' ') {
-            i++;
-            continue;
-          }
+lexer.addRule(/\//, function () {
+    col++;
+    return "/";
+});
 
-          if (i < str.length) {
-            accumulator += str[i];
-            validToken = lexChecks[j](accumulator);
-            // console.log('acc: '+accumulator);
-          }
+lexer.addRule(/\%/, function () {
+    col++;
+    return "%";
+});
 
-          if (!validToken) {
-            accumulator = str[i];
-            tokens.push(cur);
-            break;
-          }
+lexer.addRule(/</, function () {
+    col++;
+    return "<";
+});
 
-          cur = validToken;
-        } while (i < str.length);
+lexer.addRule(/>/, function () {
+    col++;
+    return ">";
+});
 
-        break;
-      }
-    }
-  }
+lexer.addRule(/<=/, function () {
+    col++;
+    return "<=";
+});
 
-  return tokens;
-}
+lexer.addRule(/>=/, function () {
+    col++;
+    return ">=";
+});
 
-function parseTokensIntoExpr(tokenList) {
-  var precedence = ['-', '+', '*', '/', '^'];
+lexer.addRule(/==/, function () {
+    col++;
+    return "==";
+});
 
-  var operators = tokenList.filter(function(typeValue) {
-    return typeValue.type === 'operator';
-  });
-  var scores = operators.map(function(typeValue) {
-    return precedence.indexOf(typeValue.value);
-  });
-}
+lexer.addRule(/!=/, function () {
+    col++;
+    return "!=";
+});
 
-var lexer = new Lexer()
-console.log(lexer._tokenizeExpr('10000 +1 - 1*199/1'));
+lexer.addRule(/!/, function () {
+    col++;
+    return "!";
+});
 
-function lexCode(str) {
-  var lines = str.split(/[\r\n]+/g);
-}
+lexer.addRule(/\&/, function () {
+    col++;
+    return "&";
+});
 
-function Lexer() {
-  this.lex = lexCode;
-  this._lexVar = lexVariable;
-  this._lexInt = lexInt;
-  this._lexObject = lexObject;
-  this._tokenizeExpr = tokenizeExpr;
-}
+lexer.addRule(/\|/, function () {
+    col++;
+    return "|";
+});
 
-module.exports = Lexer;
+lexer.addRule(/=/, function () {
+    col++;
+    return "=";
+});
+
+lexer.addRule(/,/, function () {
+    col++;
+    return ",";
+});
+
+lexer.addRule(/$/, function () {
+    return "EOF";
+});

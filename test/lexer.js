@@ -1,38 +1,25 @@
 var tap = require('tap');
-var Lexer = require('../lexer');
-var lexer = new Lexer();
+var lexer = require('../lexer');
 
 /* test variable */
-tap.same(lexer._lexVar('_hey'), { type: 'variable', value: '_hey' });
-tap.same(lexer._lexVar('hey'), { type: 'variable', value: 'hey' });
-tap.notOk(lexer._lexVar('5hey'));
-tap.notOk(lexer._lexVar('-hey'));
+tap.same(lexer.setInput('_hey').lex(), { type: 'ID', value: '_hey' });
+tap.same(lexer.setInput('hey').lex(), { type: 'ID', value: 'hey' });
+
+// tap.throws(function() {
+  // lexer.setInput('5hey').lex());
+// }, {});
+tap.throws(function() {
+  lexer.setInput('-hey').lex();
+}, {});
 
 /* test int */
-tap.same(lexer._lexInt('1'), { type: 'int', value: 1 });
-tap.same(lexer._lexInt('22'), { type: 'int', value: 22 });
-tap.same(lexer._lexInt('-1'), { type: 'int', value: -1 });
-tap.notOk(lexer._lexInt('5hey'));
-tap.notOk(lexer._lexInt('-hey'));
+tap.same(lexer.setInput('1').lex(), { type: 'INT', value: 1 });
+tap.same(lexer.setInput('+22').lex(), { type: 'INT', value: 22 });
+tap.same(lexer.setInput('-1').lex(), { type: 'INT', value: -1 });
 
-/* test objects */
-tap.same(lexer._lexObject('1'), {
-  type: 'object',
-  value: { type: 'int', value: 1 },
-});
-tap.same(lexer._lexObject('22'), {
-  type: 'object',
-  value: { type: 'int', value: 22 },
-});
-tap.same(lexer._lexObject('-1'), {
-  type: 'object',
-  value: { type: 'int', value: -1 },
-});
-tap.notOk(lexer._lexObject('5hey'));
-tap.notOk(lexer._lexObject('hey'));
-
-/* test arithmetic */
-lexer._lexExpr('1 + 1');
+tap.same(lexer.setInput('+1.0').lex(), { type: 'FLOAT', value: 1.0 });
+tap.same(lexer.setInput('-22.00').lex(), { type: 'FLOAT', value: -22.0 });
+tap.same(lexer.setInput('1.50000009').lex(), { type: 'FLOAT', value: 1.50000009 });
 
 /* test basic assignment here */
 // var actualAst = new Lexer().lex('x = 1 + 1');
