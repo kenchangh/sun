@@ -5,30 +5,6 @@
 //   return this;
 // }
 
-// function lexObject(str) {
-//   var typeChecks = [
-//     lexInt,
-//   ];
-
-//   for (var i=0; i < typeChecks.length; i++) {
-//     var typeValue = typeChecks[i](str);
-//     if (typeValue) {
-//       return new TypeValueObj('object', typeValue);
-//     }
-//   }
-
-//   return false;
-// }
-
-// function lexOperator(str) {
-//   var operators = ['+', '-', '*', '/', '^'];
-//   // var spaceSeparedOperators = ['OR', 'AND']
-//   var re = /^(?:\+|-|\*|\/|\^)$/;
-//   if (!str.match(re)) return false;
-//   return new TypeValueObj('operator', str);
-// }
-
-
 var Lexer = require('lex');
 var lexer = new Lexer();
 
