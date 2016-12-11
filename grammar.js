@@ -47,8 +47,8 @@ module.exports = {
     ],
 
     "statement": [
-      ["variable = e",    "$$ = new yy.LeftRight('assignment', $1, $3);"],
-      ["keyword e",       "$$ = new yy.LeftRight('keyword', $1, $2);"],
+      ["variable = e",    "$$ = new yy.Assignment($1, $3);"],
+      ["keyword e",       "$$ = new yy.KeywordAction($1, $2);"],
     ],
 
     "keyword": [
