@@ -9,6 +9,7 @@ var grammar = {
   "lex": {
     "rules": [
      ["\\s+",                       "/* skip whitespace */"],
+     ["\\n+",                       "NEWLINE"],
      ["[a-zA-Z_][a-zA-Z_0-9]*",     "return 'IDENTIFIER'"],
      ["[0-9]+(?:\\.[0-9]+)?\\b",    "return 'FLOAT';"],
      ["[0-9]+\\b",                  "return 'INT';"],
@@ -22,7 +23,7 @@ var grammar = {
      ["=",                          "return '=';"],
      ["Print",                      "return 'PRINT';"],
      ["Enter",                      "return 'ENTER';"],
-     ["$",                          "return 'EOF';"]
+     ["$",                          "return 'EOF';"],
     ]
   },
 
@@ -36,20 +37,28 @@ var grammar = {
   ],
 
   "bnf": {
-    "program": [["statement EOF", "return $1"]],
+    "program": [
+      ["statements EOF", "return $1"],
+    ],
+
+    "statements": [
+      ["statement",             "$$ = [$1];"],
+      ["statement NEWLINE",     "$$ = [$1];"],
+      ["statements statement",  "$$ = $1.concat($2);"],
+    ],
 
     "statement": [
-      ["e",               "return $1;"],
-      ["variable = e",    "return $3;"],
+      ["e",               "$$ = $1;"],
+      ["variable = e",    "$$ = new yy.Value('assignment', $1, $3);"],
     ],
 
     "variable": [
-      ["identifier",              "$$ = yytext"],
+      ["identifier",              "$$ = new yy.Value('variable', yytext)"],
       // ["variable [ expression ]", "$$ = $1; $$.indices.push($3);"]
     ],
 
     "identifier": [
-      ["IDENTIFIER", "$$ = yytext;"]
+      ["IDENTIFIER", "$$ = yytext;"],
     ],
 
     "e": [
@@ -68,6 +77,22 @@ var grammar = {
 
 var parser = new Parser(grammar);
 
-// var parserSource = parser.generate();
+var yy = parser.yy;
+
+yy.Value = function (type) {
+  this.type = type;
+  switch (this.type) {
+    case 'variable':
+      this.name = arguments[1];
+      this.indices = [];
+      break;
+    case "assignment":
+      this.left = arguments[1];
+      this.right = arguments[2];
+      break;
+    default:
+      break;
+  }
+};
 
 module.exports = parser;
