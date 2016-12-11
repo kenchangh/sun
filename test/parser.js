@@ -40,3 +40,9 @@ tap.same(parser.parse('x = 3\ny = x^x + 2\ny = y + 2'), [
   new yy.Assignment(new yy.Variable('y'), 29),
   new yy.Assignment(new yy.Variable('y'), 31),
 ]);
+
+// untestable on tap
+// tap.same(parser.parse('x = 3\nPrint x'), [
+//   new yy.Assignment(new yy.Variable('x'), 3),
+//   new yy.KeywordAction('Print', 3),
+// ]);

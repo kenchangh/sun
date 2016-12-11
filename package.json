@@ -4,7 +4,8 @@
   "description": "Implementation of dr juan's pseudocode language",
   "main": "index.js",
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "tap test/*.js",
+    "build": "node build.js"
   },
   "keywords": [
     "language"

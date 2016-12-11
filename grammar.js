@@ -3,6 +3,8 @@ module.exports = {
     "rules": [
      [" +",                       "/* skip whitespace */"],
      ["\\n+",                       "return 'NEWLINE';"],
+     ["Print",                      "return 'PRINT';"],
+     ["Enter",                      "return 'ENTER';"],
      ["[a-zA-Z_][a-zA-Z_0-9]*",     "return 'IDENTIFIER';"],
      ["[0-9]+(?:\\.[0-9]+)?\\b",    "return 'FLOAT';"],
      ["[0-9]+\\b",                  "return 'INT';"],
@@ -14,8 +16,6 @@ module.exports = {
      ["\\(",                        "return '(';"],
      ["\\)",                        "return ')';"],
      ["=",                          "return '=';"],
-     ["Print",                      "return 'PRINT';"],
-     ["Enter",                      "return 'ENTER';"],
      ["$",                          "return 'EOF';"],
     ]
   },
@@ -48,6 +48,12 @@ module.exports = {
 
     "statement": [
       ["variable = e",    "$$ = new yy.Assignment($1, $3);"],
+      ["keyword e",       "$$ = new yy.KeywordAction($1, $2);"],
+    ],
+
+    "keyword": [
+      ["PRINT", "$$ = yytext;"],
+      ["ENTER", "$$ = yytext;"],
     ],
 
     "variable": [
@@ -69,7 +75,7 @@ module.exports = {
       [ "( e )",   "$$ = yy.resolveVar($2);" ],
       [ "variable","$$ = $1" ],
       [ "INT",     "$$ = parseInt(yytext, 10);" ],
-      [ "FLOAT",   "$$ = parseFloat(yytext, 10);" ],
+      [ "FLOAT",   "$$ = parseFloat(yytext);" ],
     ],
   }
 }
