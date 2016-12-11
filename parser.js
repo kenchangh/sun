@@ -6,13 +6,24 @@ var Parser = require('jison').Parser;
 var parser = new Parser(grammar);
 var yy = parser.yy;
 
-yy.scope = {};
+yy.context = {};
 
-yy.Assignment = function Assignment(left, right) {
-  this.type = 'assignment';
-  this.left = left; // variable
-  this.right = right; // expression
-  yy.scope[left.name] = right;
+yy.LeftRight = function LeftRight(type, left, right) {
+  this.type = type;
+
+  switch (type) {
+    case 'assignment':
+      this.left = left;
+      this.right = right;
+      var varName = left.name;
+      yy.context[varName] = right;
+    case 'keyword':
+      this.left = left;
+      this.right = right;
+      break;
+    default:
+      break;
+  }
 };
 
 yy.Variable = function Variable(name) {
@@ -33,7 +44,7 @@ yy.KeywordAction = function KeywordAction(keyword, variable) {
         output: process.stdout,
       });
       rl.question('prompt: ', function (answer) {
-        console.log(typeof answer);
+        // console.log(typeof answer);
         var val = parseFloat(answer, 10);
         if (val === NaN) val = answer;
         new yy.Assignment(new yy.Variable(variable), val);
@@ -47,7 +58,7 @@ yy.KeywordAction = function KeywordAction(keyword, variable) {
 
 yy.resolveVar = function resolveVar(expression) {
   if (expression.type === 'variable') {
-    return yy.scope[expression.name];
+    return yy.context[expression.name];
   }
   return expression;
 }
