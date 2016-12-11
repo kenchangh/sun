@@ -8,7 +8,7 @@ var Parser = require('jison').Parser;
 var grammar = {
   "lex": {
     "rules": [
-     ["\\s+",                       "/* skip whitespace */"],
+     [" +",                       "/* skip whitespace */"],
      ["\\n+",                       "return 'NEWLINE';"],
      ["[a-zA-Z_][a-zA-Z_0-9]*",     "return 'IDENTIFIER';"],
      ["[0-9]+(?:\\.[0-9]+)?\\b",    "return 'FLOAT';"],
@@ -43,21 +43,21 @@ var grammar = {
 
     "lines": [
       ["line",             "$$ = [$1];"],
-      // ["line NEWLINE",     "$$ = [$1];"],
+      ["line NEWLINE",     "$$ = [$1];"],
       ["lines line",  "$$ = $1.concat($2);"],
     ],
 
     "line": [
-      ["e",         "$$ = $1;"],
+      // ["e",         "$$ = $1;"],
       ["statement", "$$ = $1;"],
     ],
 
     "statement": [
-      ["variable = e",    "$$ = new yy.Value('assignment', $1, $3);"],
+      ["variable = e",    "$$ = new yy.Assignment($1, $3);"],
     ],
 
     "variable": [
-      ["identifier",              "$$ = new yy.Value('variable', yytext)"],
+      ["identifier",              "$$ = new yy.Variable(yytext)"],
       // ["variable [ expression ]", "$$ = $1; $$.indices.push($3);"]
     ],
 
@@ -73,6 +73,7 @@ var grammar = {
       [ "e ^ e",   "$$ = Math.pow($1, $3);" ],
       [ "- e",     "$$ = -$2;", {"prec": "UMINUS"} ],
       [ "( e )",   "$$ = $2;" ],
+      [ "variable","$$ = $1" ],
       [ "INT",     "$$ = parseInt(yytext, 10);" ],
       [ "FLOAT",   "$$ = parseFloat(yytext, 10);" ],
     ],
@@ -83,20 +84,16 @@ var parser = new Parser(grammar);
 
 var yy = parser.yy;
 
-yy.Value = function (type) {
-  this.type = type;
-  switch (this.type) {
-    case 'variable':
-      this.name = arguments[1];
-      this.indices = [];
-      break;
-    case "assignment":
-      this.left = arguments[1];
-      this.right = arguments[2];
-      break;
-    default:
-      break;
-  }
+yy.Assignment = function Assignment(left, right) {
+  this.type = 'assignment';
+  this.left = left;
+  this.right = right;
+};
+
+yy.Variable = function Variable(name) {
+  this.type = 'variable';
+  this.name = name;
+  this.indices = [];
 };
 
 module.exports = parser;
