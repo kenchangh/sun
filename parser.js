@@ -1,93 +1,21 @@
 var readline = require('readline');
+var grammar = require('./grammar');
 var Parser = require('jison').Parser;
 // var rl = readline.createInterface({
 //   input: process.stdin,
 //   output: process.stdout,
 // });
 
-var grammar = {
-  "lex": {
-    "rules": [
-     [" +",                       "/* skip whitespace */"],
-     ["\\n+",                       "return 'NEWLINE';"],
-     ["[a-zA-Z_][a-zA-Z_0-9]*",     "return 'IDENTIFIER';"],
-     ["[0-9]+(?:\\.[0-9]+)?\\b",    "return 'FLOAT';"],
-     ["[0-9]+\\b",                  "return 'INT';"],
-     ["\\*",                        "return '*';"],
-     ["\\/",                        "return '/';"],
-     ["-",                          "return '-';"],
-     ["\\+",                        "return '+';"],
-     ["\\^",                        "return '^';"],
-     ["\\(",                        "return '(';"],
-     ["\\)",                        "return ')';"],
-     ["=",                          "return '=';"],
-     ["Print",                      "return 'PRINT';"],
-     ["Enter",                      "return 'ENTER';"],
-     ["$",                          "return 'EOF';"],
-    ]
-  },
-
-  "operators": [
-    ["right", "="],
-    ["left", "+", "-"],
-    ["left", "*", "/"],
-    ["left", "^"],
-    ["left", "UMINUS"],
-    ["right", "!"],
-  ],
-
-  "bnf": {
-    "program": [
-      ["lines EOF", "return $1"],
-    ],
-
-    "lines": [
-      ["line",             "$$ = [$1];"],
-      ["line NEWLINE",     "$$ = [$1];"],
-      ["lines line",  "$$ = $1.concat($2);"],
-    ],
-
-    "line": [
-      // ["e",         "$$ = $1;"],
-      ["statement", "$$ = $1;"],
-    ],
-
-    "statement": [
-      ["variable = e",    "$$ = new yy.Assignment($1, $3);"],
-    ],
-
-    "variable": [
-      ["identifier",              "$$ = new yy.Variable(yytext)"],
-      // ["variable [ expression ]", "$$ = $1; $$.indices.push($3);"]
-    ],
-
-    "identifier": [
-      ["IDENTIFIER", "$$ = yytext;"],
-    ],
-
-    "e": [
-      [ "e + e",   "$$ = $1 + $3;" ],
-      [ "e - e",   "$$ = $1 - $3;" ],
-      [ "e * e",   "$$ = $1 * $3;" ],
-      [ "e / e",   "$$ = $1 / $3;" ],
-      [ "e ^ e",   "$$ = Math.pow($1, $3);" ],
-      [ "- e",     "$$ = -$2;", {"prec": "UMINUS"} ],
-      [ "( e )",   "$$ = $2;" ],
-      [ "variable","$$ = $1" ],
-      [ "INT",     "$$ = parseInt(yytext, 10);" ],
-      [ "FLOAT",   "$$ = parseFloat(yytext, 10);" ],
-    ],
-  }
-}
-
 var parser = new Parser(grammar);
-
 var yy = parser.yy;
+
+yy.scope = {};
 
 yy.Assignment = function Assignment(left, right) {
   this.type = 'assignment';
-  this.left = left;
-  this.right = right;
+  this.left = left; // variable
+  this.right = right; // expression
+  yy.scope[left.name] = right;
 };
 
 yy.Variable = function Variable(name) {
@@ -95,5 +23,28 @@ yy.Variable = function Variable(name) {
   this.name = name;
   this.indices = [];
 };
+
+yy.resolveVar = function resolveVar(expression) {
+  if (expression.type === 'variable') {
+    return yy.scope[expression.name];
+  }
+  return expression;
+}
+
+// yy.Operation = function Operation(type) {
+//   this.type = type;
+//   switch (type) {
+//     case '+':
+//     case '-':
+//     case '*':
+//     case '/':
+//     case '^':
+//       var left = arguments[1];
+//       var right = arguments[2];
+//       if (left.type === 'variable') {
+//         left = 
+//       }
+//   }
+// }
 
 module.exports = parser;
