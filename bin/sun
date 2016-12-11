@@ -1,7 +1,7 @@
 var fs = require('fs');
-var compiler = require('../');
+var parser = require('../parser');
 
 fs.readFile(process.argv[2], 'utf8', function(err, source) {
   if (err) throw err;
-  compiler.compile(source);
+  parser.parse(source);
 });
