@@ -46,6 +46,10 @@ tap.same(parser.parse('x = 3\nPrint x'), [
   new obj.KeywordAction('Print', new obj.Variable('x')),
 ]);
 
+tap.same(parser.parse('Print (5-1)*5/6+7'), [
+  new obj.KeywordAction('Print', 10.333333333333334),
+]);
+
 // Avoid testing Enter, slows down test cycle
 // tap.same(parser.parse('Enter x\nPrint x'), [
 //   new obj.KeywordAction('Enter', new obj.Variable('x')),
