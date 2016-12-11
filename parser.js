@@ -9,8 +9,8 @@ var grammar = {
   "lex": {
     "rules": [
      ["\\s+",                       "/* skip whitespace */"],
-     ["\\n+",                       "NEWLINE"],
-     ["[a-zA-Z_][a-zA-Z_0-9]*",     "return 'IDENTIFIER'"],
+     ["\\n+",                       "return 'NEWLINE';"],
+     ["[a-zA-Z_][a-zA-Z_0-9]*",     "return 'IDENTIFIER';"],
      ["[0-9]+(?:\\.[0-9]+)?\\b",    "return 'FLOAT';"],
      ["[0-9]+\\b",                  "return 'INT';"],
      ["\\*",                        "return '*';"],
@@ -38,17 +38,21 @@ var grammar = {
 
   "bnf": {
     "program": [
-      ["statements EOF", "return $1"],
+      ["lines EOF", "return $1"],
     ],
 
-    "statements": [
-      ["statement",             "$$ = [$1];"],
-      ["statement NEWLINE",     "$$ = [$1];"],
-      ["statements statement",  "$$ = $1.concat($2);"],
+    "lines": [
+      ["line",             "$$ = [$1];"],
+      // ["line NEWLINE",     "$$ = [$1];"],
+      ["lines line",  "$$ = $1.concat($2);"],
+    ],
+
+    "line": [
+      ["e",         "$$ = $1;"],
+      ["statement", "$$ = $1;"],
     ],
 
     "statement": [
-      ["e",               "$$ = $1;"],
       ["variable = e",    "$$ = new yy.Value('assignment', $1, $3);"],
     ],
 
