@@ -1,0 +1,5 @@
+If 1 Then
+	Print 1
+Else
+	Print 2
+EndIf

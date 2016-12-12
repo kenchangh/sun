@@ -36,6 +36,10 @@ module.exports = {
   "lex": {
     "rules": [
      // ["\\n+",                           "yy.row++; return 'NEWLINE';"],
+     ["If",                             "return 'IF';"],
+     ["Then",                           "return 'THEN';"],
+     ["Else",                           "return 'ELSE';"],
+     ["EndIf",                          "return 'ENDIF';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
      ["[a-zA-Z_][a-zA-Z_0-9]*",         "return 'IDENTIFIER';"],
@@ -60,6 +64,7 @@ module.exports = {
 
   "operators": [
     ["right", "="],
+    // ["left", "==", "!="]
     ["left", "+", "-"],
     ["left", "*", "/"],
     ["left", "^"],
@@ -69,31 +74,52 @@ module.exports = {
 
   "bnf": {
     "program": [
-      ["lines EOF", "return $1"],
+      ["proglist EOF", "return $1"],
     ],
 
-    // "block": [
-    //   [""]
+    // "lines": [
+    //   ["line",             "$$ = [$1];"],
+    //   ["lines line",  "$$ = $1.concat($2);"],
     // ],
 
-    "lines": [
-      ["line",             "$$ = [$1];"],
-      ["lines line",  "$$ = $1.concat($2);"],
+    // "line": [
+    //   // disable expression-only lines, too many grammatical ambiguities
+    //   // ["e",         "$$ = $1;"],
+    //   ["statement",         "$$ = $1;"],
+    //   ["statement NEWLINE", "$$ = $1;"],
+    // ],
+
+    "proglist": [
+      ["proglist stmt", "$1.push($2); $$ = $1"],
+      ["stmt", "$$ = [$1];"]
     ],
 
-    "line": [
-      // disable expression-only lines, too many grammatical ambiguities
-      // ["e",         "$$ = $1;"],
-      ["statement",         "$$ = $1;"],
-      ["statement NEWLINE", "$$ = $1;"],
+    "stmt": [
+      ["if_stmt",         "$$ = $1"],
+      ["keyword_stmt",    "$$ = $1"],
+      ["assignment_stmt", "$$ = $1"],
     ],
 
-    // "block": [
-    // ]
+    "stmt_list": [
+      ["stmt", "$$ = $1"],
+      ["stmt_list stmt", "$$ "]
+    ],
 
-    "statement": [
-      ["variable = e",    "$$ = new yy.Assignment($1, $3);"],
-      ["keyword e",       "$$ = new yy.KeywordAction($1, $2);"],
+    "stmt_block": [
+      ["INDENT stmt_list DEDENT", "$$ = $stmt_list;"],
+    ],
+
+    "if_stmt": [
+      ["IF e THEN stmt_block ENDIF", "$$ = [ 'if', $e, $stmt_block ];"],
+      ["IF e THEN stmt_block ELSE stmt_block ENDIF", "$$ = [ 'if', $e, $4, $6 ];"],
+    ],
+
+    "assignment_stmt": [
+      ["variable = e", "$$ = new yy.Assignment($variable, $e);"]
+    ],
+
+    "keyword_stmt": [
+      ["keyword e", "$$ = new yy.KeywordAction($1, $2);"],
     ],
 
     "keyword": [
@@ -116,6 +142,8 @@ module.exports = {
       [ "e * e",   "$$ = yy.resolveVar($1) * yy.resolveVar($3);" ],
       [ "e / e",   "$$ = yy.resolveVar($1) / yy.resolveVar($3);" ],
       [ "e ^ e",   "$$ = Math.pow(yy.resolveVar($1), yy.resolveVar($3));" ],
+      // [ "e == e",  "$$ = yy.resolveVar($1) === yy.resolveVar($3);" ],
+      // [ "e != e",  "$$ = yy.resolveVar($1) !== yy.resolveVar($3);" ],
       [ "- e",     "$$ = -yy.resolveVar($2);", {"prec": "UMINUS"} ],
       [ "( e )",   "$$ = yy.resolveVar($2);" ],
       [ "variable","$$ = $1" ],

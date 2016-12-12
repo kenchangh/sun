@@ -72,3 +72,6 @@ tap.same(parser.parse('Print (5-1)*5/6+7'), [
 //   new nodes.KeywordAction('Enter', new nodes.Variable('x')),
 //   new nodes.KeywordAction('Print', new nodes.Variable('x')),
 // ]);
+
+tap.same(parser.parse("If 1 Then\n\tPrint 1\nEndIf"), [
+]);
