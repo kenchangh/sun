@@ -9,6 +9,8 @@ var yy = parser.yy;
 
 yy.context = {};
 
+yy._iemitstack = [0]; // indentation stack that starts with 0
+
 yy.Assignment = function (left, right) {
   yy.context[left.name] = right;
   return new nodes.Assignment(left, right);
