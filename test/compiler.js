@@ -24,3 +24,40 @@ tap.same(compiler.context, {});
 
 compiler.compile("Print (5-1)*5/6+7");
 tap.same(compiler.context, {});
+
+var ifElseStr;
+
+ifElseStr = `If 1 Then
+  x = 1
+EndIf
+`
+compiler.compile(ifElseStr);
+tap.same(compiler.context, { x: 1 });
+compiler.resetContext();
+
+ifElseStr = `If 0 Then
+  x = 1
+EndIf
+`
+compiler.compile(ifElseStr);
+tap.same(compiler.context, {});
+
+ifElseStr = `If 1 Then
+  x = 1
+Else
+  x = 2
+EndIf
+`
+compiler.compile(ifElseStr);
+tap.same(compiler.context, { x: 1 });
+compiler.resetContext();
+
+ifElseStr = `If 0 Then
+  x = 1
+Else
+  x = 2
+EndIf
+`
+compiler.compile(ifElseStr);
+tap.same(compiler.context, { x: 2 });
+compiler.resetContext();

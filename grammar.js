@@ -110,7 +110,7 @@ module.exports = {
     ],
 
     "if_stmt": [
-      ["IF e THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, null);"],
+      ["IF e THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, []);"],
       ["IF e THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, $6);"],
     ],
 

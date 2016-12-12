@@ -155,7 +155,7 @@ EndIf
 tap.same(parser.parse(ifElseStr), [
   new nodes.IfElseStmt(1, [
     new nodes.KeywordAction('Print', 1),
-  ], null),
+  ], []),
 ]);
 
 ifElseStr = `If 1 Then
@@ -168,7 +168,7 @@ tap.same(parser.parse(ifElseStr), [
   new nodes.IfElseStmt(1, [
     new nodes.KeywordAction('Print', 1),
     new nodes.KeywordAction('Print', 2),
-  ], null),
+  ], []),
 ]);
 
 ifElseStr = `If 1 Then

@@ -84,15 +84,22 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
         }
         break;
 
+      case 'if_else':
+        var condition = parseNode.call(this, node.condition);
+        var block = condition ? node.ifBlock : node.elseBlock;
+
+        for (var i=0; i < block.length; i++) {
+          parseNode.call(this, block[i]);
+        }
+        break;
+
       default:
         break;
     }
 
   } else {
-
     // expression base, STRING, INT, FLOAT
     return node;
-
   }
 }
 
