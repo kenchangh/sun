@@ -20,6 +20,8 @@ function executeOperation(type, a, b) {
     multiplication: function () { return a * b },
     division: function () { return a / b },
     exponentiation: function () { return Math.pow(a, b) },
+    equal: function () { return a === b },
+    inequal: function () { return a !== b },
   };
 
   return operations[type]();
@@ -70,6 +72,8 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
       case 'multiplication':
       case 'division':
       case 'exponentiation':
+      case 'equal':
+      case 'inequal':
         var left = parseNode.call(this, node.left);
         var right = parseNode.call(this, node.right);
         if (left === undefined) console.log(node);

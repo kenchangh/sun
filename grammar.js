@@ -42,10 +42,11 @@ module.exports = {
      ["EndIf",                          "return 'ENDIF';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
-     ["[a-zA-Z_][a-zA-Z_0-9]*",         "return 'IDENTIFIER';"],
      ["\"[^\"]*\"|\'[^\']*'",           "yytext = yytext.substr(1,yyleng-2); return 'STRING';"],
+     ["(True|False)",                   "return 'BOOL'"],
      ["[0-9]+(?:\\.[0-9]+)?\\b",        "return 'FLOAT';"],
      ["[0-9]+\\b",                      "return 'INT';"],
+     ["[a-zA-Z_][a-zA-Z_0-9]*",         "return 'IDENTIFIER';"],
      ["\\*",                            "return '*';"],
      ["\\/",                            "return '/';"],
      ["-",                              "return '-';"],
@@ -53,6 +54,8 @@ module.exports = {
      ["\\^",                            "return '^';"],
      ["\\(",                            "return '(';"],
      ["\\)",                            "return ')';"],
+     ["==",                             "return '==';"],
+     ["!=",                             "return '!=';"],
      ["=",                              "return '=';"],
      ["$",                              "return 'EOF';"],
      ["^\\s*$",                         eofDedent],
@@ -64,7 +67,7 @@ module.exports = {
 
   "operators": [
     ["right", "="],
-    // ["left", "==", "!="]
+    ["left", "==", "!="],
     ["left", "+", "-"],
     ["left", "*", "/"],
     ["left", "^"],
@@ -76,18 +79,6 @@ module.exports = {
     "program": [
       ["proglist EOF", "return $1"],
     ],
-
-    // "lines": [
-    //   ["line",             "$$ = [$1];"],
-    //   ["lines line",  "$$ = $1.concat($2);"],
-    // ],
-
-    // "line": [
-    //   // disable expression-only lines, too many grammatical ambiguities
-    //   // ["e",         "$$ = $1;"],
-    //   ["statement",         "$$ = $1;"],
-    //   ["statement NEWLINE", "$$ = $1;"],
-    // ],
 
     "proglist": [
       ["stmt",          "$$ = [$stmt];"],
@@ -142,11 +133,12 @@ module.exports = {
       [ "e * e",   "$$ = new yy.Operation('multiplication', $1, $3);" ],
       [ "e / e",   "$$ = new yy.Operation('division', $1, $3);" ],
       [ "e ^ e",   "$$ = new yy.Operation('exponentiation', $1, $3);" ],
-      // [ "e == e",  "$$ = yy.resolveVar($1) === yy.resolveVar($3);" ],
-      // [ "e != e",  "$$ = yy.resolveVar($1) !== yy.resolveVar($3);" ],
+      [ "e == e",  "$$ = new yy.Operation('equal', $1, $3);" ],
+      [ "e != e",  "$$ = new yy.Operation('inequal', $1, $3);" ],
       [ "- e",     "$$ = new yy.Operation('negation', $e);", {"prec": "UMINUS"} ],
       [ "( e )",   "$$ = $e;" ],
       [ "variable","$$ = $1" ],
+      [ "BOOL",    "$$ = yytext === 'True' ? true : false;" ],
       [ "STRING",  "$$ = yytext" ],
       [ "INT",     "$$ = parseInt(yytext, 10);" ],
       [ "FLOAT",   "$$ = parseFloat(yytext);" ],

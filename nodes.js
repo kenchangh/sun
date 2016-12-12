@@ -33,6 +33,8 @@ function Operation(type) {
     case 'multiplication':
     case 'division':
     case 'exponentiation':
+    case 'equal':
+    case 'inequal':
       this.left = arguments[1];
       this.right = arguments[2];
       break;

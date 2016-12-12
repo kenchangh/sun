@@ -13,12 +13,42 @@ var nodes = require('../nodes');
 // tap.same(parser.parse('5^5 * 5'), [15625]);
 // tap.same(parser.parse('-(5^5 * 5)'), [-15625]);
 
+tap.same(parser.parse('x = True'), [
+  new nodes.Operation('assignment', new nodes.Variable('x'), true)
+]);
+
+// distinguishing lower-case true
+tap.same(parser.parse('x = true'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Variable('true')
+  )
+]);
+
+tap.same(parser.parse('x = False'), [
+  new nodes.Operation('assignment', new nodes.Variable('x'), false)
+]);
+
 tap.same(parser.parse('x = 1'), [
   new nodes.Operation('assignment', new nodes.Variable('x'), 1)
 ]);
 
 tap.same(parser.parse('x = 1\n'), [
   new nodes.Operation('assignment', new nodes.Variable('x'), 1)
+]);
+
+tap.same(parser.parse('x = 1 == 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('equal', 1, 1)
+  )
+]);
+
+tap.same(parser.parse('x = 1 != 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('inequal', 1, 1)
+  )
 ]);
 
 tap.same(parser.parse('y = (5-1)*5/6+7'), [
