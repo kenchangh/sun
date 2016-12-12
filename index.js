@@ -137,6 +137,15 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
         this.parseBlock(block);
       }
 
+    } else if (type === 'while') {
+
+      var condition = node.condition;
+      var block = node.block;
+
+      while (parseNode.call(this, condition)) {
+        this.parseBlock(block);
+      }
+
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 
       var operand = parseNode.call(this, node.operand);

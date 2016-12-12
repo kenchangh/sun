@@ -115,3 +115,14 @@ for (var i=1; i < 11; i++) {
 }
 tap.same(compiler.outputBuffer, arr);
 compiler.reset();
+
+var whileStr;
+
+whileStr = `i = 1
+While i <= 10
+  Print i
+  i = i + 1
+EndWhile`;
+compiler.compile(whileStr);
+tap.same(compiler.outputBuffer, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+compiler.reset();
