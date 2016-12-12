@@ -1,5 +1,5 @@
 var tap = require('tap');
-var SunCompiler = require('../');
+var SunCompiler = require('../src/sun');
 var compiler = new SunCompiler(true); // true for debug flag
 
 tap.throws(function() {

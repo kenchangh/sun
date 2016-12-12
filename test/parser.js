@@ -1,6 +1,6 @@
 var tap = require('tap');
-var parser = require('../parser');
-var nodes = require('../nodes');
+var parser = require('../src/parser');
+var nodes = require('../src/nodes');
 
 // tap.same(parser.parse('1 + 1'), [2]);
 // tap.same(parser.parse('1 + 1\n'), [2]);
