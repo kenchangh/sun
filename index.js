@@ -1,5 +1,6 @@
 module.exports = SunCompiler;
 
+var readlineSync = require('readline-sync');
 var parser = require('./parser');
 var operations = require('./operations');
 var OPERATIONS_BY_OPERANDS = operations.OPERATIONS_BY_OPERANDS;
@@ -32,12 +33,7 @@ function executeOperation(type, a, b) {
   }
 }
 
-function executeEnter(node) {
-  if (node.type !== 'variable') {
-    throw new Error('Enter must be used with variables');
-  }
 
-}
 
 function SunCompiler() {
   // expose the context to public for testing
@@ -52,6 +48,18 @@ SunCompiler.prototype.compile = function compile(source) {
   for (var i=0; i < parseTree.length; i++) {
     this.parseNode(parseTree[i]);
   }
+}
+
+SunCompiler.prototype.executeEnter = function executeEnter(node) {
+  if (node.type !== 'variable') {
+    var result = this.parseNode(node);
+    throw new Error("Enter must be used with variables, found: "+result+"'");
+  }
+  var varName = node.name;
+  var answer = readlineSync.question('');
+  var val = parseFloat(answer);
+  val = isNaN(val) ? answer : val;
+  this.context[varName] = val;
 }
 
 SunCompiler.prototype.parseNode = function parseNode(node) {
@@ -74,7 +82,7 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
         var val = parseNode.call(this, node.expression);
         console.log(val);
       } else if (node.keyword === 'Enter') {
-        executeEnter(node.expression);
+        this.executeEnter(node.expression);
       } else {
         throw new Error("Unrecognized keyword: '"+node.keyword+"'");
       }
