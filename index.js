@@ -1,32 +1,35 @@
 module.exports = SunCompiler;
 
 var parser = require('./parser');
+var operations = require('./operations');
+var OPERATIONS_BY_OPERANDS = operations.OPERATIONS_BY_OPERANDS;
+var OPERATIONS_BY_TYPE = operations.OPERATIONS_BY_TYPE;
+var OPERATION_EXECUTIONS = operations.OPERATION_EXECUTIONS;
+
 
 function executeOperation(type, a, b) {
-  if (typeof a !== 'number') {
-    throw new Error("'"+a+"' is not a number");
-  }
-  if (typeof b !== 'number') {
-    throw new Error("'"+b+"' is not a number");
+
+  if (OPERATIONS_BY_TYPE['number'].indexOf(-1) === -1) {
+    if (typeof a !== 'number') {
+      throw new Error("'"+a+"' is not a number");
+    }
+    if (b !== undefined && typeof b !== 'number') {
+      throw new Error("'"+b+"' is not a number");
+    }
+
+    if (type === 'division' && b === 0) {
+      throw new Error('Division by zero encountered');
+    }
   }
 
-  if (type === 'division' && b === 0) {
-    throw new Error('Division by zero encountered');
+  // one operand
+  if (b === undefined) {
+    return OPERATION_EXECUTIONS[type](a);
   }
-
-  var operations = {
-    addition: function () { return a + b },
-    subtraction: function () { return a - b },
-    multiplication: function () { return a * b },
-    division: function () { return a / b },
-    exponentiation: function () { return Math.pow(a, b) },
-    equal: function () { return a === b },
-    inequal: function () { return a !== b },
-    conjunction: function () { return a && b },
-    disjunction: function () { return a || b },
-  };
-
-  return operations[type]();
+  // two operands
+  else {
+    return OPERATION_EXECUTIONS[type](a, b);
+  }
 }
 
 function executeEnter(node) {
@@ -54,56 +57,58 @@ SunCompiler.prototype.compile = function compile(source) {
 SunCompiler.prototype.parseNode = function parseNode(node) {
   if (typeof node === 'object') {
 
-    switch (node.type) {
-      // resolve variables here
-      case 'variable':
-        var varName = node.name
-        var val = this.context[varName];
-        if (val === undefined) {
-          throw new Error("First usage of variable '"+varName+"', declare the variable above this line first.");
-        }
-        return this.context[varName];
+    var type = node.type;
 
-      case 'assignment':
-        var variable = node.left;
-        this.context[variable.name] = parseNode.call(this, node.right);
-        break;
+    if (type === 'variable') {
 
-      case 'addition':
-      case 'subtraction':
-      case 'multiplication':
-      case 'division':
-      case 'exponentiation':
-      case 'equal':
-      case 'inequal':
-      case 'conjunction':
-      case 'disjunction':
-        var left = parseNode.call(this, node.left);
-        var right = parseNode.call(this, node.right);
-        if (left === undefined) console.log(node);
-        return executeOperation(node.type, left, right);
+      var varName = node.name
+      var val = this.context[varName];
+      if (val === undefined) {
+        throw new Error("First usage of variable '"+varName+"', declare the variable above this line first.");
+      }
+      return this.context[varName];
 
-      case 'keyword':
-        if (node.keyword === 'Print') {
-          var val = parseNode.call(this, node.expression);
-          console.log(val);
-        } else if (node.keyword === 'Enter') {
-          executeEnter(node.expression);
-        }
-        break;
+    } else if (type === 'keyword') {
 
-      case 'if_else':
-        var condition = parseNode.call(this, node.condition);
-        var block = condition ? node.ifBlock : node.elseBlock;
+      if (node.keyword === 'Print') {
+        var val = parseNode.call(this, node.expression);
+        console.log(val);
+      } else if (node.keyword === 'Enter') {
+        executeEnter(node.expression);
+      } else {
+        throw new Error("Unrecognized keyword: '"+node.keyword+"'");
+      }
 
-        for (var i=0; i < block.length; i++) {
-          parseNode.call(this, block[i]);
-        }
-        break;
+    } else if (type === 'assignment') {
 
-      default:
-        throw new Error("Unhandled node type: '"+node.type+"'");
-        break;
+      var variable = node.left;
+      this.context[variable.name] = parseNode.call(this, node.right);
+      return undefined;
+
+    } else if (type === 'if_else') {
+
+      var condition = parseNode.call(this, node.condition);
+      var block = condition ? node.ifBlock : node.elseBlock;
+
+      for (var i=0; i < block.length; i++) {
+        parseNode.call(this, block[i]);
+      }
+
+    } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
+
+      var operand = parseNode.call(this, node.operand);
+      return executeOperation(node.type, node.operand);
+      
+    } else if (OPERATIONS_BY_OPERANDS[2].indexOf(type) !== -1) {
+
+      var left = parseNode.call(this, node.left);
+      var right = parseNode.call(this, node.right);
+      return executeOperation(node.type, left, right);
+
+    } else {
+
+      throw new Error("Unhandled node type: '"+node.type+"'");
+
     }
 
   } else {

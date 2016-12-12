@@ -7,6 +7,14 @@ tap.throws(function() {
   compiler.compile('x = 1 + "asd"');
 });
 
+compiler.compile('x = !1');
+tap.same(compiler.context, { x: false });
+compiler.resetContext();
+
+compiler.compile('x = -1');
+tap.same(compiler.context, { x: -1 });
+compiler.resetContext();
+
 compiler.compile('x = 1 == 1');
 tap.same(compiler.context, { x: true });
 compiler.resetContext();

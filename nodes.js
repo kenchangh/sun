@@ -5,6 +5,8 @@ module.exports = {
   IfElseStmt: IfElseStmt,
 };
 
+var OPERATIONS_BY_OPERANDS = require('./operations').OPERATIONS_BY_OPERANDS;
+
 function Variable(name) {
   this.type = 'variable';
   this.name = name;
@@ -24,25 +26,25 @@ function IfElseStmt(condition, ifBlock, elseBlock) {
   this.elseBlock = elseBlock;
 }
 
+
 function Operation(type) {
   this.type = type;
-  switch (type) {
-    case 'assignment':
-    case 'addition':
-    case 'subtraction':
-    case 'multiplication':
-    case 'division':
-    case 'exponentiation':
-    case 'equal':
-    case 'inequal':
-    case 'conjunction':
-    case 'disjunction':
-      this.left = arguments[1];
-      this.right = arguments[2];
-      break;
-    case 'negation':
-      this.operand = left;
-    default:
-      break;
+
+  if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
+
+    this.operand = arguments[1];
+
+  } else if (OPERATIONS_BY_OPERANDS[2].indexOf(type) !== -1) {
+
+    this.left = arguments[1];
+    this.right = arguments[2];
+
+  } else if (type === 'assignment') {
+
+    this.left = arguments[1];
+    this.right = arguments[2];
+
+  } else {
+    throw new Error("Unhandled node type: '"+type+"'");
   }
 }

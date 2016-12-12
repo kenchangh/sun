@@ -37,6 +37,20 @@ tap.same(parser.parse('x = 1\n'), [
   new nodes.Operation('assignment', new nodes.Variable('x'), 1)
 ]);
 
+tap.same(parser.parse('x = -1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('negation', 1)
+  )
+]);
+
+tap.same(parser.parse('x = !1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('inversion', 1)
+  )
+]);
+
 tap.same(parser.parse('x = 1 == 1'), [
   new nodes.Operation('assignment',
     new nodes.Variable('x'),
