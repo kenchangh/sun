@@ -34,19 +34,29 @@ function executeOperation(type, a, b) {
 }
 
 
-
-function SunCompiler() {
+function SunCompiler(debug) {
   // expose the context to public for testing
+  this.debug = debug;
   this.context = {};
-  this.resetContext = function resetContext() {
+  this.outputBuffer = [];
+  this.reset = function reset() {
     this.context = {};
+    this.outputBuffer = [];
   };
+}
+
+SunCompiler.prototype.parseBlock = function parseBlock(block) {
+  for (var i=0; i < block.length; i++) {
+    this.parseNode.call(this, block[i]);
+  }
 }
 
 SunCompiler.prototype.compile = function compile(source) {
   var parseTree = parser.parse(source);
-  for (var i=0; i < parseTree.length; i++) {
-    this.parseNode(parseTree[i]);
+  this.parseBlock(parseTree);
+
+  if (!this.debug) {
+    this.reset();
   }
 }
 
@@ -60,6 +70,14 @@ SunCompiler.prototype.executeEnter = function executeEnter(node) {
   var val = parseFloat(answer);
   val = isNaN(val) ? answer : val;
   this.context[varName] = val;
+}
+
+SunCompiler.prototype.executePrint = function executePrint(val) {
+  if (this.debug) {
+    this.outputBuffer.push(val);
+  } else {
+    console.log(val);
+  }
 }
 
 SunCompiler.prototype.parseNode = function parseNode(node) {
@@ -80,7 +98,7 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
 
       if (node.keyword === 'Print') {
         var val = parseNode.call(this, node.expression);
-        console.log(val);
+        this.executePrint(val);
       } else if (node.keyword === 'Enter') {
         this.executeEnter(node.expression);
       } else {
@@ -97,9 +115,25 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
 
       var condition = parseNode.call(this, node.condition);
       var block = condition ? node.ifBlock : node.elseBlock;
+      this.parseBlock(block);
 
-      for (var i=0; i < block.length; i++) {
-        parseNode.call(this, block[i]);
+    } else if (type === 'loop') {
+
+      var varName = node.variable.name;
+      var start = parseNode.call(this, node.start);
+      var stop = parseNode.call(this, node.stop);
+      var block = node.block;
+
+      if (typeof start !== 'number') {
+        throw new Error("Loop's start must be a number, found: "+typeof start+"'");
+      }
+      if (typeof stop !== 'number') {
+        throw new Error("Loop's stop must be a number, found: "+typeof start+"'");
+      }
+
+      this.context[varName] = start;
+      for (this.context[varName]; this.context[varName] <= stop; this.context[varName]++) {
+        this.parseBlock(block);
       }
 
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
@@ -120,7 +154,7 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
     }
 
   } else {
-    // expression base, STRING, INT, FLOAT
+    // expression base, STRING, INT, FLOAT, BOOL
     return node;
   }
 }
