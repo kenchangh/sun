@@ -90,19 +90,19 @@ module.exports = {
     // ],
 
     "proglist": [
-      ["proglist stmt", "$1.push($2); $$ = $1"],
-      ["stmt", "$$ = [$1];"]
+      ["stmt",          "$$ = [$stmt];"],
+      ["proglist stmt", "$proglist.push($stmt); $$ = $proglist;"],
     ],
 
     "stmt": [
-      ["if_stmt",         "$$ = $1"],
-      ["keyword_stmt",    "$$ = $1"],
-      ["assignment_stmt", "$$ = $1"],
+      ["if_stmt",         "$$ = $1;"],
+      ["keyword_stmt",    "$$ = $1;"],
+      ["assignment_stmt", "$$ = $1;"],
     ],
 
     "stmt_list": [
-      ["stmt", "$$ = $1"],
-      ["stmt_list stmt", "$$ "]
+      ["stmt",            "$$ = [$stmt];"],
+      ["stmt_list stmt",  "$stmt_list.push($stmt); $$ = $stmt_list;"]
     ],
 
     "stmt_block": [
@@ -110,12 +110,12 @@ module.exports = {
     ],
 
     "if_stmt": [
-      ["IF e THEN stmt_block ENDIF", "$$ = [ 'if', $e, $stmt_block ];"],
-      ["IF e THEN stmt_block ELSE stmt_block ENDIF", "$$ = [ 'if', $e, $4, $6 ];"],
+      ["IF e THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, null);"],
+      ["IF e THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, $6);"],
     ],
 
     "assignment_stmt": [
-      ["variable = e", "$$ = new yy.Assignment($variable, $e);"]
+      ["variable = e", "$$ = new yy.Operation('assignment', $variable, $e);"]
     ],
 
     "keyword_stmt": [
@@ -137,15 +137,15 @@ module.exports = {
     ],
 
     "e": [
-      [ "e + e",   "$$ = yy.resolveVar($1) + yy.resolveVar($3);" ],
-      [ "e - e",   "$$ = yy.resolveVar($1) - yy.resolveVar($3);" ],
-      [ "e * e",   "$$ = yy.resolveVar($1) * yy.resolveVar($3);" ],
-      [ "e / e",   "$$ = yy.resolveVar($1) / yy.resolveVar($3);" ],
-      [ "e ^ e",   "$$ = Math.pow(yy.resolveVar($1), yy.resolveVar($3));" ],
+      [ "e + e",   "$$ = new yy.Operation('addition', $1, $3);" ],
+      [ "e - e",   "$$ = new yy.Operation('substraction', $1, $3);" ],
+      [ "e * e",   "$$ = new yy.Operation('multiplication', $1, $3);" ],
+      [ "e / e",   "$$ = new yy.Operation('division', $1, $3);" ],
+      [ "e ^ e",   "$$ = new yy.Operation('exponentiation', $1, $3);" ],
       // [ "e == e",  "$$ = yy.resolveVar($1) === yy.resolveVar($3);" ],
       // [ "e != e",  "$$ = yy.resolveVar($1) !== yy.resolveVar($3);" ],
-      [ "- e",     "$$ = -yy.resolveVar($2);", {"prec": "UMINUS"} ],
-      [ "( e )",   "$$ = yy.resolveVar($2);" ],
+      [ "- e",     "$$ = new yy.Operation('negation', $e);", {"prec": "UMINUS"} ],
+      [ "( e )",   "$$ = $e;" ],
       [ "variable","$$ = $1" ],
       [ "STRING",  "$$ = yytext" ],
       [ "INT",     "$$ = parseInt(yytext, 10);" ],

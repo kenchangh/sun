@@ -1,13 +1,8 @@
 module.exports = {
-  Assignment: Assignment,
   Variable: Variable,
   KeywordAction: KeywordAction,
-};
-
-function Assignment(left, right) {
-  this.type = 'assignment';
-  this.left = left; // variable
-  this.right = right; // expression
+  Operation: Operation,
+  IfElseStmt: IfElseStmt,
 };
 
 function Variable(name) {
@@ -19,4 +14,27 @@ function Variable(name) {
 function KeywordAction(keyword, expression) {
   this.keyword = keyword;
   this.expression = expression;
+}
+
+function IfElseStmt(condition, ifBlock, elseBlock) {
+  this.condition = condition;
+  this.ifBlock = ifBlock;
+  this.elseBlock = elseBlock;
+}
+
+function Operation(type, left, right) {
+  this.type = type;
+  switch (type) {
+    case 'assignment':
+    case 'addition':
+    case 'substraction':
+    case 'multiplication':
+    case 'division':
+    case 'exponentiation':
+      this.left = left;
+      this.right = right;
+      break;
+    default:
+      break;
+  }
 }
