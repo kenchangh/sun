@@ -43,6 +43,8 @@ module.exports = {
      ["Loop",                           "return 'LOOP';"],
      ["to",                             "return 'TO';"],
      ["EndLoop",                        "return 'END_LOOP';"],
+     ["While",                          "return 'WHILE';"],
+     ["EndWhile",                       "return 'END_WHILE';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
      ["AND",                            "return 'AND';"],
@@ -103,7 +105,8 @@ module.exports = {
       ["if_stmt",         "$$ = $1;"],
       ["keyword_stmt",    "$$ = $1;"],
       ["assignment_stmt", "$$ = $1;"],
-      ["loop_stmt", "$$ = $1;"],
+      ["loop_stmt",       "$$ = $1;"],
+      ["while_stmt",      "$$ = $1;"],
     ],
 
     "stmt_list": [
@@ -113,6 +116,13 @@ module.exports = {
 
     "stmt_block": [
       ["INDENT stmt_list DEDENT", "$$ = $stmt_list;"],
+    ],
+
+    "while_stmt": [
+      [
+        "WHILE e stmt_block END_WHILE",
+        "$$ = new yy.WhileStmt($e, $stmt_block);"
+      ]
     ],
 
     "loop_stmt": [

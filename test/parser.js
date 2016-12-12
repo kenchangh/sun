@@ -341,3 +341,22 @@ tap.same(parser.parse(loopStr), [
         ])
     ]),
 ]);
+
+var whileStr;
+
+whileStr = `While i <= 10
+  Print i
+EndWhile
+`;
+
+tap.same(parser.parse(whileStr), [
+  new nodes.WhileStmt(
+    new nodes.Operation('lte',
+      new nodes.Variable('i'),
+      10
+    ), [
+      new nodes.KeywordAction(
+        'Print', new nodes.Variable('i')),
+    ]
+  )
+])

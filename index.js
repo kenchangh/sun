@@ -10,7 +10,7 @@ var OPERATION_EXECUTIONS = operations.OPERATION_EXECUTIONS;
 
 function executeOperation(type, a, b) {
 
-  if (OPERATIONS_BY_TYPE['number'].indexOf(-1) !== -1) {
+  if (OPERATIONS_BY_TYPE['number'].indexOf(type) !== -1) {
     if (typeof a !== 'number') {
       console.log(type, a, b)
       throw new Error("'"+a+"' is not a number");

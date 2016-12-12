@@ -4,6 +4,7 @@ module.exports = {
   Operation: Operation,
   IfElseStmt: IfElseStmt,
   LoopStmt: LoopStmt,
+  WhileStmt: WhileStmt,
 };
 
 var OPERATIONS_BY_OPERANDS = require('./operations').OPERATIONS_BY_OPERANDS;
@@ -36,6 +37,12 @@ function LoopStmt(variable, start, stop, block) {
   this.variable = variable;
   this.start = start;
   this.stop = stop;
+  this.block = block;
+}
+
+function WhileStmt(condition, block) {
+  this.type = 'while';
+  this.condition = condition;
   this.block = block;
 }
 
