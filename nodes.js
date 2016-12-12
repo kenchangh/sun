@@ -3,6 +3,7 @@ module.exports = {
   KeywordAction: KeywordAction,
   Operation: Operation,
   IfElseStmt: IfElseStmt,
+  LoopStmt: LoopStmt,
 };
 
 var OPERATIONS_BY_OPERANDS = require('./operations').OPERATIONS_BY_OPERANDS;
@@ -23,9 +24,20 @@ function IfElseStmt(condition, ifBlock, elseBlock) {
   this.type = 'if_else'
   this.condition = condition;
   this.ifBlock = ifBlock;
+
+  if (!elseBlock) {
+    elseBlock = [];
+  }
   this.elseBlock = elseBlock;
 }
 
+function LoopStmt(variable, start, stop, block) {
+  this.type = 'loop';
+  this.variable = variable;
+  this.start = start;
+  this.stop = stop;
+  this.block = block;
+}
 
 function Operation(type) {
   this.type = type;

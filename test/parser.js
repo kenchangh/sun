@@ -281,3 +281,56 @@ tap.same(parser.parse(ifElseStr), [
     new nodes.KeywordAction('Print', 3),
   ]),
 ]);
+
+// nested if-s
+ifElseStr = `If 1 Then
+  Print 1
+  If 2 Then
+    Print 2
+  EndIf
+Else
+  Print 3
+EndIf
+`;
+
+tap.same(parser.parse(ifElseStr), [
+  new nodes.IfElseStmt(1, [
+    new nodes.KeywordAction('Print', 1),
+    new nodes.IfElseStmt(2, [
+      new nodes.KeywordAction('Print', 2),
+    ])
+  ], [
+    new nodes.KeywordAction('Print', 3),
+  ]),
+]);
+
+var loopStr;
+
+loopStr = `Loop:i=1 to 10
+  Print i
+EndLoop
+`;
+tap.same(parser.parse(loopStr), [
+  new nodes.LoopStmt(
+    new nodes.Variable('i'), 1, 10, [
+      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+    ]),
+]);
+
+// nested loops
+loopStr = `Loop:i=1 to 10
+  Loop:j=1 to 10
+    Print j
+  EndLoop
+EndLoop
+`;
+
+tap.same(parser.parse(loopStr), [
+  new nodes.LoopStmt(
+    new nodes.Variable('i'), 1, 10, [
+      new nodes.LoopStmt(
+        new nodes.Variable('j'), 1, 10, [
+          new nodes.KeywordAction('Print', new nodes.Variable('j'))
+        ])
+    ]),
+]);

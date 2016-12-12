@@ -9,6 +9,7 @@ yy.Operation = nodes.Operation;
 yy.KeywordAction = nodes.KeywordAction;
 yy.Variable = nodes.Variable;
 yy.IfElseStmt = nodes.IfElseStmt;
+yy.LoopStmt = nodes.LoopStmt;
 
 yy._iemitstack = [0]; // indentation stack that starts with 0
 

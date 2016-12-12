@@ -41,6 +41,7 @@ module.exports = {
      ["Else",                           "return 'ELSE';"],
      ["EndIf",                          "return 'ENDIF';"],
      ["Loop",                           "return 'LOOP';"],
+     ["to",                             "return 'TO';"],
      ["EndLoop",                        "return 'END_LOOP';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
@@ -101,6 +102,7 @@ module.exports = {
       ["if_stmt",         "$$ = $1;"],
       ["keyword_stmt",    "$$ = $1;"],
       ["assignment_stmt", "$$ = $1;"],
+      ["loop_stmt", "$$ = $1;"],
     ],
 
     "stmt_list": [
@@ -114,8 +116,8 @@ module.exports = {
 
     "loop_stmt": [
       [
-        "LOOP : variable = e to e stmt_block END_LOOP",
-        "$$ = new yy.LoopStmt($variable, $5, $7);"
+        "LOOP : variable = e TO e stmt_block END_LOOP",
+        "$$ = new yy.LoopStmt($variable, $5, $7, $stmt_block);"
       ],
     ],
 
