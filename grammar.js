@@ -1,3 +1,5 @@
+var whitespace = "[\t \u00a0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000]";
+
 module.exports = {
   "lex": {
     "rules": [
@@ -6,6 +8,7 @@ module.exports = {
      ["Print",                      "return 'PRINT';"],
      ["Enter",                      "return 'ENTER';"],
      ["[a-zA-Z_][a-zA-Z_0-9]*",     "return 'IDENTIFIER';"],
+     ["\"[^\"]*\"|\'[^\']*'", "yytext = yytext.substr(1,yyleng-2); return 'STRING';"],
      ["[0-9]+(?:\\.[0-9]+)?\\b",    "return 'FLOAT';"],
      ["[0-9]+\\b",                  "return 'INT';"],
      ["\\*",                        "return '*';"],
@@ -33,6 +36,10 @@ module.exports = {
     "program": [
       ["lines EOF", "return $1"],
     ],
+
+    // "block": [
+    //   [""]
+    // ],
 
     "lines": [
       ["line",             "$$ = [$1];"],
@@ -74,6 +81,7 @@ module.exports = {
       [ "- e",     "$$ = -yy.resolveVar($2);", {"prec": "UMINUS"} ],
       [ "( e )",   "$$ = yy.resolveVar($2);" ],
       [ "variable","$$ = $1" ],
+      [ "STRING",  "$$ = yytext" ],
       [ "INT",     "$$ = parseInt(yytext, 10);" ],
       [ "FLOAT",   "$$ = parseFloat(yytext);" ],
     ],

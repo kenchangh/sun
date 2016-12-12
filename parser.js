@@ -1,7 +1,7 @@
 var readlineSync = require('readline-sync');
 var grammar = require('./grammar');
 var Parser = require('jison').Parser;
-var objects = require('./objects');
+var nodes = require('./nodes');
 
 
 var parser = new Parser(grammar);
@@ -11,10 +11,10 @@ yy.context = {};
 
 yy.Assignment = function (left, right) {
   yy.context[left.name] = right;
-  return new objects.Assignment(left, right);
+  return new nodes.Assignment(left, right);
 };
 
-yy.Variable = objects.Variable;
+yy.Variable = nodes.Variable;
 
 yy.KeywordAction = function (keyword, expression) {
   switch (keyword) {
@@ -34,7 +34,7 @@ yy.KeywordAction = function (keyword, expression) {
     default:
       break;
   }
-  return new objects.KeywordAction(keyword, expression);
+  return new nodes.KeywordAction(keyword, expression);
 }
 
 yy.resolveVar = function resolveVar(expression) {
