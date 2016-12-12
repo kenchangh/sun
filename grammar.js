@@ -40,6 +40,8 @@ module.exports = {
      ["Then",                           "return 'THEN';"],
      ["Else",                           "return 'ELSE';"],
      ["EndIf",                          "return 'ENDIF';"],
+     ["Loop",                           "return 'LOOP';"],
+     ["EndLoop",                        "return 'END_LOOP';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
      ["AND",                            "return 'AND';"],
@@ -64,6 +66,7 @@ module.exports = {
      ["!=",                             "return '!=';"],
      ["=",                              "return '=';"],
      ["!",                              "return '!';"],
+     [":",                              "return ':';"],
      ["$",                              "return 'EOF';"],
      ["^\\s*$",                         eofDedent],
      ["\\n\\r]+"+spc+"*/![^\\n\\r]",    "/* eat blank lines */"],
@@ -107,6 +110,13 @@ module.exports = {
 
     "stmt_block": [
       ["INDENT stmt_list DEDENT", "$$ = $stmt_list;"],
+    ],
+
+    "loop_stmt": [
+      [
+        "LOOP : variable = e to e stmt_block END_LOOP",
+        "$$ = new yy.LoopStmt($variable, $5, $7);"
+      ],
     ],
 
     "if_stmt": [
