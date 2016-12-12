@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+<title>Sun Programming Language</title>
+<style type="text/css" media="screen">
+  .content {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    bottom: 50px;
+    left: 0;
+  }
+  .editor-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .editor-header {
+    background-color: black;
+    height: 50px;
+    text-align: center;
+    position: relative;
+  }
+  .run-btn {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    height: 35px;
+    margin-top: -17.5px;
+  }
+  #editor { 
+    position: absolute;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    font-size: 15px;
+  }
+  #editor .ace_scroller, #editor .ace_gutter {
+    padding-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="content col-md-10 col-md-offset-1">
+  <div class="editor-content col-md-5">
+    <div class="editor-header">
+      <button class="run-btn btn btn-primary pull-right">Run</button>
+    </div>
+    <div id="editor">Print 'Enter a stopping point: '
+Enter n
+Loop:i=1 to 20
+  If i % 3 == 0 AND i % 5 == 0
+  Then
+    Print "FizzBuzz"
+  Else
+    If i % 3 == 0
+    Then
+      Print "Fizz"
+    Else
+      If i % 5 == 0
+      Then
+        Print "Buzz"
+      Else
+        Print i
+      EndIf
+    EndIf
+  EndIf
+EndLoop</div>
+  </div>
+</div>
+
+<script src="/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/build/sun.js" type="text/javascript" charset="utf-8"></script>
+<script src="/js/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+var editor = ace.edit("editor");
+editor.setTheme("ace/theme/monokai");
+
+$('.run-btn').click(function() {
+  var compiler = new SunCompiler();
+  compiler.compile(editor.getValue());
+});
+
+</script>
+</body>
+</html>

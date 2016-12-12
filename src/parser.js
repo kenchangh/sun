@@ -1,4 +1,3 @@
-var readlineSync = require('readline-sync');
 var grammar = require('./grammar');
 var Parser = require('jison').Parser;
 var nodes = require('./nodes');

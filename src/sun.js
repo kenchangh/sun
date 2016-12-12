@@ -1,12 +1,18 @@
-module.exports = SunCompiler;
-
 var readlineSync = require('readline-sync');
 var parser = require('./parser');
 var operations = require('./operations');
+var browser = require('./browser');
 var OPERATIONS_BY_OPERANDS = operations.OPERATIONS_BY_OPERANDS;
 var OPERATIONS_BY_TYPE = operations.OPERATIONS_BY_TYPE;
 var OPERATION_EXECUTIONS = operations.OPERATION_EXECUTIONS;
+var isBrowser = typeof window !== undefined;
 
+if (isBrowser) {
+  // mock readlineSync
+  readlineSync = {
+    question: function() {},
+  };
+}
 
 function executeOperation(type, a, b) {
 
@@ -33,7 +39,6 @@ function executeOperation(type, a, b) {
     return OPERATION_EXECUTIONS[type](a, b);
   }
 }
-
 
 function SunCompiler(debug) {
   // expose the context to public for testing
@@ -63,11 +68,16 @@ SunCompiler.prototype.compile = function compile(source) {
 
 SunCompiler.prototype.executeEnter = function executeEnter(node) {
   if (node.type !== 'variable') {
-    var result = this.parseNode(node);
-    throw new Error("Enter must be used with variables, found: "+result+"'");
+    throw new Error("Enter must be used with variables, found: "+node.type+"'");
   }
   var varName = node.name;
-  var answer = readlineSync.question('');
+
+  var answer;
+  if (isBrowser) {
+    answer = browser.enter();
+  } else {
+    answer = readlineSync.question('');
+  }
   var val = parseFloat(answer);
   val = isNaN(val) ? answer : val;
   this.context[varName] = val;
@@ -76,6 +86,8 @@ SunCompiler.prototype.executeEnter = function executeEnter(node) {
 SunCompiler.prototype.executePrint = function executePrint(val) {
   if (this.debug) {
     this.outputBuffer.push(val);
+  } else if (isBrowser) {
+    browser.print(val);
   } else {
     console.log(val);
   }
@@ -169,3 +181,4 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
   }
 }
 
+module.exports = SunCompiler;

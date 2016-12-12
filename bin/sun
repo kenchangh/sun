@@ -1,5 +1,5 @@
 var fs = require('fs');
-var Compiler = require('../');
+var Compiler = require('../src/sun');
 var compiler = new Compiler();
 
 fs.readFile(process.argv[2], 'utf8', function(err, source) {
