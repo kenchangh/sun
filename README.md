@@ -24,11 +24,20 @@ Else
 EndIf
 ```
 
-### Controlled-loops
+### Automatic Loops
 ```
-Loop:i=0 to 9
-    Print i
+Loop:i=1 to 10
+    Print i  // count from 1 - 10
 EndLoop
+```
+
+### While Loops
+```
+i = 1
+While i <= 10
+	Print i  // count from 1 - 10
+	i = i + 1
+EndWhile
 ```
 
 ### Arrays
