@@ -65,6 +65,34 @@ tap.same(parser.parse('x = 1 != 1'), [
   )
 ]);
 
+tap.same(parser.parse('x = 1 > 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('gt', 1, 1)
+  )
+]);
+
+tap.same(parser.parse('x = 1 < 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('lt', 1, 1)
+  )
+]);
+
+tap.same(parser.parse('x = 1 >= 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('gte', 1, 1)
+  )
+]);
+
+tap.same(parser.parse('x = 1 <= 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('lte', 1, 1)
+  )
+]);
+
 tap.same(parser.parse('x = 1 AND 1'), [
   new nodes.Operation('assignment',
     new nodes.Variable('x'),

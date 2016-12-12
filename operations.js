@@ -46,6 +46,30 @@ var OPERATIONS = [
     type: 'number',
     execution: Math.pow,
   },
+  {
+    name: 'gt',
+    operands: 2,
+    type: 'number',
+    execution: function (a, b) { return a > b },
+  },
+  {
+    name: 'lt',
+    operands: 2,
+    type: 'number',
+    execution: function (a, b) { return a < b },
+  },
+  {
+    name: 'gte',
+    operands: 2,
+    type: 'number',
+    execution: function (a, b) { return a >= b },
+  },
+  {
+    name: 'lte',
+    operands: 2,
+    type: 'number',
+    execution: function (a, b) { return a <= b },
+  },
 
   // boolean 2 operands
   {
