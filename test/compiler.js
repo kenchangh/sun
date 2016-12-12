@@ -11,6 +11,18 @@ compiler.compile('x = 1 == 1');
 tap.same(compiler.context, { x: true });
 compiler.resetContext();
 
+compiler.compile('x = 1 != 1');
+tap.same(compiler.context, { x: false });
+compiler.resetContext();
+
+compiler.compile('x = 1 AND 0');
+tap.same(compiler.context, { x: false });
+compiler.resetContext();
+
+compiler.compile('x = 1 OR 0');
+tap.same(compiler.context, { x: true });
+compiler.resetContext();
+
 compiler.compile('x = 1 + 1\nPrint x');
 tap.same(compiler.context, { x: 2 });
 compiler.resetContext();

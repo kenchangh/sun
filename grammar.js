@@ -42,6 +42,8 @@ module.exports = {
      ["EndIf",                          "return 'ENDIF';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
+     ["AND",                            "return 'AND';"],
+     ["OR",                             "return 'OR';"],
      ["\"[^\"]*\"|\'[^\']*'",           "yytext = yytext.substr(1,yyleng-2); return 'STRING';"],
      ["(True|False)",                   "return 'BOOL'"],
      ["[0-9]+(?:\\.[0-9]+)?\\b",        "return 'FLOAT';"],
@@ -67,6 +69,7 @@ module.exports = {
 
   "operators": [
     ["right", "="],
+    ["left", "AND", "OR"],
     ["left", "==", "!="],
     ["left", "+", "-"],
     ["left", "*", "/"],
@@ -133,6 +136,8 @@ module.exports = {
       [ "e * e",   "$$ = new yy.Operation('multiplication', $1, $3);" ],
       [ "e / e",   "$$ = new yy.Operation('division', $1, $3);" ],
       [ "e ^ e",   "$$ = new yy.Operation('exponentiation', $1, $3);" ],
+      [ "e AND e", "$$ = new yy.Operation('conjunction', $1, $3);"],
+      [ "e OR e",  "$$ = new yy.Operation('disjunction', $1, $3);"],
       [ "e == e",  "$$ = new yy.Operation('equal', $1, $3);" ],
       [ "e != e",  "$$ = new yy.Operation('inequal', $1, $3);" ],
       [ "- e",     "$$ = new yy.Operation('negation', $e);", {"prec": "UMINUS"} ],

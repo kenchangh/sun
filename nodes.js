@@ -35,6 +35,8 @@ function Operation(type) {
     case 'exponentiation':
     case 'equal':
     case 'inequal':
+    case 'conjunction':
+    case 'disjunction':
       this.left = arguments[1];
       this.right = arguments[2];
       break;

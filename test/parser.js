@@ -51,6 +51,28 @@ tap.same(parser.parse('x = 1 != 1'), [
   )
 ]);
 
+tap.same(parser.parse('x = 1 AND 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('conjunction', 1, 1)
+  )
+]);
+
+// make sure parser parses AND separately
+tap.same(parser.parse('x = xANDy'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Variable('xANDy')
+  )
+]);
+
+tap.same(parser.parse('x = 1 OR 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('disjunction', 1, 1)
+  )
+]);
+
 tap.same(parser.parse('y = (5-1)*5/6+7'), [
   {
     "left": new nodes.Variable('y'),

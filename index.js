@@ -22,6 +22,8 @@ function executeOperation(type, a, b) {
     exponentiation: function () { return Math.pow(a, b) },
     equal: function () { return a === b },
     inequal: function () { return a !== b },
+    conjunction: function () { return a && b },
+    disjunction: function () { return a || b },
   };
 
   return operations[type]();
@@ -74,6 +76,8 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
       case 'exponentiation':
       case 'equal':
       case 'inequal':
+      case 'conjunction':
+      case 'disjunction':
         var left = parseNode.call(this, node.left);
         var right = parseNode.call(this, node.right);
         if (left === undefined) console.log(node);
@@ -98,6 +102,7 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
         break;
 
       default:
+        throw new Error("Unhandled node type: '"+node.type+"'");
         break;
     }
 
