@@ -1,0 +1,20 @@
+Print 'Enter a stopping point: '
+Enter n
+Loop:i=1 to n
+	If i % 3 == 0 AND i % 5 == 0
+	Then
+		Print "FizzBuzz"
+	Else
+		If i % 3 == 0
+		Then
+			Print "Fizz"
+		Else
+			If i % 5 == 0
+			Then
+				Print "Buzz"
+			Else
+				Print i
+			EndIf
+		EndIf
+	EndIf
+EndLoop

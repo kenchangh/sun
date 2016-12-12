@@ -47,6 +47,12 @@ var OPERATIONS = [
     execution: Math.pow,
   },
   {
+    name: 'modulo',
+    operands: 2,
+    type: 'number',
+    execution: function (a, b) { return a % b },
+  },
+  {
     name: 'gt',
     operands: 2,
     type: 'number',

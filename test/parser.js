@@ -115,6 +115,13 @@ tap.same(parser.parse('x = 1 OR 1'), [
   )
 ]);
 
+tap.same(parser.parse('x = 1 % 1'), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('modulo', 1, 1)
+  )
+]);
+
 tap.same(parser.parse('y = (5-1)*5/6+7'), [
   {
     "left": new nodes.Variable('y'),
