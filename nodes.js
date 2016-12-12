@@ -12,28 +12,32 @@ function Variable(name) {
 };
 
 function KeywordAction(keyword, expression) {
+  this.type = 'keyword';
   this.keyword = keyword;
   this.expression = expression;
 }
 
 function IfElseStmt(condition, ifBlock, elseBlock) {
+  this.type = 'if_else'
   this.condition = condition;
   this.ifBlock = ifBlock;
   this.elseBlock = elseBlock;
 }
 
-function Operation(type, left, right) {
+function Operation(type) {
   this.type = type;
   switch (type) {
     case 'assignment':
     case 'addition':
-    case 'substraction':
+    case 'subtraction':
     case 'multiplication':
     case 'division':
     case 'exponentiation':
-      this.left = left;
-      this.right = right;
+      this.left = arguments[1];
+      this.right = arguments[2];
       break;
+    case 'negation':
+      this.operand = left;
     default:
       break;
   }

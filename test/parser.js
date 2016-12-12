@@ -30,7 +30,7 @@ tap.same(parser.parse('y = (5-1)*5/6+7'), [
           "left": {
             "left": 5,
             "right": 1,
-            "type": "substraction"
+            "type": "subtraction"
           },
           "right": 5,
           "type": "multiplication"
@@ -55,7 +55,7 @@ tap.same(parser.parse('x = 1\ny = (5-1)*5/6+7'), [
           "left": {
             "left": 5,
             "right": 1,
-            "type": "substraction"
+            "type": "subtraction"
           },
           "right": 5,
           "type": "multiplication"
@@ -126,7 +126,7 @@ tap.same(parser.parse('Print (5-1)*5/6+7'), [
         "left": {
           "left": 5,
           "right": 1,
-          "type": "substraction"
+          "type": "subtraction"
         },
         "right": 5,
         "type": "multiplication"

@@ -138,7 +138,7 @@ module.exports = {
 
     "e": [
       [ "e + e",   "$$ = new yy.Operation('addition', $1, $3);" ],
-      [ "e - e",   "$$ = new yy.Operation('substraction', $1, $3);" ],
+      [ "e - e",   "$$ = new yy.Operation('subtraction', $1, $3);" ],
       [ "e * e",   "$$ = new yy.Operation('multiplication', $1, $3);" ],
       [ "e / e",   "$$ = new yy.Operation('division', $1, $3);" ],
       [ "e ^ e",   "$$ = new yy.Operation('exponentiation', $1, $3);" ],
