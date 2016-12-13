@@ -1,27 +1,20 @@
-module.exports = {
-  Variable: Variable,
-  KeywordAction: KeywordAction,
-  Operation: Operation,
-  IfElseStmt: IfElseStmt,
-  LoopStmt: LoopStmt,
-  WhileStmt: WhileStmt,
-};
-
 var OPERATIONS_BY_OPERANDS = require('./operations').OPERATIONS_BY_OPERANDS;
 
-function Variable(name) {
+var exports = module.exports;
+
+exports.Variable = function Variable(name) {
   this.type = 'variable';
   this.name = name;
   this.indices = [];
 };
 
-function KeywordAction(keyword, expression) {
+exports.KeywordAction = function KeywordAction(keyword, expression) {
   this.type = 'keyword';
   this.keyword = keyword;
   this.expression = expression;
 }
 
-function IfElseStmt(condition, ifBlock, elseBlock) {
+exports.IfElseStmt = function IfElseStmt(condition, ifBlock, elseBlock) {
   this.type = 'if_else'
   this.condition = condition;
   this.ifBlock = ifBlock;
@@ -32,7 +25,7 @@ function IfElseStmt(condition, ifBlock, elseBlock) {
   this.elseBlock = elseBlock;
 }
 
-function LoopStmt(loopStartVar, loopEndVar, start, stop, block) {
+exports.LoopStmt = function LoopStmt(loopStartVar, loopEndVar, start, stop, block) {
   this.type = 'loop';
 
   if (loopStartVar.name !== loopEndVar.name) {
@@ -46,13 +39,13 @@ function LoopStmt(loopStartVar, loopEndVar, start, stop, block) {
   this.block = block;
 }
 
-function WhileStmt(condition, block) {
+exports.WhileStmt = function WhileStmt(condition, block) {
   this.type = 'while';
   this.condition = condition;
   this.block = block;
 }
 
-function Operation(type) {
+exports.Operation = function Operation(type) {
   this.type = type;
 
   if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
