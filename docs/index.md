@@ -2,7 +2,6 @@
 layout: default
 title: Sun Programming Language
 ---
-
 # Sun
 
 Sun is a programming language for quick prototyping and learning programming concepts. Being minimal and having a limited feature set, Sun is aimed to help novices in learning programming without all the cruft and redundancies. The language loosely follows the pseudocode language taught by Dr Juan in Sunway University for our Programming Concepts and Problem Solving class (PRG 1114).
@@ -56,3 +55,24 @@ Loop:i=0 to 9
 EndLoop
 ```
 
+## Status
+- [x] Operators and expressions
+- [x] Input / output
+- [x] If / else
+- [x] Automatic loops
+- [x] While loops
+- [ ] CaseOf / Case
+- [ ] Array
+- [ ] Functions
+- [ ] Bootstrapping???
+
+## Running examples
+
+You will need to have clone the project and install the dependencies with npm first. You must have NodeJS installed on your system.
+```
+git clone git@github.com:mavenave/sun.git
+cd sun
+npm install
+
+node bin/sun examples/fizzbuzz.sun
+```
