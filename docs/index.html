@@ -47,6 +47,15 @@
   #editor .ace_scroller, #editor .ace_gutter {
     padding-top: 20px;
   }
+  .io-terminal {
+    position: absolute;
+    left: 44%;
+    height: 30%;
+    width: 60%;
+    background-color: #272822;
+    color: white;
+    overflow: auto;
+  }
 </style>
 </head>
 <body>
@@ -77,6 +86,10 @@ Loop:i=1 to 20
   EndIf
 EndLoop</div>
   </div>
+  <div class="io-terminal col-md-5">
+    <h4>Output</h4>
+
+  </div>
 </div>
 
 <script src="/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -86,8 +99,16 @@ EndLoop</div>
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/monokai");
 
+var compiler = new SunCompiler();
+var $ioTerminal = $('.io-terminal');
+compiler.setPrintHook(function(message) {
+  $ioTerminal.append('<div>'+message+'</div>');
+});
+compiler.setEnterHook(function() {
+
+})
+
 $('.run-btn').click(function() {
-  var compiler = new SunCompiler();
   compiler.compile(editor.getValue());
 });
 

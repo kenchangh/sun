@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "tap test/*.js",
-    "build": "browserify src/entry.js -s SunCompiler -i readline-sync | uglifyjs > docs/build/sun.js",
+    "build": "browserify src/sun.js -s SunCompiler -i readline-sync | uglifyjs > docs/build/sun.js",
     "serve": "jekyll serve -s docs"
   },
   "keywords": [

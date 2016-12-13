@@ -1,7 +1,6 @@
 var readlineSync = require('readline-sync');
 var parser = require('./parser');
 var operations = require('./operations');
-var browser = require('./browser');
 var OPERATIONS_BY_OPERANDS = operations.OPERATIONS_BY_OPERANDS;
 var OPERATIONS_BY_TYPE = operations.OPERATIONS_BY_TYPE;
 var OPERATION_EXECUTIONS = operations.OPERATION_EXECUTIONS;
@@ -12,6 +11,11 @@ if (isBrowser) {
   readlineSync = {
     question: function() {},
   };
+}
+
+function isFunction(functionToCheck) {
+  var getType = {};
+  return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
 
 function executeOperation(type, a, b) {
@@ -49,6 +53,12 @@ function SunCompiler(debug) {
     this.context = {};
     this.outputBuffer = [];
   };
+  this.setPrintHook = function setPrintHook(cb) {
+    this.printHook = cb;
+  }
+  this.setEnterHook = function setEnterHook(cb) {
+    this.enterHook = cb;
+  }
 }
 
 SunCompiler.prototype.parseBlock = function parseBlock(block) {
@@ -74,7 +84,10 @@ SunCompiler.prototype.executeEnter = function executeEnter(node) {
 
   var answer;
   if (isBrowser) {
-    answer = browser.enter();
+    if (!isFunction(this.enterHook)) {
+      throw new Error('No browser implementation of Enter function');
+    }
+    answer = this.enterHook();
   } else {
     answer = readlineSync.question('');
   }
@@ -85,11 +98,20 @@ SunCompiler.prototype.executeEnter = function executeEnter(node) {
 
 SunCompiler.prototype.executePrint = function executePrint(val) {
   if (this.debug) {
+
     this.outputBuffer.push(val);
+
   } else if (isBrowser) {
-    browser.print(val);
+
+    if (!isFunction(this.printHook)) {
+      throw new Error('No browser implementation of Print function');
+    }
+    this.printHook(val);
+
   } else {
+
     console.log(val);
+
   }
 }
 
