@@ -40,11 +40,11 @@ module.exports = {
      ["Then",                           "return 'THEN';"],
      ["Else",                           "return 'ELSE';"],
      ["EndIf",                          "return 'ENDIF';"],
+     ["(EndLoop|LoopEnd)",              "return 'END_LOOP';"],
      ["Loop",                           "return 'LOOP';"],
      ["to",                             "return 'TO';"],
-     ["EndLoop",                        "return 'END_LOOP';"],
+     ["(EndWhile|WhileEnd)",            "return 'END_WHILE';"],
      ["While",                          "return 'WHILE';"],
-     ["EndWhile",                       "return 'END_WHILE';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
      ["AND",                            "return 'AND';"],
@@ -127,8 +127,8 @@ module.exports = {
 
     "loop_stmt": [
       [
-        "LOOP : variable = e TO e stmt_block END_LOOP",
-        "$$ = new yy.LoopStmt($variable, $5, $7, $stmt_block);"
+        "LOOP : variable = e TO e stmt_block END_LOOP : variable",
+        "$$ = new yy.LoopStmt($3, $11, $5, $7, $stmt_block);"
       ],
     ],
 

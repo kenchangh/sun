@@ -95,7 +95,7 @@ var loopStr;
 
 loopStr = `Loop:i=1 to 10
   Print i
-EndLoop`
+EndLoop:i`
 compiler.compile(loopStr);
 tap.same(compiler.outputBuffer, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 compiler.reset();
@@ -104,8 +104,8 @@ compiler.reset();
 loopStr = `Loop:i=1 to 10
   Loop:j=1 to 10
     Print j
-  EndLoop
-EndLoop`
+  EndLoop:j
+EndLoop:i`
 compiler.compile(loopStr);
 var arr = [];
 for (var i=1; i < 11; i++) {

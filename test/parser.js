@@ -315,11 +315,23 @@ var loopStr;
 
 loopStr = `Loop:i=1 to 10
   Print i
-EndLoop
+EndLoop:i
 `;
 tap.same(parser.parse(loopStr), [
   new nodes.LoopStmt(
-    new nodes.Variable('i'), 1, 10, [
+    new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
+      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+    ]),
+]);
+
+// alternative declaration, LoopEnd
+loopStr = `Loop:i=1 to 10
+  Print i
+LoopEnd:i
+`;
+tap.same(parser.parse(loopStr), [
+  new nodes.LoopStmt(
+    new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
       new nodes.KeywordAction('Print', new nodes.Variable('i'))
     ]),
 ]);
@@ -328,25 +340,52 @@ tap.same(parser.parse(loopStr), [
 loopStr = `Loop:i=1 to 10
   Loop:j=1 to 10
     Print j
-  EndLoop
-EndLoop
+  EndLoop:j
+EndLoop:i
 `;
 
 tap.same(parser.parse(loopStr), [
   new nodes.LoopStmt(
-    new nodes.Variable('i'), 1, 10, [
+    new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
       new nodes.LoopStmt(
-        new nodes.Variable('j'), 1, 10, [
+        new nodes.Variable('j'), new nodes.Variable('j'), 1, 10, [
           new nodes.KeywordAction('Print', new nodes.Variable('j'))
         ])
     ]),
 ]);
+
+// different variables for loop
+loopStr = `Loop:i=1 to 10
+  Print i
+EndLoop:j
+`;
+tap.throws(function() {
+  parser.parse(loopStr);
+});
 
 var whileStr;
 
 whileStr = `While i <= 10
   Print i
 EndWhile
+`;
+
+tap.same(parser.parse(whileStr), [
+  new nodes.WhileStmt(
+    new nodes.Operation('lte',
+      new nodes.Variable('i'),
+      10
+    ), [
+      new nodes.KeywordAction(
+        'Print', new nodes.Variable('i')),
+    ]
+  )
+]);
+
+// alternative declaration WhileEnd
+whileStr = `While i <= 10
+  Print i
+WhileEnd
 `;
 
 tap.same(parser.parse(whileStr), [

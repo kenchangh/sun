@@ -32,9 +32,15 @@ function IfElseStmt(condition, ifBlock, elseBlock) {
   this.elseBlock = elseBlock;
 }
 
-function LoopStmt(variable, start, stop, block) {
+function LoopStmt(loopStartVar, loopEndVar, start, stop, block) {
   this.type = 'loop';
-  this.variable = variable;
+
+  if (loopStartVar.name !== loopEndVar.name) {
+    throw new Error('Variable used at end of loop must be same as start of loop. Expected: '
+      +loopStartVar.name+'. Found: '+loopEndVar.name);
+  }
+
+  this.variable = loopStartVar;
   this.start = start;
   this.stop = stop;
   this.block = block;
