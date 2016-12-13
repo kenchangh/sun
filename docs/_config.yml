@@ -14,7 +14,7 @@ baseurl:          ''
 
 author:
   name:           Chan Guan Hao
-  url:            http://mavenave.me/sun/
+  url:            http://mavenave.me/sun
 
 github:
   repo:           https://github.com/mavenave/sun
