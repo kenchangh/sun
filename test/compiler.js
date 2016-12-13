@@ -6,6 +6,19 @@ tap.throws(function() {
   // number cannot add string
   compiler.compile('x = 1 + "asd"');
 });
+compiler.reset();
+
+tap.throws(function() {
+  // number cannot add string
+  compiler.compile('x = "asd" + 1');
+});
+compiler.reset();
+
+tap.throws(function() {
+  // first usage error
+  compiler.compile('Print x');
+});
+compiler.reset();
 
 compiler.compile('x = !1');
 tap.same(compiler.context, { x: false });
@@ -29,6 +42,11 @@ compiler.reset();
 
 compiler.compile('x = 1 OR 0');
 tap.same(compiler.context, { x: true });
+compiler.reset();
+
+tap.throws(function() {
+  compiler.compile('x = 1 / 0');
+});
 compiler.reset();
 
 compiler.compile('x = 1 + 1\nPrint x');
@@ -126,3 +144,62 @@ EndWhile`;
 compiler.compile(whileStr);
 tap.same(compiler.outputBuffer, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 compiler.reset();
+
+
+/* ARRAYS */
+
+compiler.compile('A[0] = 1');
+tap.same(compiler.context, { A: {'0': 1} });
+compiler.reset();
+
+compiler.compile('A[0][2] = 1');
+tap.same(compiler.context, { A: {'0,2': 1} });
+compiler.reset();
+
+compiler.compile('A[0][2] = 1\nPrint A[0][2]');
+tap.same(compiler.context, { A: {'0,2': 1} });
+tap.same(compiler.outputBuffer, [1]);
+compiler.reset();
+
+tap.throws(function() {
+  // A[0] not declared
+  compiler.compile('Print A[0]');
+});
+compiler.reset();
+
+tap.throws(function() {
+  // wrongly access elements of existing variable
+  compiler.compile('A = 1\nPrint A[0]');
+});
+compiler.reset();
+
+tap.throws(function() {
+  // wrongly access elements of existing variable
+  compiler.compile('A = 1\nA[0] = 2');
+});
+compiler.reset();
+
+tap.throws(function() {
+  // wrongly access elements of existing variable
+  compiler.compile('A[0] = 1\nPrint A[1]');
+});
+compiler.reset();
+
+compiler.compile('i = 1\nA[1] = 1\nPrint A[i]');
+tap.same(compiler.context, { A: { '1': 1 }, i: 1 })
+tap.same(compiler.outputBuffer, [1])
+compiler.reset();
+
+compiler.compile('i = 1\nA[i] = 1');
+tap.same(compiler.context, { A: { '1': 1 }, i: 1 })
+compiler.reset();
+
+tap.throws(function() {
+  // no non-integer indexes
+  compiler.compile('A["x"] = 1');
+});
+
+tap.throws(function() {
+  // no non-integer indexes
+  compiler.compile('A[2.5] = 1');
+});

@@ -423,3 +423,39 @@ tap.same(parser.parse(whileStr), [
     ]
   )
 ])
+
+
+/* ARRAYS HERE */
+
+tap.same(parser.parse('Print A[i]'), [
+  new nodes.KeywordAction('Print',
+    new nodes.Variable('A', [
+      new nodes.Variable('i')
+    ])
+  )
+]);
+
+tap.same(parser.parse('Print A[i][1]'), [
+  new nodes.KeywordAction('Print',
+    new nodes.Variable('A', [
+      new nodes.Variable('i'), 1
+    ])
+  )
+]);
+
+tap.same(parser.parse('Print A[i]+A[j]'), [
+  new nodes.KeywordAction('Print',
+    new nodes.Operation('addition',
+      new nodes.Variable('A', [
+        new nodes.Variable('i')
+      ]),
+      new nodes.Variable('A', [
+        new nodes.Variable('j')
+      ])
+    )
+  )
+]);
+
+tap.throws(function() {
+  parser.parse('Print A[]');
+})

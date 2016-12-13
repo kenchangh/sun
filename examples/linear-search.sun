@@ -1,0 +1,23 @@
+A[0] = 'ruby'
+A[1] = 'javascript'
+A[2] = 'erlang'
+A[3] = 'python'
+A[4] = 'c'
+A[5] = 'java'
+
+Print 'Enter a programming language: '
+Enter lang
+found = False
+Loop:i=0 to 5
+	If lang == A[i]
+	Then
+		Print lang
+		Print i
+		found = True
+	EndIf
+Loop-end:i
+
+If !found
+Then
+	Print 'Not found'
+EndIf

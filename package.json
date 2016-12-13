@@ -4,7 +4,8 @@
   "description": "Implementation of dr juan's pseudocode language",
   "main": "index.js",
   "scripts": {
-    "test": "tap test/*.js",
+    "test": "tap test/*.js --cov",
+    "test-cov": "tap test/*.js --cov --coverage-report=html",
     "build": "browserify src/sun.js -s SunCompiler -i readline-sync | uglifyjs > docs/build/sun.js",
     "serve": "jekyll serve -s docs"
   },

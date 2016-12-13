@@ -19,11 +19,14 @@ function isFunction(functionToCheck) {
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
 
+function isFloat(n){
+  return Number(n) === n && n % 1 !== 0;
+}
+
 function executeOperation(type, a, b) {
 
   if (OPERATIONS_BY_TYPE['number'].indexOf(type) !== -1) {
     if (typeof a !== 'number') {
-      console.log(type, a, b)
       throw new Error("'"+a+"' is not a number");
     }
     if (b !== undefined && typeof b !== 'number') {
@@ -76,11 +79,6 @@ SunCompiler.prototype.compile = function compile(source) {
     var parseTree = parser.parse(source);
     this.parseBlock(parseTree);
 
-    if (isFunction(this.handleParseTreeReady)) {
-      this.handleParseTreeReady(parseTree);
-    }
-
-    
   } catch (e) {
 
     if (this.debug) {
@@ -136,7 +134,18 @@ SunCompiler.prototype.executePrint = function executePrint(val) {
   }
 }
 
+function throwIfNonIntIndices(indices) {
+  for (var i = 0; i < indices.length; i++) {
+    var index = indices[i];
+    if (typeof index !== 'number' || isFloat(index)) {
+      throw new Error("Array index should be integers, found '"+index+"'");
+    }
+  }
+}
+
 SunCompiler.prototype.parseNode = function parseNode(node) {
+  
+
   if (typeof node === 'object') {
 
     var type = node.type;
@@ -148,7 +157,33 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
       if (val === undefined) {
         throw new Error("First usage of variable '"+varName+"', declare the variable above this line first.");
       }
-      return this.context[varName];
+      if (node.indices && typeof val !== 'object') {
+        throw new Error("Cannot access elements of variable '"+varName+"'. It is not an array, it's a '"+typeof val+"'");
+      }
+
+      var indices = node.indices;
+      if (indices) {
+        // apply the indices until the end
+        // for (var i = 0; i < indices.length; i++) {
+        //   index = indices[i];
+        //   val = val[index];
+        // }
+        indices = indices.map(parseNode.bind(this));
+        throwIfNonIntIndices(indices);
+
+        var key = indices.toString();
+        val = this.context[varName][key];
+
+        if (val === undefined) {
+          var elementAccess = indices.map(function(index) {
+            return '['+index+']';
+          }).join('');
+          throw new Error("There's no element at '"+varName+elementAccess+"'");
+        }
+      } else {
+        val = this.context[varName];
+      }
+      return val;
 
     } else if (type === 'keyword') {
 
@@ -164,7 +199,57 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
     } else if (type === 'assignment') {
 
       var variable = node.left;
-      this.context[variable.name] = parseNode.call(this, node.right);
+      var indices = variable.indices;
+      var varName = variable.name;
+      var currentVal = this.context[varName];
+      var newVal = parseNode.call(this, node.right);
+
+      if (currentVal !== undefined &&
+        typeof currentVal !== 'object' &&
+        Array.isArray(indices)) {
+
+        throw new Error("Cannot assign elements of variable '"+varName+"'. It is not an array, it's a '"+typeof val+"'");
+
+      }
+      var currentType = typeof currentVal;
+      var newType = typeof newVal;
+      if (currentVal !== undefined &&
+        typeof currentVal !== 'object' &&
+        currentType !== newType) {
+        console.log(currentVal, newVal)
+
+        throw new Error("Assigning a '"+
+          newType+"' to a '"+currentType+
+          "' at variable '"+varName+"'");
+
+      }
+      if (Array.isArray(indices)) {
+        // apply the indices until the end
+        // HACK
+        // str = 'this.context[varName]';
+        // for (var i = 0; i < indices.length; i++) {
+        //   str += '['+indices[i]+']';
+        // }
+        // str += '= newVal;';
+        // eval('this.context')
+        // eval(str);
+        
+        // arrays represented as objects internally
+        // use the indices as hash keys
+        // A[0][1][2] becomes A['0,1,2']
+
+        // actually parsing the index expressions
+        indices = indices.map(parseNode.bind(this));
+        throwIfNonIntIndices(indices);
+        if (this.context[varName] === undefined) {
+          this.context[varName] = {};
+        }
+        var key = indices.toString();
+        this.context[varName][key] = newVal;
+
+      } else {
+        this.context[varName] = newVal;
+      }
       return undefined;
 
     } else if (type === 'if_else') {
@@ -204,7 +289,7 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 
       var operand = parseNode.call(this, node.operand);
-      return executeOperation(node.type, node.operand);
+      return executeOperation(node.type, operand);
       
     } else if (OPERATIONS_BY_OPERANDS[2].indexOf(type) !== -1) {
 

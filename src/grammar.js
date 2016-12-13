@@ -61,6 +61,8 @@ module.exports = {
      ["\\^",                            "return '^';"],
      ["\\(",                            "return '(';"],
      ["\\)",                            "return ')';"],
+     ["\\[",                            "return '[';"],
+     ["\\]",                            "return ']';"],
      ["%",                              "return '%';"],
      [">=",                             "return '>=';"],
      ["<=",                             "return '<=';"],
@@ -151,8 +153,17 @@ module.exports = {
     ],
 
     "variable": [
-      ["identifier",              "$$ = new yy.Variable(yytext)"],
-      // ["variable [ expression ]", "$$ = $1; $$.indices.push($3);"]
+      ["identifier",              "$$ = new yy.Variable($identifier);"],
+      ["identifier indices",      "$$ = new yy.Variable($identifier, $indices);"]
+    ],
+
+    "indices": [
+      ["index",         "$$ = [$index]"],
+      ["indices index", "$indices.push($index); $$ = $indices;"],
+    ],
+
+    "index": [
+      ["[ e ]", "$$ = $e"]
     ],
 
     "identifier": [

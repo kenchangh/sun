@@ -2,10 +2,13 @@ var OPERATIONS_BY_OPERANDS = require('./operations').OPERATIONS_BY_OPERANDS;
 
 var exports = module.exports;
 
-exports.Variable = function Variable(name) {
+exports.Variable = function Variable(name, indices) {
   this.type = 'variable';
   this.name = name;
-  this.indices = [];
+  if (indices === undefined) {
+    indices = null;
+  }
+  this.indices = indices;
 };
 
 exports.KeywordAction = function KeywordAction(keyword, expression) {
