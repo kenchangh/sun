@@ -67,7 +67,7 @@
     </div>
     <div id="editor">Print 'Enter a stopping point: '
 Enter n
-Loop:i=1 to 20
+Loop:i=1 to n
   If i % 3 == 0 AND i % 5 == 0
   Then
     Print "FizzBuzz"
@@ -104,8 +104,8 @@ var $ioTerminal = $('.io-terminal');
 compiler.setPrintHook(function(message) {
   $ioTerminal.append('<div>'+message+'</div>');
 });
-compiler.setEnterHook(function() {
-
+compiler.setEnterHook(function(varName) {
+  return prompt('Enter '+varName+':');
 })
 
 $('.run-btn').click(function() {

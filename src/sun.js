@@ -87,7 +87,7 @@ SunCompiler.prototype.executeEnter = function executeEnter(node) {
     if (!isFunction(this.enterHook)) {
       throw new Error('No browser implementation of Enter function');
     }
-    answer = this.enterHook();
+    answer = this.enterHook(varName);
   } else {
     answer = readlineSync.question('');
   }
