@@ -14,3 +14,6 @@ author:
 
 github:
   repo:           https://github.com/mavenave/sun
+
+kramdown:
+  input:          GFM
