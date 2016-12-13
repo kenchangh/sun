@@ -61,3 +61,14 @@ EndLoop
 - [ ] Array
 - [ ] Functions
 - [ ] Bootstrapping???
+
+## Running examples
+
+You will need to have clone the project and install the dependencies with npm first. You must have NodeJS installed on your system.
+```
+git clone git@github.com:mavenave/sun.git
+cd sun
+npm install
+
+node bin/sun examples/fizzbuzz.sun
+```

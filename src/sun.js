@@ -4,7 +4,8 @@ var operations = require('./operations');
 var OPERATIONS_BY_OPERANDS = operations.OPERATIONS_BY_OPERANDS;
 var OPERATIONS_BY_TYPE = operations.OPERATIONS_BY_TYPE;
 var OPERATION_EXECUTIONS = operations.OPERATION_EXECUTIONS;
-var isBrowser = typeof window !== undefined;
+var checkIsBrowser = new Function("try {return this===window;}catch(e){ return false;}");
+var isBrowser = checkIsBrowser();
 
 if (isBrowser) {
   // mock readlineSync
@@ -85,7 +86,6 @@ SunCompiler.prototype.compile = function compile(source) {
     if (this.debug) {
       throw e;
     }
-    console.log(e.message)
     this.executePrint(e.message);
 
   } finally {
@@ -124,7 +124,6 @@ SunCompiler.prototype.executePrint = function executePrint(val) {
     this.outputBuffer.push(val);
 
   } else if (isBrowser) {
-
     if (!isFunction(this.printHook)) {
       throw new Error('No browser implementation of Print function');
     }
