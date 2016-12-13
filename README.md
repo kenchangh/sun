@@ -50,3 +50,14 @@ Loop:i=0 to 9
     Print A[i]
 EndLoop
 ```
+
+### Status
+- [x] Operators and expressions
+- [x] Input / output
+- [x] If / else
+- [x] Automatic loops
+- [x] While loops
+- [ ] CaseOf / Case
+- [ ] Array
+- [ ] Functions
+- [ ] Bootstrapping???
