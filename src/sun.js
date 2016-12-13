@@ -59,6 +59,9 @@ function SunCompiler(debug) {
   this.setEnterHook = function setEnterHook(cb) {
     this.enterHook = cb;
   }
+  this.onParseTreeReady = function onParseTreeReady(cb) {
+    this.handleParseTreeReady = cb;
+  }
 }
 
 SunCompiler.prototype.parseBlock = function parseBlock(block) {
@@ -68,12 +71,31 @@ SunCompiler.prototype.parseBlock = function parseBlock(block) {
 }
 
 SunCompiler.prototype.compile = function compile(source) {
-  var parseTree = parser.parse(source);
-  this.parseBlock(parseTree);
+  try {
+    var parseTree = parser.parse(source);
+    this.parseBlock(parseTree);
 
-  if (!this.debug) {
-    this.reset();
+    if (isFunction(this.handleParseTreeReady)) {
+      this.handleParseTreeReady(parseTree);
+    }
+
+    
+  } catch (e) {
+
+    if (this.debug) {
+      throw e;
+    }
+    console.log(e.message)
+    this.executePrint(e.message);
+
+  } finally {
+
+    if (!this.debug) {
+      this.reset();
+    }
+
   }
+  
 }
 
 SunCompiler.prototype.executeEnter = function executeEnter(node) {
