@@ -51,7 +51,7 @@ Loop:i=0 to 9
 EndLoop
 ```
 
-### Status
+## Status
 - [x] Operators and expressions
 - [x] Input / output
 - [x] If / else
