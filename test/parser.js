@@ -336,6 +336,30 @@ tap.same(parser.parse(loopStr), [
     ]),
 ]);
 
+// alternative declaration, Loop-end
+loopStr = `Loop:i=1 to 10
+  Print i
+Loop-end:i
+`;
+tap.same(parser.parse(loopStr), [
+  new nodes.LoopStmt(
+    new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
+      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+    ]),
+]);
+
+// alternative declaration, Loop-End
+loopStr = `Loop:i=1 to 10
+  Print i
+Loop-End:i
+`;
+tap.same(parser.parse(loopStr), [
+  new nodes.LoopStmt(
+    new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
+      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+    ]),
+]);
+
 // nested loops
 loopStr = `Loop:i=1 to 10
   Loop:j=1 to 10

@@ -40,7 +40,7 @@ module.exports = {
      ["Then",                           "return 'THEN';"],
      ["Else",                           "return 'ELSE';"],
      ["EndIf",                          "return 'ENDIF';"],
-     ["(EndLoop|LoopEnd)",              "return 'END_LOOP';"],
+     ["(EndLoop|LoopEnd|Loop-[Ee]nd)",  "return 'END_LOOP';"],
      ["Loop",                           "return 'LOOP';"],
      ["to",                             "return 'TO';"],
      ["(EndWhile|WhileEnd)",            "return 'END_WHILE';"],
