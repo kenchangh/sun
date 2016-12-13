@@ -1,0 +1,20 @@
+# Dependencies
+markdown:         redcarpet
+highlighter:      pygments
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            Sun
+tagline:          A language for rapid prototyping and learning new concepts
+description:      A language for rapid prototyping and learning new concepts. Made by @mavenave
+url:              http://mavenave.me/sun
+baseurl:          ''
+
+author:
+  name:           Chan Guan Hao
+  url:            http://mavenave.me
+
+github:
+  repo:           https://github.com/mavenave/sun
