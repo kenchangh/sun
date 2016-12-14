@@ -7,6 +7,8 @@ var OPERATION_EXECUTIONS = operations.OPERATION_EXECUTIONS;
 var checkIsBrowser = new Function("try {return this===window;}catch(e){ return false;}");
 var isBrowser = checkIsBrowser();
 
+// if path never taken in tests
+/* istanbul ignore if */
 if (isBrowser) {
   // mock readlineSync
   /* istanbul ignore next */
@@ -80,6 +82,7 @@ SunCompiler.prototype.compile = function compile(source) {
 
   } catch (e) {
 
+    /* istanbul ignore next */
     if (this.debug) {
       throw e;
     }
@@ -221,7 +224,6 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
       if (currentVal !== undefined &&
         typeof currentVal !== 'object' &&
         currentType !== newType) {
-        console.log(currentVal, newVal)
 
         throw new Error("Assigning a '"+
           newType+"' to a '"+currentType+
@@ -246,6 +248,8 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
         // actually parsing the index expressions
         indices = indices.map(parseNode.bind(this));
         throwIfNonIntIndices(indices);
+
+        /* istanbul ignore else */
         if (this.context[varName] === undefined) {
           this.context[varName] = {};
         }

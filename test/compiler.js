@@ -91,6 +91,10 @@ compiler.compile('x = 1 OR 0');
 tap.same(compiler.context, { x: true });
 compiler.reset();
 
+compiler.compile('x = 0 OR 1');
+tap.same(compiler.context, { x: true });
+compiler.reset();
+
 tap.throws(function() {
   compiler.compile('x = 1 / 0');
 });
@@ -121,6 +125,12 @@ compiler.reset();
 compiler.compile("Print (5-1)*5/6+7");
 tap.same(compiler.context, {});
 tap.same(compiler.outputBuffer, [10.333333333333334]);
+compiler.reset();
+
+tap.throws(function() {
+  // no reassigning to different types
+  compiler.compile("x = 'a'\nx=1");
+});
 compiler.reset();
 
 var ifElseStr;
@@ -162,6 +172,26 @@ compiler.reset();
 
 var loopStr;
 
+loopStr = `Loop:i='a' to 10
+  Print i
+EndLoop:i`
+
+// checks for loop start point to be number
+tap.throws(function() {
+  compiler.compile(loopStr);
+});
+compiler.reset();
+
+loopStr = `Loop:i=1 to 'a'
+  Print i
+EndLoop:i`
+
+// checks for loop start point to be number
+tap.throws(function() {
+  compiler.compile(loopStr);
+});
+compiler.reset();
+
 loopStr = `Loop:i=1 to 10
   Print i
 EndLoop:i`
@@ -184,6 +214,8 @@ for (var i=1; i < 11; i++) {
 }
 tap.same(compiler.outputBuffer, arr);
 compiler.reset();
+
+
 
 var whileStr;
 
