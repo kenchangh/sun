@@ -459,3 +459,17 @@ tap.same(parser.parse('Print A[i]+A[j]'), [
 tap.throws(function() {
   parser.parse('Print A[]');
 })
+
+
+/* FUNCTIONS HERE */
+
+var functionStr;
+
+functionStr = `PrintLyrics()
+  Print "I'm a lumberjack and I'm okay"
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('PrintLyrics', [])
+]);

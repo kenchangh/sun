@@ -15,7 +15,7 @@ exports.KeywordAction = function KeywordAction(keyword, expression) {
   this.type = 'keyword';
   this.keyword = keyword;
   this.expression = expression;
-}
+};
 
 exports.IfElseStmt = function IfElseStmt(condition, ifBlock, elseBlock) {
   this.type = 'if_else'
@@ -26,7 +26,7 @@ exports.IfElseStmt = function IfElseStmt(condition, ifBlock, elseBlock) {
     elseBlock = [];
   }
   this.elseBlock = elseBlock;
-}
+};
 
 exports.LoopStmt = function LoopStmt(loopStartVar, loopEndVar, start, stop, block) {
   this.type = 'loop';
@@ -40,13 +40,26 @@ exports.LoopStmt = function LoopStmt(loopStartVar, loopEndVar, start, stop, bloc
   this.start = start;
   this.stop = stop;
   this.block = block;
-}
+};
 
 exports.WhileStmt = function WhileStmt(condition, block) {
   this.type = 'while';
   this.condition = condition;
   this.block = block;
-}
+};
+
+exports.FunctionStmt = function FunctionStmt(name, params, block) {
+  this.type = 'function';
+  this.name = name;
+  this.params = params;
+  this.block = block;
+};
+
+exports.FunctionParam = function FunctionParam(name) {
+  this.type = 'function_param';
+  this.name = name;
+  this.reference = false;
+};
 
 exports.Operation = function Operation(type) {
   this.type = type;
@@ -68,4 +81,4 @@ exports.Operation = function Operation(type) {
   } else {
     throw new Error("Unhandled node type: '"+type+"'");
   }
-}
+};

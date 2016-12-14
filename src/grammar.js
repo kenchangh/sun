@@ -45,6 +45,7 @@ module.exports = {
      ["to",                             "return 'TO';"],
      ["(EndWhile|WhileEnd)",            "return 'END_WHILE';"],
      ["While",                          "return 'WHILE';"],
+     ["End",                            "return 'END';"],
      ["Print",                          "return 'PRINT';"],
      ["Enter",                          "return 'ENTER';"],
      ["AND",                            "return 'AND';"],
@@ -54,13 +55,14 @@ module.exports = {
      ["[0-9]+(?:\\.[0-9]+)?\\b",        "return 'FLOAT';"],
      ["[0-9]+\\b",                      "return 'INT';"],
      ["[a-zA-Z_][a-zA-Z_0-9]*",         "return 'IDENTIFIER';"],
+     ["\\(",                            "return '(';"],
+     ["\\)",                            "return ')';"],
+     [",",                              "return ',';"],
      ["\\*",                            "return '*';"],
      ["\\/",                            "return '/';"],
      ["-",                              "return '-';"],
      ["\\+",                            "return '+';"],
      ["\\^",                            "return '^';"],
-     ["\\(",                            "return '(';"],
-     ["\\)",                            "return ')';"],
      ["\\[",                            "return '[';"],
      ["\\]",                            "return ']';"],
      ["%",                              "return '%';"],
@@ -104,6 +106,7 @@ module.exports = {
     ],
 
     "stmt": [
+      ["function_stmt",   "$$= $1;"],
       ["if_stmt",         "$$ = $1;"],
       ["keyword_stmt",    "$$ = $1;"],
       ["assignment_stmt", "$$ = $1;"],
@@ -118,6 +121,22 @@ module.exports = {
 
     "stmt_block": [
       ["INDENT stmt_list DEDENT", "$$ = $stmt_list;"],
+    ],
+
+    "function_stmt": [
+      [
+        "identifier ( params ) stmt_block END",
+        "$$ = new yy.FunctionStmt($identifier, $params, $stmt_block);"
+      ]
+    ],
+
+    "params": [
+      ["param",               "$$ = [$param];"],
+      ["params , param",  "$params.push($param); $$ = $params;"]
+    ],
+
+    "param": [
+      ["identifier", "$$ = new yy.FunctionParam($identifier);"],
     ],
 
     "while_stmt": [
@@ -171,6 +190,8 @@ module.exports = {
     ],
 
     "e": [
+      [ "variable","$$ = $1" ],
+      [ "( e )",   "$$ = $e;" ],
       [ "e + e",   "$$ = new yy.Operation('addition', $1, $3);" ],
       [ "e - e",   "$$ = new yy.Operation('subtraction', $1, $3);" ],
       [ "e * e",   "$$ = new yy.Operation('multiplication', $1, $3);" ],
@@ -187,8 +208,6 @@ module.exports = {
       [ "e <= e",  "$$ = new yy.Operation('lte', $1, $3);" ],
       [ "! e",     "$$ = new yy.Operation('inversion', $e);" ],
       [ "- e",     "$$ = new yy.Operation('negation', $e);", {"prec": "UMINUS"} ],
-      [ "( e )",   "$$ = $e;" ],
-      [ "variable","$$ = $1" ],
       [ "BOOL",    "$$ = yytext === 'True' ? true : false;" ],
       [ "STRING",  "$$ = yytext" ],
       [ "INT",     "$$ = parseInt(yytext, 10);" ],
