@@ -9,11 +9,13 @@ var isBrowser = checkIsBrowser();
 
 if (isBrowser) {
   // mock readlineSync
+  /* istanbul ignore next */
   readlineSync = {
     question: function() {},
   };
 }
 
+/* istanbul ignore next */
 function isFunction(functionToCheck) {
   var getType = {};
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
@@ -63,9 +65,6 @@ function SunCompiler(debug) {
   this.setEnterHook = function setEnterHook(cb) {
     this.enterHook = cb;
   }
-  this.onParseTreeReady = function onParseTreeReady(cb) {
-    this.handleParseTreeReady = cb;
-  }
 }
 
 SunCompiler.prototype.parseBlock = function parseBlock(block) {
@@ -84,6 +83,7 @@ SunCompiler.prototype.compile = function compile(source) {
     if (this.debug) {
       throw e;
     }
+    /* istanbul ignore next */
     this.executePrint(e.message);
 
   } finally {
@@ -96,6 +96,8 @@ SunCompiler.prototype.compile = function compile(source) {
   
 }
 
+/* istanbul ignore next */
+/* ignoring Enter as have to test manually */
 SunCompiler.prototype.executeEnter = function executeEnter(node) {
   if (node.type !== 'variable') {
     throw new Error("Enter must be used with variables, found: "+node.type+"'");
@@ -116,6 +118,8 @@ SunCompiler.prototype.executeEnter = function executeEnter(node) {
   this.context[varName] = val;
 }
 
+/* istanbul ignore next */
+/* ignoring Print as have to test manually */
 SunCompiler.prototype.executePrint = function executePrint(val) {
   if (this.debug) {
 
@@ -146,7 +150,7 @@ function throwIfNonIntIndices(indices) {
 SunCompiler.prototype.parseNode = function parseNode(node) {
   
 
-  if (typeof node === 'object') {
+  if (typeof node === 'object' && node !== null) {
 
     var type = node.type;
 
@@ -187,13 +191,14 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
 
     } else if (type === 'keyword') {
 
+      /* istanbul ignore else */
       if (node.keyword === 'Print') {
         var val = parseNode.call(this, node.expression);
         this.executePrint(val);
       } else if (node.keyword === 'Enter') {
+        /* istanbul ignore next */
+        // ignoring coverage, manually test
         this.executeEnter(node.expression);
-      } else {
-        throw new Error("Unrecognized keyword: '"+node.keyword+"'");
       }
 
     } else if (type === 'assignment') {
@@ -303,9 +308,11 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
 
     }
 
-  } else {
+  } else if (node !== null && node !== undefined) {
     // expression base, STRING, INT, FLOAT, BOOL
     return node;
+  } else {
+    throw new Error("Invalid node: '"+node+"'");
   }
 }
 

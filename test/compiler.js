@@ -1,6 +1,37 @@
 var tap = require('tap');
 var SunCompiler = require('../src/sun');
-var compiler = new SunCompiler(true); // true for debug flag
+
+var compiler;
+
+/* test interface for SunCompiler here */
+compiler = new SunCompiler(true);
+
+compiler.setPrintHook(function() {});
+tap.ok(compiler.printHook);
+compiler.setEnterHook(function() {});
+tap.ok(compiler.enterHook);
+
+tap.throws(function() {
+  compiler.parseNode(null);
+});
+
+/* production interface for SunCompiler */
+compiler = new SunCompiler();
+compiler.compile('x = 1 + 1');
+tap.same(compiler.context, {});
+tap.same(compiler.outputBuffer, []);
+
+/* basics of operators and expressions */
+
+compiler = new SunCompiler(true); // true for debug flag
+
+tap.throws(function() {
+  compiler.parseNode({type: 'random'});
+});
+
+tap.throws(function() {
+  compiler.parseNode(null);
+});
 
 tap.throws(function() {
   // number cannot add string
@@ -36,6 +67,22 @@ compiler.compile('x = 1 != 1');
 tap.same(compiler.context, { x: false });
 compiler.reset();
 
+compiler.compile('x = 1 > 2');
+tap.same(compiler.context, { x: false });
+compiler.reset();
+
+compiler.compile('x = 1 < 2');
+tap.same(compiler.context, { x: true });
+compiler.reset();
+
+compiler.compile('x = 1 >= 2');
+tap.same(compiler.context, { x: false });
+compiler.reset();
+
+compiler.compile('x = 1 <= 2');
+tap.same(compiler.context, { x: true });
+compiler.reset();
+
 compiler.compile('x = 1 AND 0');
 tap.same(compiler.context, { x: false });
 compiler.reset();
@@ -47,6 +94,10 @@ compiler.reset();
 tap.throws(function() {
   compiler.compile('x = 1 / 0');
 });
+compiler.reset();
+
+compiler.compile('x = 1 % 5');
+tap.same(compiler.context, { x: 1 });
 compiler.reset();
 
 compiler.compile('x = 1 + 1\nPrint x');
