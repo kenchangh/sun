@@ -514,7 +514,7 @@ tap.same(parser.parse(functionStr), [
   new nodes.Operation('assignment',
     new nodes.Variable('x'),
     new nodes.Operation('modulo',
-      new nodes.FunctionCall('PrintLyrics', []), 3)
+      new nodes.FunctionCall('rand', []), 3)
   )
 ]);
 
@@ -524,6 +524,6 @@ tap.same(parser.parse(functionStr), [
   new nodes.Operation('assignment',
     new nodes.Variable('x'),
     new nodes.Operation('modulo',
-      new nodes.FunctionCall('PrintLyrics', [1]), 3)
+      new nodes.FunctionCall('rand', [1]), 3)
   )
 ]);

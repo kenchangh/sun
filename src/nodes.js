@@ -63,6 +63,7 @@ exports.FunctionParam = function FunctionParam(name) {
 
 exports.FunctionCall = function FuncionCall(name, params) {
   this.type = 'function_call';
+  this.name = name;
   this.params = params;
 };
 
