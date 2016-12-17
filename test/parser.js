@@ -151,7 +151,7 @@ tap.same(parser.parse('x = 1\ny = (5-1)*5/6+7'), [
   {
     "left": new nodes.Variable('y'),
     "right": {
-      "left": {   
+      "left": {
         "left": {
           "left": {
             "left": 5,
@@ -471,5 +471,21 @@ End
 `
 
 tap.same(parser.parse(functionStr), [
-  new nodes.FunctionStmt('PrintLyrics', [])
+  new nodes.FunctionStmt('PrintLyrics', [], [
+    new nodes.KeywordAction('Print', "I'm a lumberjack and I'm okay")
+  ])
+]);
+
+functionStr = `PrintName(name)
+  Print name
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('PrintName', [
+    new nodes.FunctionParam('name')
+  ], [
+    new nodes.KeywordAction('Print',
+      new nodes.Variable('name'))
+  ])
 ]);
