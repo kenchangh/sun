@@ -56,9 +56,11 @@ function SunCompiler(debug) {
   // expose the context to public for testing
   this.debug = debug;
   this.context = {};
+  this.functions = {};
   this.outputBuffer = [];
   this.reset = function reset() {
     this.context = {};
+    this.functions = {};
     this.outputBuffer = [];
   };
   this.setPrintHook = function setPrintHook(cb) {
@@ -78,6 +80,15 @@ SunCompiler.prototype.parseBlock = function parseBlock(block) {
 SunCompiler.prototype.compile = function compile(source) {
   try {
     var parseTree = parser.parse(source);
+
+    // reorder so that parse all the function nodes first
+    var functions = parseTree.filter(function(node) {
+      return node.type === 'function';
+    });
+    var otherNodes = parseTree.filter(function(node) {
+      return node.type !== 'function';
+    });
+    parseTree = functions.concat(otherNodes);
     this.parseBlock(parseTree);
 
   } catch (e) {
@@ -232,7 +243,6 @@ SunCompiler.prototype.setVariable = function setVariable(variable, expression) {
 
 SunCompiler.prototype.parseNode = function parseNode(node) {
 
-
   if (typeof node === 'object' && node !== null) {
 
     var type = node.type;
@@ -294,6 +304,12 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
       while (parseNode.call(this, condition)) {
         this.parseBlock(block);
       }
+
+    } else if (type === 'function') {
+
+      // just storing for future calls
+      this.functions[node.name] = node;
+      return undefined;
 
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 

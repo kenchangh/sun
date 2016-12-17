@@ -1,5 +1,6 @@
 var tap = require('tap');
 var SunCompiler = require('../src/sun');
+var nodes = require('../src/nodes');
 
 var compiler;
 
@@ -286,3 +287,31 @@ tap.throws(function() {
   // no non-integer indexes
   compiler.compile('A[2.5] = 1');
 });
+
+
+/* FUNCTIONS HERE */
+
+var functionStr;
+
+functionStr = `
+Print 'a'
+PrintLyrics()
+  Print "I'm a lumberjack and I'm okay"
+End
+PrintName(name)
+  Print name
+End
+`;
+compiler.compile(functionStr);
+tap.same(compiler.functions, {
+  PrintLyrics: new nodes.FunctionStmt('PrintLyrics', [], [
+    new nodes.KeywordAction('Print', "I'm a lumberjack and I'm okay")
+  ]),
+  PrintName: new nodes.FunctionStmt('PrintName', [
+    new nodes.FunctionParam('name')
+  ], [
+    new nodes.KeywordAction('Print',
+      new nodes.Variable('name'))
+  ])
+});
+compiler.reset();

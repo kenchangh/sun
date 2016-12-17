@@ -489,3 +489,21 @@ tap.same(parser.parse(functionStr), [
       new nodes.Variable('name'))
   ])
 ]);
+
+functionStr = `PrintNameAndAge(name, age)
+  Print name
+  Print age
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('PrintNameAndAge', [
+    new nodes.FunctionParam('name'),
+    new nodes.FunctionParam('age'),
+  ], [
+    new nodes.KeywordAction('Print',
+      new nodes.Variable('name')),
+    new nodes.KeywordAction('Print',
+      new nodes.Variable('age')),
+  ])
+]);
