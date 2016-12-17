@@ -96,7 +96,7 @@ SunCompiler.prototype.compile = function compile(source) {
     }
 
   }
-  
+
 }
 
 /* istanbul ignore next */
@@ -118,7 +118,9 @@ SunCompiler.prototype.executeEnter = function executeEnter(node) {
   }
   var val = parseFloat(answer);
   val = isNaN(val) ? answer : val;
-  this.context[varName] = val;
+  // this.context[varName] = val;
+  // console.log(node);
+  this.setVariable(node, val);
 }
 
 /* istanbul ignore next */
@@ -150,8 +152,86 @@ function throwIfNonIntIndices(indices) {
   }
 }
 
+SunCompiler.prototype.getVariable = function getVariable(variable) {
+  var varName = variable.name;
+  var val = this.context[varName];
+  if (val === undefined) {
+    throw new Error("First usage of variable '"+varName+"', declare the variable above this line first.");
+  }
+  // if (node.indices && typeof val !== 'object') {
+  //   throw new Error("Cannot access elements of variable '"+varName+"'. It is not an array, it's a '"+typeof val+"'");
+  // }
+
+  var indices = variable.indices;
+  if (indices) {
+    // apply the indices until the end
+    // for (var i = 0; i < indices.length; i++) {
+    //   index = indices[i];
+    //   val = val[index];
+    // }
+    indices = indices.map(this.parseNode.bind(this));
+    throwIfNonIntIndices(indices);
+
+    var key = indices.toString();
+    val = this.context[varName][key];
+
+    if (val === undefined) {
+      var elementAccess = indices.map(function(index) {
+        return '['+index+']';
+      }).join('');
+      throw new Error("There's no element at '"+varName+elementAccess+"'");
+    }
+  } else {
+    val = this.context[varName];
+  }
+  return val;
+};
+
+SunCompiler.prototype.setVariable = function setVariable(variable, expression) {
+  var indices = variable.indices;
+  var varName = variable.name;
+  var currentVal = this.context[varName];
+  var newVal = this.parseNode.call(this, expression);
+
+  if (currentVal !== undefined &&
+    typeof currentVal !== 'object' &&
+    Array.isArray(indices)) {
+    throw new Error("Cannot assign elements of variable '"+varName+"'. It is not an array, it's a '"+typeof val+"'");
+  }
+  var currentType = typeof currentVal;
+  var newType = typeof newVal;
+  if (currentVal !== undefined &&
+    typeof currentVal !== 'object' &&
+    currentType !== newType) {
+
+    throw new Error("Assigning a '"+
+      newType+"' to a '"+currentType+
+      "' at variable '"+varName+"'");
+
+  }
+  if (Array.isArray(indices)) {
+    // arrays represented as objects internally
+    // use the indices as hash keys
+    // A[0][1][2] becomes A['0,1,2']
+
+    // actually parsing the index expressions
+    indices = indices.map(this.parseNode.bind(this));
+    throwIfNonIntIndices(indices);
+
+    /* istanbul ignore else */
+    if (this.context[varName] === undefined) {
+      this.context[varName] = {};
+    }
+    var key = indices.toString();
+    this.context[varName][key] = newVal;
+
+  } else {
+    this.context[varName] = newVal;
+  }
+};
+
 SunCompiler.prototype.parseNode = function parseNode(node) {
-  
+
 
   if (typeof node === 'object' && node !== null) {
 
@@ -159,37 +239,7 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
 
     if (type === 'variable') {
 
-      var varName = node.name
-      var val = this.context[varName];
-      if (val === undefined) {
-        throw new Error("First usage of variable '"+varName+"', declare the variable above this line first.");
-      }
-      if (node.indices && typeof val !== 'object') {
-        throw new Error("Cannot access elements of variable '"+varName+"'. It is not an array, it's a '"+typeof val+"'");
-      }
-
-      var indices = node.indices;
-      if (indices) {
-        // apply the indices until the end
-        // for (var i = 0; i < indices.length; i++) {
-        //   index = indices[i];
-        //   val = val[index];
-        // }
-        indices = indices.map(parseNode.bind(this));
-        throwIfNonIntIndices(indices);
-
-        var key = indices.toString();
-        val = this.context[varName][key];
-
-        if (val === undefined) {
-          var elementAccess = indices.map(function(index) {
-            return '['+index+']';
-          }).join('');
-          throw new Error("There's no element at '"+varName+elementAccess+"'");
-        }
-      } else {
-        val = this.context[varName];
-      }
+      var val = this.getVariable(node);
       return val;
 
     } else if (type === 'keyword') {
@@ -207,58 +257,8 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
     } else if (type === 'assignment') {
 
       var variable = node.left;
-      var indices = variable.indices;
-      var varName = variable.name;
-      var currentVal = this.context[varName];
-      var newVal = parseNode.call(this, node.right);
-
-      if (currentVal !== undefined &&
-        typeof currentVal !== 'object' &&
-        Array.isArray(indices)) {
-
-        throw new Error("Cannot assign elements of variable '"+varName+"'. It is not an array, it's a '"+typeof val+"'");
-
-      }
-      var currentType = typeof currentVal;
-      var newType = typeof newVal;
-      if (currentVal !== undefined &&
-        typeof currentVal !== 'object' &&
-        currentType !== newType) {
-
-        throw new Error("Assigning a '"+
-          newType+"' to a '"+currentType+
-          "' at variable '"+varName+"'");
-
-      }
-      if (Array.isArray(indices)) {
-        // apply the indices until the end
-        // HACK
-        // str = 'this.context[varName]';
-        // for (var i = 0; i < indices.length; i++) {
-        //   str += '['+indices[i]+']';
-        // }
-        // str += '= newVal;';
-        // eval('this.context')
-        // eval(str);
-        
-        // arrays represented as objects internally
-        // use the indices as hash keys
-        // A[0][1][2] becomes A['0,1,2']
-
-        // actually parsing the index expressions
-        indices = indices.map(parseNode.bind(this));
-        throwIfNonIntIndices(indices);
-
-        /* istanbul ignore else */
-        if (this.context[varName] === undefined) {
-          this.context[varName] = {};
-        }
-        var key = indices.toString();
-        this.context[varName][key] = newVal;
-
-      } else {
-        this.context[varName] = newVal;
-      }
+      var val = parseNode.call(this, node.right);
+      this.setVariable(variable, val);
       return undefined;
 
     } else if (type === 'if_else') {
@@ -299,7 +299,7 @@ SunCompiler.prototype.parseNode = function parseNode(node) {
 
       var operand = parseNode.call(this, node.operand);
       return executeOperation(node.type, operand);
-      
+
     } else if (OPERATIONS_BY_OPERANDS[2].indexOf(type) !== -1) {
 
       var left = parseNode.call(this, node.left);
