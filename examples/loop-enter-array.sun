@@ -1,0 +1,10 @@
+Enter val
+Loop:i=0 to 2
+    Enter A[i]
+Loop-end:i
+
+Loop:i=0 to 2
+    Loop:j=i to 2
+        Print A[i]
+    Loop-end:j
+Loop-end:i
