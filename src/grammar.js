@@ -190,8 +190,15 @@ module.exports = {
       ["IDENTIFIER", "$$ = yytext;"],
     ],
 
+    "list": [
+      ["",                  "$$ = [];"],
+      ["e",                 "$$ = [$e];"],
+      ["list , e", "$list.push(e); $$ = $list;"],
+    ],
+
     "e": [
       [ "variable","$$ = $1" ],
+      [ "identifier ( list )","$$ = new yy.FunctionCall($identifier, $list)" ],
       [ "( e )",   "$$ = $e;" ],
       [ "e + e",   "$$ = new yy.Operation('addition', $1, $3);" ],
       [ "e - e",   "$$ = new yy.Operation('subtraction', $1, $3);" ],
