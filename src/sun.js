@@ -269,7 +269,9 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
 
 SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
-  if (typeof node === 'object' && node !== null) {
+  if (typeof node === 'object' &&
+    !Array.isArray(node) &&
+    node !== null) {
 
     var type = node.type;
 
@@ -351,7 +353,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
         throw new Error("Function '"+functionName+"' is not declared");
       }
       var context = this.createContext(funcName, func.params, callParams);
-      this.parseNode(context, block);
+      this.parseBlock(context, block);
 
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 
@@ -369,6 +371,11 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       throw new Error("Unhandled node type: '"+node.type+"'");
 
     }
+
+  } else if (Array.isArray(node)) {
+
+    throw new Error("Expecting node, not node list: "+
+      JSON.stringify(node));
 
   } else if (node !== null && node !== undefined) {
     // expression base, STRING, INT, FLOAT, BOOL

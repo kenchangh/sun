@@ -13,7 +13,11 @@ compiler.setEnterHook(function() {});
 tap.ok(compiler.enterHook);
 
 tap.throws(function() {
-  compiler.parseNode(null);
+  compiler.parseNode('global', null);
+});
+
+tap.throws(function() {
+  compiler.parseNode('global', []);
 });
 
 /* production interface for SunCompiler */
@@ -27,11 +31,11 @@ tap.same(compiler.outputBuffer, []);
 compiler = new SunCompiler(true); // true for debug flag
 
 tap.throws(function() {
-  compiler.parseNode({type: 'random'});
+  compiler.parseNode('global', {type: 'random'});
 });
 
 tap.throws(function() {
-  compiler.parseNode(null);
+  compiler.parseNode('global', null);
 });
 
 tap.throws(function() {
@@ -320,3 +324,15 @@ tap.same(compiler.functions, {
   ])
 });
 compiler.reset();
+
+functionStr = `
+ReturnName(name, age)
+  Return name
+End
+`;
+
+compiler.compile(functionStr);
+tap.ok(compiler.functions.ReturnName);
+tap.same(compiler.contexts, {
+  global: {},
+});
