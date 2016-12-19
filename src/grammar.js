@@ -45,7 +45,8 @@ module.exports = {
      ["to\\b",                             "return 'TO';"],
      ["(EndWhile|WhileEnd)\\b",            "return 'END_WHILE';"],
      ["While\\b",                          "return 'WHILE';"],
-     ["End",                               "return 'END';"],
+     ["End\\b",                            "return 'END';"],
+     ["Return\\b",                         "return 'RETURN';"],
      ["Print\\b",                          "return 'PRINT';"],
      ["Enter\\b",                          "return 'ENTER';"],
      ["AND\\b",                            "return 'AND';"],
@@ -193,7 +194,7 @@ module.exports = {
     "list": [
       ["",                  "$$ = [];"],
       ["e",                 "$$ = [$e];"],
-      ["list , e", "$list.push(e); $$ = $list;"],
+      ["list , e",          "$list.push($e); $$ = $list;"],
     ],
 
     "e": [

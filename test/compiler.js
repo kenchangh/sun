@@ -19,7 +19,7 @@ tap.throws(function() {
 /* production interface for SunCompiler */
 compiler = new SunCompiler();
 compiler.compile('x = 1 + 1');
-tap.same(compiler.context, {});
+tap.same(compiler.contexts, {});
 tap.same(compiler.outputBuffer, []);
 
 /* basics of operators and expressions */
@@ -53,47 +53,47 @@ tap.throws(function() {
 compiler.reset();
 
 compiler.compile('x = !1');
-tap.same(compiler.context, { x: false });
+tap.same(compiler.contexts, { global: { x: false } });
 compiler.reset();
 
 compiler.compile('x = -1');
-tap.same(compiler.context, { x: -1 });
+tap.same(compiler.contexts, { global: { x: -1 } });
 compiler.reset();
 
 compiler.compile('x = 1 == 1');
-tap.same(compiler.context, { x: true });
+tap.same(compiler.contexts, { global: { x: true } });
 compiler.reset();
 
 compiler.compile('x = 1 != 1');
-tap.same(compiler.context, { x: false });
+tap.same(compiler.contexts, { global: { x: false  } });
 compiler.reset();
 
 compiler.compile('x = 1 > 2');
-tap.same(compiler.context, { x: false });
+tap.same(compiler.contexts, { global: { x: false } });
 compiler.reset();
 
 compiler.compile('x = 1 < 2');
-tap.same(compiler.context, { x: true });
+tap.same(compiler.contexts, { global: { x: true } });
 compiler.reset();
 
 compiler.compile('x = 1 >= 2');
-tap.same(compiler.context, { x: false });
+tap.same(compiler.contexts, { global: { x: false } });
 compiler.reset();
 
 compiler.compile('x = 1 <= 2');
-tap.same(compiler.context, { x: true });
+tap.same(compiler.contexts, { global: { x: true } });
 compiler.reset();
 
 compiler.compile('x = 1 AND 0');
-tap.same(compiler.context, { x: false });
+tap.same(compiler.contexts, { global: { x: false } });
 compiler.reset();
 
 compiler.compile('x = 1 OR 0');
-tap.same(compiler.context, { x: true });
+tap.same(compiler.contexts, { global: { x: true } });
 compiler.reset();
 
 compiler.compile('x = 0 OR 1');
-tap.same(compiler.context, { x: true });
+tap.same(compiler.contexts, { global: { x: true } });
 compiler.reset();
 
 tap.throws(function() {
@@ -102,29 +102,29 @@ tap.throws(function() {
 compiler.reset();
 
 compiler.compile('x = 1 % 5');
-tap.same(compiler.context, { x: 1 });
+tap.same(compiler.contexts, { global: { x: 1 } });
 compiler.reset();
 
 compiler.compile('x = 1 + 1\nPrint x');
-tap.same(compiler.context, { x: 2 });
+tap.same(compiler.contexts, { global: { x: 2 } });
 tap.same(compiler.outputBuffer, [2]);
 compiler.reset();
 
 compiler.compile('x = 1\ny = (5-1)*5/6+7');
-tap.same(compiler.context, { x: 1, y: 10.333333333333334 });
+tap.same(compiler.contexts, { global: { x: 1, y: 10.333333333333334 } });
 compiler.reset();
 
 compiler.compile("x = 'a'");
-tap.same(compiler.context, { x: 'a' });
+tap.same(compiler.contexts, { global: { x: 'a' } });
 compiler.reset();
 
 compiler.compile("Print 'hello world'");
-tap.same(compiler.context, {});
+tap.same(compiler.contexts, { global: {} });
 tap.same(compiler.outputBuffer, ['hello world']);
 compiler.reset();
 
 compiler.compile("Print (5-1)*5/6+7");
-tap.same(compiler.context, {});
+tap.same(compiler.contexts, { global: {} });
 tap.same(compiler.outputBuffer, [10.333333333333334]);
 compiler.reset();
 
@@ -141,7 +141,7 @@ ifElseStr = `If 1 Then
 EndIf
 `
 compiler.compile(ifElseStr);
-tap.same(compiler.context, { x: 1 });
+tap.same(compiler.contexts, { global: { x: 1 } });
 compiler.reset();
 
 ifElseStr = `If 0 Then
@@ -149,7 +149,7 @@ ifElseStr = `If 0 Then
 EndIf
 `
 compiler.compile(ifElseStr);
-tap.same(compiler.context, {});
+tap.same(compiler.contexts, { global: {} });
 
 ifElseStr = `If 1 Then
   x = 1
@@ -158,7 +158,7 @@ Else
 EndIf
 `
 compiler.compile(ifElseStr);
-tap.same(compiler.context, { x: 1 });
+tap.same(compiler.contexts, { global: { x: 1 } });
 compiler.reset();
 
 ifElseStr = `If 0 Then
@@ -168,7 +168,7 @@ Else
 EndIf
 `
 compiler.compile(ifElseStr);
-tap.same(compiler.context, { x: 2 });
+tap.same(compiler.contexts, { global: { x: 2 } });
 compiler.reset();
 
 var loopStr;
@@ -233,15 +233,15 @@ compiler.reset();
 /* ARRAYS */
 
 compiler.compile('A[0] = 1');
-tap.same(compiler.context, { A: {'0': 1} });
+tap.same(compiler.contexts, { global: { A: {'0': 1} } });
 compiler.reset();
 
 compiler.compile('A[0][2] = 1');
-tap.same(compiler.context, { A: {'0,2': 1} });
+tap.same(compiler.contexts, { global: { A: {'0,2': 1} } });
 compiler.reset();
 
 compiler.compile('A[0][2] = 1\nPrint A[0][2]');
-tap.same(compiler.context, { A: {'0,2': 1} });
+tap.same(compiler.contexts, { global: { A: {'0,2': 1} } });
 tap.same(compiler.outputBuffer, [1]);
 compiler.reset();
 
@@ -270,12 +270,17 @@ tap.throws(function() {
 compiler.reset();
 
 compiler.compile('i = 1\nA[1] = 1\nPrint A[i]');
-tap.same(compiler.context, { A: { '1': 1 }, i: 1 })
+tap.same(compiler.contexts, { global: { A: { '1': 1 }, i: 1 } })
 tap.same(compiler.outputBuffer, [1])
 compiler.reset();
 
 compiler.compile('i = 1\nA[i] = 1');
-tap.same(compiler.context, { A: { '1': 1 }, i: 1 })
+tap.same(compiler.contexts, {
+  global: {
+    i: 1,
+    A: { '1': 1 },
+  }
+})
 compiler.reset();
 
 tap.throws(function() {
