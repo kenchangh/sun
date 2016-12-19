@@ -91,7 +91,7 @@ SunCompiler.prototype.createContext = function createContext(name, declParams, c
 
 SunCompiler.prototype.parseBlock = function parseBlock(context, block) {
   for (var i=0; i < block.length; i++) {
-    this.parseNode.call(this, context, block[i]);
+    this.parseNode(context, block[i]);
   }
 }
 
@@ -201,10 +201,9 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
     //   index = indices[i];
     //   val = val[index];
     // }
-    var self = this;
     indices = indices.map(function (index) {
-      return self.parseNode(context, index);
-    });
+      return this.parseNode(context, index);
+    }.bind(this));
     throwIfNonIntIndices(indices);
 
     var key = indices.toString();
@@ -223,12 +222,11 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
 };
 
 SunCompiler.prototype.setVariable = function setVariable(context, variable, expression) {
-  var self = this;
   var scope = this.contexts[context];
   var indices = variable.indices;
   var varName = variable.name;
   var currentVal = scope[varName];
-  var newVal = this.parseNode.call(this, context, expression);
+  var newVal = this.parseNode(context, expression);
 
   if (currentVal !== undefined &&
     typeof currentVal !== 'object' &&
@@ -253,8 +251,8 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
 
     // actually parsing the index expressions
     indices = indices.map(function(index) {
-      return self.parseNode(context, index);
-    });
+      return this.parseNode(context, index);
+    }.bind(this));
     throwIfNonIntIndices(indices);
 
     /* istanbul ignore else */
@@ -284,7 +282,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
       /* istanbul ignore else */
       if (node.keyword === 'Print') {
-        var val = parseNode.call(this, context, node.expression);
+        var val = this.parseNode(context, node.expression);
         this.executePrint(val);
       } else if (node.keyword === 'Enter') {
         /* istanbul ignore next */
@@ -295,21 +293,21 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
     } else if (type === 'assignment') {
 
       var variable = node.left;
-      var val = parseNode.call(this, context, node.right);
+      var val = this.parseNode(context, node.right);
       this.setVariable(context, variable, val);
       return undefined;
 
     } else if (type === 'if_else') {
 
-      var condition = parseNode.call(this, context, node.condition);
+      var condition = this.parseNode(context, node.condition);
       var block = condition ? node.ifBlock : node.elseBlock;
       this.parseBlock(context, block);
 
     } else if (type === 'loop') {
 
       var varName = node.variable.name;
-      var start = parseNode.call(this, context, node.start);
-      var stop = parseNode.call(this, context, node.stop);
+      var start = this.parseNode(context, node.start);
+      var stop = this.parseNode(context, node.stop);
       var block = node.block;
 
       if (typeof start !== 'number') {
@@ -332,7 +330,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       var condition = node.condition;
       var block = node.block;
 
-      while (parseNode.call(this, context, condition)) {
+      while (this.parseNode(context, condition)) {
         this.parseBlock(context, block);
       }
 
@@ -353,17 +351,17 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
         throw new Error("Function '"+functionName+"' is not declared");
       }
       var context = this.createContext(funcName, func.params, callParams);
-      parseNode.call(this, context, block);
+      this.parseNode(context, block);
 
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 
-      var operand = parseNode.call(this, context, node.operand);
+      var operand = this.parseNode(context, node.operand);
       return executeOperation(node.type, operand);
 
     } else if (OPERATIONS_BY_OPERANDS[2].indexOf(type) !== -1) {
 
-      var left = parseNode.call(this, context, node.left);
-      var right = parseNode.call(this, context, node.right);
+      var left = this.parseNode(context, node.left);
+      var right = this.parseNode(context, node.right);
       return executeOperation(node.type, left, right);
 
     } else {
