@@ -169,8 +169,9 @@ module.exports = {
     ],
 
     "keyword": [
-      ["PRINT", "$$ = yytext;"],
-      ["ENTER", "$$ = yytext;"],
+      ["PRINT",   "$$ = yytext;"],
+      ["ENTER",   "$$ = yytext;"],
+      ["RETURN",  "$$ = yytext;"],
     ],
 
     "variable": [

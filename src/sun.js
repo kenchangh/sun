@@ -353,7 +353,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
         throw new Error("Function '"+functionName+"' is not declared");
       }
       var context = this.createContext(funcName, func.params, callParams);
-      parseNode.call(this, context, context, block);
+      parseNode.call(this, context, block);
 
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 

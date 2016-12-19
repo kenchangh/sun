@@ -508,6 +508,20 @@ tap.same(parser.parse(functionStr), [
   ])
 ]);
 
+functionStr = `ReturnName(name)
+  Return name
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('ReturnName', [
+    new nodes.FunctionParam('name')
+  ], [
+    new nodes.KeywordAction('Return',
+      new nodes.Variable('name'))
+  ])
+]);
+
 functionStr = `x = rand() % 3`;
 
 tap.same(parser.parse(functionStr), [
