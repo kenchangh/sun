@@ -16,6 +16,11 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^13.1.1",
+    "tap": "^8.0.1",
     "uglify-js": "^2.7.5"
+  },
+  "dependencies": {
+    "jison": "^0.4.17",
+    "readline-sync": "^1.4.5"
   }
 }

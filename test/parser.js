@@ -151,7 +151,7 @@ tap.same(parser.parse('x = 1\ny = (5-1)*5/6+7'), [
   {
     "left": new nodes.Variable('y'),
     "right": {
-      "left": {   
+      "left": {
         "left": {
           "left": {
             "left": 5,
@@ -463,13 +463,13 @@ tap.throws(function() {
 
 /* FUNCTIONS HERE */
 
-var functionStr;
-
-functionStr = `PrintLyrics()
-  Print "I'm a lumberjack and I'm okay"
-End
-`
-
-tap.same(parser.parse(functionStr), [
-  new nodes.FunctionStmt('PrintLyrics', [])
-]);
+// var functionStr;
+//
+// functionStr = `PrintLyrics()
+//   Print "I'm a lumberjack and I'm okay"
+// End
+// `
+//
+// tap.same(parser.parse(functionStr), [
+//   new nodes.FunctionStmt('PrintLyrics', [])
+// ]);
