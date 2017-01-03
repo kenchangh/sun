@@ -77,9 +77,11 @@ module.exports = {
      ["!",                                 "return '!';"],
      [":",                                 "return ':';"],
      ["$",                                 "return 'EOF';"],
-     ["^\\s*$",                            eofDedent],
-     ["\\n\\r]+"+spc+"*/![^\\n\\r]",       "/* eat blank lines */"],
-     ["^[\\n\\r]"+spc+"*",                 indent],
+    //  ["^\\s*$",                            eofDedent],
+     ["\\n+",                              "return 'NEWLINE'"],
+    //  ["\\n\\r]+"+spc+"*/![^\\n\\r]",       "/* eat blank lines */"],
+    //  ["^[\\n\\r]"+spc+"*",                 indent],
+     ["^"+spc+"*",                         indent],
      [spc+"+",                             "/* skip whitespace */"],
     ]
   },
@@ -102,11 +104,13 @@ module.exports = {
     ],
 
     "proglist": [
-      ["stmt",          "$$ = [$stmt];"],
-      ["proglist stmt", "$proglist.push($stmt); $$ = $proglist;"],
+      // ["stmt",          "$$ = [$stmt];"],
+      ["stmt NEWLINE",          "$$ = [$stmt];"],
+      ["proglist stmt NEWLINE", "$proglist.push($stmt); $$ = $proglist;"],
     ],
 
     "stmt": [
+      // ["e",               "$$ = $1;"],
       ["function_stmt",   "$$ = $1;"],
       ["if_stmt",         "$$ = $1;"],
       ["keyword_stmt",    "$$ = $1;"],
@@ -116,12 +120,12 @@ module.exports = {
     ],
 
     "stmt_list": [
-      ["stmt",            "$$ = [$stmt];"],
+      ["stmt NEWLINE",            "$$ = [$stmt];"],
       ["stmt_list stmt",  "$stmt_list.push($stmt); $$ = $stmt_list;"]
     ],
 
     "stmt_block": [
-      ["INDENT stmt_list DEDENT", "$$ = $stmt_list;"],
+      ["NEWLINE INDENT stmt_list DEDENT NEWLINE", "$$ = $stmt_list;"],
     ],
 
     "function_stmt": [
@@ -157,7 +161,9 @@ module.exports = {
 
     "if_stmt": [
       ["IF e THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, []);"],
+      ["IF e NEWLINE THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, []);"],
       ["IF e THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, $6);"],
+      ["IF e NEWLINE THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, $6);"],
     ],
 
     "assignment_stmt": [
@@ -199,29 +205,29 @@ module.exports = {
     ],
 
     "e": [
-      [ "variable","$$ = $1" ],
-      [ "identifier ( list )","$$ = new yy.FunctionCall($identifier, $list)" ],
-      [ "( e )",   "$$ = $e;" ],
-      [ "e + e",   "$$ = new yy.Operation('addition', $1, $3);" ],
-      [ "e - e",   "$$ = new yy.Operation('subtraction', $1, $3);" ],
-      [ "e * e",   "$$ = new yy.Operation('multiplication', $1, $3);" ],
-      [ "e / e",   "$$ = new yy.Operation('division', $1, $3);" ],
-      [ "e ^ e",   "$$ = new yy.Operation('exponentiation', $1, $3);" ],
-      [ "e % e",   "$$ = new yy.Operation('modulo', $1, $3);" ],
-      [ "e AND e", "$$ = new yy.Operation('conjunction', $1, $3);"],
-      [ "e OR e",  "$$ = new yy.Operation('disjunction', $1, $3);"],
-      [ "e == e",  "$$ = new yy.Operation('equal', $1, $3);" ],
-      [ "e != e",  "$$ = new yy.Operation('inequal', $1, $3);" ],
-      [ "e > e",   "$$ = new yy.Operation('gt', $1, $3);" ],
-      [ "e < e",   "$$ = new yy.Operation('lt', $1, $3);" ],
-      [ "e >= e",  "$$ = new yy.Operation('gte', $1, $3);" ],
-      [ "e <= e",  "$$ = new yy.Operation('lte', $1, $3);" ],
-      [ "! e",     "$$ = new yy.Operation('inversion', $e);" ],
-      [ "- e",     "$$ = new yy.Operation('negation', $e);", {"prec": "UMINUS"} ],
-      [ "BOOL",    "$$ = yytext === 'True' ? true : false;" ],
-      [ "STRING",  "$$ = yytext" ],
-      [ "INT",     "$$ = parseInt(yytext, 10);" ],
-      [ "FLOAT",   "$$ = parseFloat(yytext);" ],
+      ["variable",  "$$ = $1" ],
+      ["identifier ( list )", "$$ = new yy.FunctionCall($identifier, $list)"],
+      ["( e )",     "$$ = $e;"],
+      ["e + e",     "$$ = new yy.Operation('addition', $1, $3);"],
+      ["e - e",     "$$ = new yy.Operation('subtraction', $1, $3);"],
+      ["e * e",     "$$ = new yy.Operation('multiplication', $1, $3);"],
+      ["e / e",     "$$ = new yy.Operation('division', $1, $3);"],
+      ["e ^ e",     "$$ = new yy.Operation('exponentiation', $1, $3);"],
+      ["e % e",     "$$ = new yy.Operation('modulo', $1, $3);"],
+      ["e AND e",   "$$ = new yy.Operation('conjunction', $1, $3);"],
+      ["e OR e",    "$$ = new yy.Operation('disjunction', $1, $3);"],
+      ["e == e",    "$$ = new yy.Operation('equal', $1, $3);"],
+      ["e != e",    "$$ = new yy.Operation('inequal', $1, $3);"],
+      ["e > e",     "$$ = new yy.Operation('gt', $1, $3);"],
+      ["e < e",     "$$ = new yy.Operation('lt', $1, $3);"],
+      ["e >= e",    "$$ = new yy.Operation('gte', $1, $3);"],
+      ["e <= e",    "$$ = new yy.Operation('lte', $1, $3);"],
+      ["! e",       "$$ = new yy.Operation('inversion', $e);"],
+      ["- e",       "$$ = new yy.Operation('negation', $e);", {"prec": "UMINS"}],
+      ["BOOL",      "$$ = yytext === 'True' ? true : false;"],
+      ["STRING",    "$$ = yytext"],
+      ["INT",       "$$ = parseInt(yytext, 10);"],
+      ["FLOAT",     "$$ = parseFloat(yytext);"],
     ],
   }
 }

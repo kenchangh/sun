@@ -2,16 +2,6 @@ var tap = require('tap');
 var parser = require('../src/parser');
 var nodes = require('../src/nodes');
 
-// tap.same(parser.parse('1 + 1'), [2]);
-// tap.same(parser.parse('1 + 1\n'), [2]);
-// tap.same(parser.parse('2 / 1'), [2]);
-
-// tap.same(parser.parse('5/-1'), [-5]);
-
-// tap.same(parser.parse('(5-1)*5/6+7'), [10.333333333333334]);
-// tap.same(parser.parse('(5*(5+5))'), [50]);
-// tap.same(parser.parse('5^5 * 5'), [15625]);
-// tap.same(parser.parse('-(5^5 * 5)'), [-15625]);
 
 tap.same(parser.parse('x = True'), [
   new nodes.Operation('assignment', new nodes.Variable('x'), true)

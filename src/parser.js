@@ -4,6 +4,11 @@ var nodes = require('./nodes');
 var parser = new Parser(grammar);
 var yy = parser.yy;
 
+var oldParse = parser.parse;
+parser.parse = function parse(src) {
+  return oldParse.call(parser, src+'\n');
+};
+
 for (var prop in nodes) {
   yy[prop] = nodes[prop];
 }
