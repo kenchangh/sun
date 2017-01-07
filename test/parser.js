@@ -525,7 +525,7 @@ tap.same(parser.parse(functionStr), [
   ])
 ]);
 
-// no variables
+// no arguments
 functionStr = `x = rand() % 3`;
 
 tap.same(parser.parse(functionStr), [
@@ -536,7 +536,7 @@ tap.same(parser.parse(functionStr), [
   )
 ]);
 
-// single variable
+// single argument
 functionStr = `x = rand(1) % 3`;
 
 tap.same(parser.parse(functionStr), [
@@ -547,7 +547,7 @@ tap.same(parser.parse(functionStr), [
   )
 ]);
 
-// multi variables
+// multi arguments
 functionStr = `x = rand(1, 2) % 3`;
 
 tap.same(parser.parse(functionStr), [
