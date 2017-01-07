@@ -72,9 +72,7 @@ function SunCompiler(debug) {
 }
 
 SunCompiler.prototype.createContext = function createContext(name, declParams, callParams) {
-  if (callParams < declParams.length) {
-    throw new Error("Too few arguments to function '"+name+"'");
-  } else if (callParams > declParams.length) {
+  if (callParams.length !== declParams.length) {
     throw new Error("Function '"+name+"' requires "+
       declParams.length+" arguments but called with "+
       callParams.length+" arguments");

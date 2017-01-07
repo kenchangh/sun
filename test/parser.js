@@ -468,13 +468,7 @@ tap.throws(function() {
 
 var functionStr;
 
-functionStr = `rand()`;
-
-tap.same(parser.parse(functionStr), [
-  new nodes.FunctionCall('rand', []),
-]);
-
-functionStr = `PrintLyrics()
+functionStr = `Function PrintLyrics()
   Print "I'm a lumberjack and I'm okay"
 End
 `
@@ -485,7 +479,7 @@ tap.same(parser.parse(functionStr), [
   ])
 ]);
 
-functionStr = `PrintName(name)
+functionStr = `Function PrintName(name)
   Print name
 End
 `
@@ -499,7 +493,7 @@ tap.same(parser.parse(functionStr), [
   ])
 ]);
 
-functionStr = `PrintNameAndAge(name, age)
+functionStr = `Function PrintNameAndAge(name, age)
   Print name
   Print age
 End
@@ -517,7 +511,7 @@ tap.same(parser.parse(functionStr), [
   ])
 ]);
 
-functionStr = `ReturnName(name)
+functionStr = `Function ReturnName(name)
   Return name
 End
 `
@@ -529,6 +523,10 @@ tap.same(parser.parse(functionStr), [
     new nodes.KeywordAction('Return',
       new nodes.Variable('name'))
   ])
+]);
+
+tap.same(parser.parse('rand'), [
+  new nodes.Variable('rand'),
 ]);
 
 functionStr = `rand()`;

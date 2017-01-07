@@ -4,6 +4,7 @@ module.exports = {
   "lex": {
     "rules": [
      // ["\\n+",                           "yy.row++; return 'NEWLINE';"],
+     ["Function\\b",                       "return 'FUNCTION';"],
      ["If\\b",                             "return 'IF';"],
      ["Then\\b",                           "return 'THEN';"],
      ["Else\\b",                           "return 'ELSE';"],
@@ -94,7 +95,7 @@ module.exports = {
 
     "function_stmt": [
       [
-        "identifier ( params ) stmt_block END",
+        "FUNCTION identifier ( params ) stmt_block END",
         "$$ = new yy.FunctionStmt($identifier, $params, $stmt_block);"
       ]
     ],

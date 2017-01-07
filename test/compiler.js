@@ -304,10 +304,10 @@ var functionStr;
 
 functionStr = `
 Print 'a'
-PrintLyrics()
+Function PrintLyrics()
   Print "I'm a lumberjack and I'm okay"
 End
-PrintName(name)
+Function PrintName(name)
   Print name
 End
 `;
@@ -326,7 +326,7 @@ tap.same(compiler.functions, {
 compiler.reset();
 
 functionStr = `
-ReturnName(name, age)
+Function ReturnName(name, age)
   Return name
 End
 `;
@@ -337,7 +337,7 @@ tap.same(compiler.contexts, {
   global: {},
 });
 
-functionStr = `PrintNameAndAge(name, age)
+functionStr = `Function PrintNameAndAge(name, age)
   Print name
   Print age
 End
@@ -348,7 +348,7 @@ tap.throws(function() {
   compiler.compile(functionStr);
 });
 
-functionStr = `PrintNameAndAge(name, age)
+functionStr = `Function PrintNameAndAge(name, age)
   Print name
   Print age
 End
