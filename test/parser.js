@@ -2,16 +2,6 @@ var tap = require('tap');
 var parser = require('../src/parser');
 var nodes = require('../src/nodes');
 
-// tap.same(parser.parse('1 + 1'), [2]);
-// tap.same(parser.parse('1 + 1\n'), [2]);
-// tap.same(parser.parse('2 / 1'), [2]);
-
-// tap.same(parser.parse('5/-1'), [-5]);
-
-// tap.same(parser.parse('(5-1)*5/6+7'), [10.333333333333334]);
-// tap.same(parser.parse('(5*(5+5))'), [50]);
-// tap.same(parser.parse('5^5 * 5'), [15625]);
-// tap.same(parser.parse('-(5^5 * 5)'), [-15625]);
 
 tap.same(parser.parse('x = True'), [
   new nodes.Operation('assignment', new nodes.Variable('x'), true)
@@ -259,6 +249,19 @@ tap.same(parser.parse(ifElseStr), [
   ], []),
 ]);
 
+// alternative form of writing
+ifElseStr = `If 1
+Then
+  Print 1
+EndIf
+`;
+
+tap.same(parser.parse(ifElseStr), [
+  new nodes.IfElseStmt(1, [
+    new nodes.KeywordAction('Print', 1),
+  ], []),
+]);
+
 ifElseStr = `If 1 Then
   Print 1
   Print 2
@@ -463,13 +466,104 @@ tap.throws(function() {
 
 /* FUNCTIONS HERE */
 
-// var functionStr;
-//
-// functionStr = `PrintLyrics()
-//   Print "I'm a lumberjack and I'm okay"
-// End
-// `
-//
-// tap.same(parser.parse(functionStr), [
-//   new nodes.FunctionStmt('PrintLyrics', [])
-// ]);
+var functionStr;
+
+functionStr = `Function PrintLyrics()
+  Print "I'm a lumberjack and I'm okay"
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('PrintLyrics', [], [
+    new nodes.KeywordAction('Print', "I'm a lumberjack and I'm okay")
+  ])
+]);
+
+functionStr = `Function PrintName(name)
+  Print name
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('PrintName', [
+    new nodes.FunctionParam('name')
+  ], [
+    new nodes.KeywordAction('Print',
+      new nodes.Variable('name'))
+  ])
+]);
+
+functionStr = `Function PrintNameAndAge(name, age)
+  Print name
+  Print age
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('PrintNameAndAge', [
+    new nodes.FunctionParam('name'),
+    new nodes.FunctionParam('age'),
+  ], [
+    new nodes.KeywordAction('Print',
+      new nodes.Variable('name')),
+    new nodes.KeywordAction('Print',
+      new nodes.Variable('age')),
+  ])
+]);
+
+functionStr = `Function ReturnName(name)
+  Return name
+End
+`
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionStmt('ReturnName', [
+    new nodes.FunctionParam('name')
+  ], [
+    new nodes.KeywordAction('Return',
+      new nodes.Variable('name'))
+  ])
+]);
+
+tap.same(parser.parse('rand'), [
+  new nodes.Variable('rand'),
+]);
+
+functionStr = `rand()`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionCall('rand', []),
+]);
+
+// no arguments
+functionStr = `x = rand() % 3`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('modulo',
+      new nodes.FunctionCall('rand', []), 3)
+  )
+]);
+
+// single argument
+functionStr = `x = rand(1) % 3`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('modulo',
+      new nodes.FunctionCall('rand', [1]), 3)
+  )
+]);
+
+// multi arguments
+functionStr = `x = rand(1, 2) % 3`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('modulo',
+      new nodes.FunctionCall('rand', [1, 2]), 3)
+  )
+]);

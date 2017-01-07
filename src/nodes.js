@@ -61,6 +61,12 @@ exports.FunctionParam = function FunctionParam(name) {
   this.reference = false;
 };
 
+exports.FunctionCall = function FuncionCall(name, params) {
+  this.type = 'function_call';
+  this.name = name;
+  this.params = params;
+};
+
 exports.Operation = function Operation(type) {
   this.type = type;
 
