@@ -421,3 +421,19 @@ Print Add(1, 2)
 compiler.compile(functionStr);
 tap.same(compiler.outputBuffer, [3]);
 compiler.reset();
+
+// skipped subsequent lines after Return
+functionStr = `Function Add(a, b)
+  If 1 Then
+    If 2 Then
+      Return a + b
+    EndIf
+    Print a
+  EndIf
+  Print a
+End
+Print Add(1, 2)
+`
+compiler.compile(functionStr);
+tap.same(compiler.outputBuffer, [3]);
+compiler.reset();
