@@ -336,6 +336,7 @@ tap.ok(compiler.functions.ReturnName);
 tap.same(compiler.contexts, {
   global: {},
 });
+compiler.reset();
 
 functionStr = `Function PrintNameAndAge(name, age)
   Print name
@@ -346,6 +347,7 @@ PrintNameAndAge("chan")
 `
 tap.throws(function() {
   compiler.compile(functionStr);
+  compiler.reset();
 });
 
 functionStr = `Function PrintNameAndAge(name, age)
@@ -357,4 +359,39 @@ PrintNameAndAge("chan", 16, 16)
 `
 tap.throws(function() {
   compiler.compile(functionStr);
+  compiler.reset();
 });
+
+functionStr = `Function PrintNameAndAge(name, age)
+  Print name
+  Print age
+End
+
+SomeRandomFunctionName()
+`
+tap.throws(function() {
+  compiler.compile(functionStr);
+  compiler.reset();
+});
+
+// actually calling the function
+functionStr = `Function PrintName(name)
+  Print name
+End
+
+PrintName("chan")
+`
+compiler.compile(functionStr);
+tap.same(compiler.outputBuffer, ['chan']);
+compiler.reset();
+
+// multiple arguments
+functionStr = `Function PrintNameAndAge(name, age)
+  Print name
+  Print age
+End
+
+PrintNameAndAge("chan", 16)
+`
+compiler.compile(functionStr);
+compiler.reset();

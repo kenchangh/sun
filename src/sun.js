@@ -345,11 +345,11 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       var funcName = node.name;
       var callParams = node.params;
       var func = this.functions[funcName];
-      var block = func.block;
 
       if (func === undefined) {
-        throw new Error("Function '"+functionName+"' is not declared");
+        throw new Error("Function '"+funcName+"' is not declared");
       }
+      var block = func.block;
       var context = this.createContext(funcName, func.params, callParams);
       this.parseBlock(context, block);
 
