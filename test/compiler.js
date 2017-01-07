@@ -437,3 +437,17 @@ Print Add(1, 2)
 compiler.compile(functionStr);
 tap.same(compiler.outputBuffer, [3]);
 compiler.reset();
+
+functionStr = `
+Function Factorial(n)
+  If n == 1 Then
+    Return 1
+  EndIf
+  Return n * Factorial(n-1)
+End
+
+Print Factorial(5)
+`
+compiler.compile(functionStr);
+tap.same(compiler.outputBuffer, [120]);
+compiler.reset();

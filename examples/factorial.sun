@@ -5,4 +5,4 @@ Function Factorial(n)
   Return n * Factorial(n-1)
 End
 
-Factorial(5)
+Print Factorial(5)

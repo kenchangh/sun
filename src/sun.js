@@ -57,11 +57,13 @@ function SunCompiler(debug) {
   this.debug = debug;
   this.returns = {};
   this.contexts = {};
+  this.callCounts = {};
   this.functions = {};
   this.outputBuffer = [];
   this.reset = function reset() {
     this.returns = {};
     this.contexts = {};
+    this.callCounts = {};
     this.functions = {};
     this.outputBuffer = [];
   };
@@ -80,6 +82,12 @@ SunCompiler.prototype.createContext = function createContext(name, declParams, c
       callParams.length+" arguments");
   }
 
+  if (name !== 'global') {
+    this.callCounts[name] = Number.isInteger(this.callCounts[name])
+      ? this.callCounts[name] + 1 : 0;
+    name = name + '.' + this.callCounts[name];
+  }
+
   var variables = {};
   for (var i = 0; i < declParams.length; i++) {
     variables[declParams[i].name] = callParams[i];
@@ -93,10 +101,7 @@ SunCompiler.prototype.createContext = function createContext(name, declParams, c
 };
 
 SunCompiler.prototype.parseBlock = function parseBlock(context, block) {
-  var node;
-  var returnVal;
   for (var i=0; i < block.length; i++) {
-    node = block[i];
     this.parseNode(context, block[i]);
 
     // traverse upwards to parent node
@@ -368,7 +373,9 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
     } else if (type === 'function_call') {
 
       var funcName = node.name;
-      var callParams = node.params;
+      var callParams = node.params.map(function (param) {
+        return this.parseNode(context, param);
+      }.bind(this));
       var func = this.functions[funcName];
 
       if (func === undefined) {
