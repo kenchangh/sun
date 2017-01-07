@@ -1,0 +1,8 @@
+Function Factorial(n)
+  If n == 1 Then
+    Return 1
+  EndIf
+  Return n * Factorial(n-1)
+End
+
+Factorial(5)
