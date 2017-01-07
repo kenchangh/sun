@@ -302,6 +302,11 @@ tap.throws(function() {
 
 var functionStr;
 
+// illegal return
+tap.throws(function() {
+  compiler.compile('Return "a"');
+});
+
 functionStr = `
 Print 'a'
 Function PrintLyrics()
@@ -394,4 +399,25 @@ End
 PrintNameAndAge("chan", 16)
 `
 compiler.compile(functionStr);
+tap.same(compiler.outputBuffer, ['chan', 16]);
+compiler.reset();
+
+functionStr = `Function Add(a, b)
+  Return a + b
+End
+Print Add(1, 2)
+`
+compiler.compile(functionStr);
+tap.same(compiler.outputBuffer, [3]);
+compiler.reset();
+
+// skipped subsequent lines after Return
+functionStr = `Function Add(a, b)
+  Return a + b
+  Print a
+End
+Print Add(1, 2)
+`
+compiler.compile(functionStr);
+tap.same(compiler.outputBuffer, [3]);
 compiler.reset();

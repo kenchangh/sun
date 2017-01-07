@@ -55,10 +55,12 @@ function executeOperation(type, a, b) {
 function SunCompiler(debug) {
   // expose the context to public for testing
   this.debug = debug;
+  this.returns = {};
   this.contexts = {};
   this.functions = {};
   this.outputBuffer = [];
   this.reset = function reset() {
+    this.returns = {};
     this.contexts = {};
     this.functions = {};
     this.outputBuffer = [];
@@ -84,12 +86,23 @@ SunCompiler.prototype.createContext = function createContext(name, declParams, c
   }
   this.contexts[name] = variables;
 
+  // return value will be be stored here
+  this.returns[name] = null;
+
   return name;
 };
 
 SunCompiler.prototype.parseBlock = function parseBlock(context, block) {
+  var node;
+  var returnVal;
   for (var i=0; i < block.length; i++) {
+    node = block[i];
     this.parseNode(context, block[i]);
+
+    // traverse upwards to parent node
+    if (this.returns[context]) {
+      return undefined;
+    }
   }
 }
 
@@ -282,12 +295,24 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
       /* istanbul ignore else */
       if (node.keyword === 'Print') {
+
         var val = this.parseNode(context, node.expression);
         this.executePrint(val);
+
       } else if (node.keyword === 'Enter') {
+
         /* istanbul ignore next */
         // ignoring coverage, manually test
         this.executeEnter(context, node.expression);
+
+      } else if (node.keyword === 'Return') {
+
+        if (context === 'global') {
+          throw new Error('Return is illegal in the main function');
+        }
+        var returnVal = this.parseNode(context, node.expression);
+        this.returns[context] = returnVal;
+
       }
 
     } else if (type === 'assignment') {
@@ -352,6 +377,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       var block = func.block;
       var context = this.createContext(funcName, func.params, callParams);
       this.parseBlock(context, block);
+      return this.returns[context];
 
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 
