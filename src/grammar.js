@@ -125,9 +125,9 @@ module.exports = {
 
     "if_stmt": [
       ["IF e THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, []);"],
-      ["IF e NEWLINE THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, []);"],
+      ["IF e NEWLINE THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $5, []);"],
       ["IF e THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, $6);"],
-      ["IF e NEWLINE THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, $6);"],
+      ["IF e NEWLINE THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $5, $7);"],
     ],
 
     "assignment_stmt": [

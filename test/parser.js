@@ -249,6 +249,19 @@ tap.same(parser.parse(ifElseStr), [
   ], []),
 ]);
 
+// alternative form of writing
+ifElseStr = `If 1
+Then
+  Print 1
+EndIf
+`;
+
+tap.same(parser.parse(ifElseStr), [
+  new nodes.IfElseStmt(1, [
+    new nodes.KeywordAction('Print', 1),
+  ], []),
+]);
+
 ifElseStr = `If 1 Then
   Print 1
   Print 2

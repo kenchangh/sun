@@ -132,7 +132,7 @@ SunCompiler.prototype.compile = function compile(source) {
 
 /* istanbul ignore next */
 /* ignoring Enter as have to test manually */
-SunCompiler.prototype.executeEnter = function executeEnter(node) {
+SunCompiler.prototype.executeEnter = function executeEnter(context, node) {
   if (node.type !== 'variable') {
     throw new Error("Enter must be used with variables, found: "+node.type+"'");
   }
@@ -289,7 +289,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       } else if (node.keyword === 'Enter') {
         /* istanbul ignore next */
         // ignoring coverage, manually test
-        this.executeEnter(node.expression);
+        this.executeEnter(context, node.expression);
       }
 
     } else if (type === 'assignment') {

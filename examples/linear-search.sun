@@ -1,17 +1,15 @@
-A[0] = 'ruby'
-A[1] = 'javascript'
-A[2] = 'erlang'
-A[3] = 'python'
-A[4] = 'c'
-A[5] = 'java'
+Print 'Enter 5 items: '
+Loop:i=0 to 4
+	Enter A[i]
+Loop-end:i
 
-Print 'Enter a programming language: '
-Enter lang
+Print 'Search item: '
+Enter item
 found = False
-Loop:i=0 to 5
-	If lang == A[i]
+Loop:i=0 to 4
+	If item == A[i]
 	Then
-		Print lang
+		Print item
 		Print i
 		found = True
 	EndIf
