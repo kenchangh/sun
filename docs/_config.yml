@@ -5,8 +5,8 @@ permalink:        pretty
 title:            Sun
 tagline:          A language for rapid prototyping and learning new concepts
 description:      A language for rapid prototyping and learning new concepts. Made by @mavenave
-url:              http://mavenave.me/sun
-baseurl:          ''
+url:              http://mavenave.me
+baseurl:          '/sun'
 
 author:
   name:           Chan Guan Hao

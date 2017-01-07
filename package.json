@@ -6,7 +6,7 @@
   "scripts": {
     "test": "tap test/*.js",
     "test-cov": "tap test/*.js --cov --coverage-report=html --100",
-    "build": "browserify src/sun.js -s SunCompiler -i readline-sync | uglifyjs > docs/build/sun.js",
+    "build": "browserify src/sun.js -s SunCompiler -i readline-sync | uglifyjs > docs/js/sun.js",
     "serve": "jekyll serve -s docs"
   },
   "keywords": [
