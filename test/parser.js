@@ -525,6 +525,7 @@ tap.same(parser.parse(functionStr), [
   ])
 ]);
 
+// no variables
 functionStr = `x = rand() % 3`;
 
 tap.same(parser.parse(functionStr), [
@@ -535,6 +536,7 @@ tap.same(parser.parse(functionStr), [
   )
 ]);
 
+// single variable
 functionStr = `x = rand(1) % 3`;
 
 tap.same(parser.parse(functionStr), [
@@ -542,5 +544,16 @@ tap.same(parser.parse(functionStr), [
     new nodes.Variable('x'),
     new nodes.Operation('modulo',
       new nodes.FunctionCall('rand', [1]), 3)
+  )
+]);
+
+// multi variables
+functionStr = `x = rand(1, 2) % 3`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.Operation('assignment',
+    new nodes.Variable('x'),
+    new nodes.Operation('modulo',
+      new nodes.FunctionCall('rand', [1, 2]), 3)
   )
 ]);
