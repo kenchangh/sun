@@ -2,11 +2,12 @@ var grammar = require('./grammar');
 var Parser = require('jison').Parser;
 var nodes = require('./nodes');
 var parser = new Parser(grammar);
+// parser.lexer = lexer;
 var yy = parser.yy;
 
 var oldParse = parser.parse;
 parser.parse = function parse(src) {
-  return oldParse.call(parser, src+'\n');
+  return oldParse.call(parser, src.trim()+'\n');
 };
 
 for (var prop in nodes) {

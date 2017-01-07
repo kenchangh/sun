@@ -1,37 +1,5 @@
 var spc = "[\\t \\u00a0\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u200b\\u2028\\u2029\\u3000]";
 
-
-var eofDedent = "\
-// remaining DEDENTs implied by EOF, regardless of tabs/spaces\
-var tokens = [];\
-\
-while (0 < yy._iemitstack[0]) {\
-  this.popState();\
-  tokens.unshift('DEDENT');\
-  yy._iemitstack.shift();\
-}\
-\
-if (tokens.length) return tokens;\
-";
-
-var indent = "\
-var indentation = yytext.length - yytext.search(/\\s/) - 1;\
-if (indentation > yy._iemitstack[0]) {\
-  yy._iemitstack.unshift(indentation);\
-  return 'INDENT';\
-}\
-\
-var tokens = [];\
-\
-while (indentation < yy._iemitstack[0]) {\
-  this.popState();\
-  tokens.unshift('DEDENT');\
-  yy._iemitstack.shift();\
-}\
-if (tokens.length) return tokens;\
-";
-
-
 module.exports = {
   "lex": {
     "rules": [
@@ -77,11 +45,7 @@ module.exports = {
      ["!",                                 "return '!';"],
      [":",                                 "return ':';"],
      ["$",                                 "return 'EOF';"],
-    //  ["^\\s*$",                            eofDedent],
-     ["\\n+",                              "return 'NEWLINE'"],
-    //  ["\\n\\r]+"+spc+"*/![^\\n\\r]",       "/* eat blank lines */"],
-    //  ["^[\\n\\r]"+spc+"*",                 indent],
-     ["^"+spc+"*",                         indent],
+     ["[\\n\\r]+",                         "return 'NEWLINE';"],
      [spc+"+",                             "/* skip whitespace */"],
     ]
   },
@@ -121,11 +85,11 @@ module.exports = {
 
     "stmt_list": [
       ["stmt NEWLINE",            "$$ = [$stmt];"],
-      ["stmt_list stmt",  "$stmt_list.push($stmt); $$ = $stmt_list;"]
+      ["stmt_list stmt NEWLINE",  "$stmt_list.push($stmt); $$ = $stmt_list;"]
     ],
 
     "stmt_block": [
-      ["NEWLINE INDENT stmt_list DEDENT NEWLINE", "$$ = $stmt_list;"],
+      ["NEWLINE stmt_list", "$$ = $stmt_list;"],
     ],
 
     "function_stmt": [
