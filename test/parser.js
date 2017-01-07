@@ -468,6 +468,12 @@ tap.throws(function() {
 
 var functionStr;
 
+functionStr = `rand()`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionCall('rand', []),
+]);
+
 functionStr = `PrintLyrics()
   Print "I'm a lumberjack and I'm okay"
 End
@@ -523,6 +529,12 @@ tap.same(parser.parse(functionStr), [
     new nodes.KeywordAction('Return',
       new nodes.Variable('name'))
   ])
+]);
+
+functionStr = `rand()`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.FunctionCall('rand', []),
 ]);
 
 // no arguments

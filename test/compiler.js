@@ -336,3 +336,25 @@ tap.ok(compiler.functions.ReturnName);
 tap.same(compiler.contexts, {
   global: {},
 });
+
+functionStr = `PrintNameAndAge(name, age)
+  Print name
+  Print age
+End
+
+PrintNameAndAge("chan")
+`
+tap.throws(function() {
+  compiler.compile(functionStr);
+});
+
+functionStr = `PrintNameAndAge(name, age)
+  Print name
+  Print age
+End
+
+PrintNameAndAge("chan", 16, 16)
+`
+tap.throws(function() {
+  compiler.compile(functionStr);
+});

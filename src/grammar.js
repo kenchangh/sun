@@ -74,13 +74,13 @@ module.exports = {
     ],
 
     "stmt": [
-      // ["e",               "$$ = $1;"],
       ["function_stmt",   "$$ = $1;"],
       ["if_stmt",         "$$ = $1;"],
       ["keyword_stmt",    "$$ = $1;"],
       ["assignment_stmt", "$$ = $1;"],
       ["loop_stmt",       "$$ = $1;"],
       ["while_stmt",      "$$ = $1;"],
+      ["e",               "$$ = $1;"],
     ],
 
     "stmt_list": [
