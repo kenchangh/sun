@@ -1,3 +1,4 @@
+var debug = require('debug')('perf');
 var readlineSync = require('readline-sync');
 var parser = require('./parser');
 var operations = require('./operations');
@@ -113,8 +114,11 @@ SunCompiler.prototype.parseBlock = function parseBlock(context, block) {
 
 SunCompiler.prototype.compile = function compile(source) {
   try {
+    debug('Creating parse tree...');
     var parseTree = parser.parse(source);
+    debug('Created parse tree');
 
+    debug('Executing parse tree...');
     // reorder so that parse all the function nodes first
     var functions = parseTree.filter(function(node) {
       return node.type === 'function';
@@ -126,6 +130,7 @@ SunCompiler.prototype.compile = function compile(source) {
 
     var context = this.createContext('global', [], []);
     this.parseBlock(context, parseTree);
+    debug('Executed parse tree');
 
   } catch (e) {
 

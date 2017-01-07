@@ -1,8 +1,11 @@
+var debug = require('debug')('perf');
 var grammar = require('./grammar');
 var Parser = require('jison').Parser;
 var nodes = require('./nodes');
+
+debug('Loading grammar...');
 var parser = new Parser(grammar);
-// parser.lexer = lexer;
+debug('Finished loading grammar');
 var yy = parser.yy;
 
 var oldParse = parser.parse;
