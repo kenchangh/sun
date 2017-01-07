@@ -1,3 +1,11 @@
-PrintLyrics()
+Function PrintLyrics()
 	Print "I'm a lumberjack and I'm okay"
 End
+
+Function RepeatLyrics(n)
+	Loop:i=0 to n-1
+		PrintLyrics()
+	Loop-end:i
+End
+
+RepeatLyrics(5)
