@@ -112,7 +112,8 @@ module.exports = {
     ],
 
     "param": [
-      ["identifier", "$$ = new yy.FunctionParam($identifier);"],
+      ["identifier", "$$ = new yy.FunctionParam($identifier, false);"],
+      ["* identifier", "$$ = new yy.FunctionParam($identifier, true);"],
     ],
 
     "while_stmt": [

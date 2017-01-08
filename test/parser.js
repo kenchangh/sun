@@ -570,3 +570,35 @@ tap.same(parser.parse(functionStr), [
     new nodes.PrintStmt(new nodes.Variable('x')),
   ])
 ]);
+
+
+/* call-by-reference tests */
+
+var refStr;
+
+refStr = `
+Function PrintName(*name)
+  Print name
+End
+`;
+tap.same(parser.parse(refStr), [
+  new nodes.FunctionStmt('PrintName', [
+    new nodes.FunctionParam('name', true)
+  ], [
+    new nodes.PrintStmt(new nodes.Variable('name'))
+  ])
+]);
+
+refStr = `
+Function PrintNameAndAge(name, *age)
+  Print name
+End
+`;
+tap.same(parser.parse(refStr), [
+  new nodes.FunctionStmt('PrintNameAndAge', [
+    new nodes.FunctionParam('name', false),
+    new nodes.FunctionParam('age', true)
+  ], [
+    new nodes.PrintStmt(new nodes.Variable('name'))
+  ])
+]);

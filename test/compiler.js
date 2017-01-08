@@ -495,3 +495,26 @@ tap.throws(function() {
   compiler.compile(functionStr);
 });
 compiler.reset();
+
+// variables in context different
+functionStr = `
+Function ReturnName(name)
+  Return name
+End
+
+Start
+name = 'chan'
+newName = ReturnName('hao')
+End
+`;
+compiler.compile(functionStr);
+tap.same(compiler.contexts, {
+  global: {
+    name: 'chan',
+    newName: 'hao',
+  },
+  'ReturnName.0': {
+    name: 'hao',
+  }
+});
+compiler.reset();

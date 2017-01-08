@@ -66,13 +66,13 @@ exports.FunctionStmt = function FunctionStmt(name, params, block) {
   this.block = block;
 };
 
-exports.FunctionParam = function FunctionParam(name) {
+exports.FunctionParam = function FunctionParam(name, reference) {
   this.type = 'function_param';
   this.name = name;
-  this.reference = false;
+  this.reference = !!reference;
 };
 
-exports.FunctionCall = function FuncionCall(name, params) {
+exports.FunctionCall = function FunctionCall(name, params) {
   this.type = 'function_call';
   this.name = name;
   this.params = params;
