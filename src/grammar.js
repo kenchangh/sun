@@ -13,6 +13,7 @@ module.exports = {
       ["to\\b",                             "return 'TO';"],
       ["(EndWhile|WhileEnd)\\b",            "return 'END_WHILE';"],
       ["While\\b",                          "return 'WHILE';"],
+      ["Start\\b",                          "return 'START';"],
       ["End\\b",                            "return 'END';"],
       ["Return\\b",                         "return 'RETURN';"],
       ["Print\\b",                          "return 'PRINT';"],
@@ -75,6 +76,7 @@ module.exports = {
 
     "stmt": [
       ["function_stmt",   "$$ = $1;"],
+      ["main_function",   "$$ = $1;"],
       ["if_stmt",         "$$ = $1;"],
       ["keyword_stmt",    "$$ = $1;"],
       ["assignment_stmt", "$$ = $1;"],
@@ -90,6 +92,10 @@ module.exports = {
 
     "stmt_block": [
       ["NEWLINE stmt_list", "$$ = $stmt_list;"],
+    ],
+
+    "main_function": [
+      ["START stmt_block END", "$$ = new yy.MainFunction($stmt_block);"],
     ],
 
     "function_stmt": [

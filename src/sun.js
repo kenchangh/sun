@@ -138,6 +138,14 @@ SunCompiler.prototype.compile = function compile(source) {
     var otherNodes = parseTree.filter(function(node) {
       return node.type !== 'function';
     });
+    var mainFunction = parseTree.find(function(node) {
+      return node.type === 'main_function';
+    });
+
+    if (mainFunction && otherNodes.length > 1) {
+      throw new Error('Statements cannot be outside Start and End');
+    }
+
     parseTree = functions.concat(otherNodes);
 
     var context = this.createContext('global', [], []);
@@ -391,6 +399,11 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       while (this.parseNode(context, condition)) {
         this.parseBlock(context, block);
       }
+
+    } else if (type === 'main_function') {
+
+      var block = node.block;
+      this.parseBlock('global', block);
 
     } else if (type === 'function') {
 

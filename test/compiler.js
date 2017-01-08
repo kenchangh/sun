@@ -361,8 +361,8 @@ PrintNameAndAge("chan")
 `
 tap.throws(function() {
   compiler.compile(functionStr);
-  compiler.reset();
 });
+compiler.reset();
 
 functionStr = `Function PrintNameAndAge(name, age)
   Print name
@@ -373,8 +373,8 @@ PrintNameAndAge("chan", 16, 16)
 `
 tap.throws(function() {
   compiler.compile(functionStr);
-  compiler.reset();
 });
+compiler.reset();
 
 functionStr = `Function PrintNameAndAge(name, age)
   Print name
@@ -385,8 +385,8 @@ SomeRandomFunctionName()
 `
 tap.throws(function() {
   compiler.compile(functionStr);
-  compiler.reset();
 });
+compiler.reset();
 
 // actually calling the function
 functionStr = `Function PrintName(name)
@@ -466,4 +466,32 @@ compiler.compile(functionStr);
 tap.type(compiler.nativeFunctions.rand, 'function');
 tap.equal(compiler.outputBuffer.length, 1);
 tap.type(compiler.outputBuffer[0], 'number');
+compiler.reset();
+
+functionStr = `
+Function PrintName(name)
+Print name
+End
+
+Start
+PrintName('chan')
+End
+`;
+compiler.compile(functionStr);
+tap.same(compiler.outputBuffer, ['chan']);
+compiler.reset();
+
+functionStr = `
+Function PrintName(name)
+Print name
+End
+
+Start
+PrintName('chan')
+End
+PrintName('chan')
+`;
+tap.throws(function() {
+  compiler.compile(functionStr);
+});
 compiler.reset();

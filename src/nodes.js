@@ -54,6 +54,11 @@ exports.WhileStmt = function WhileStmt(condition, block) {
   this.block = block;
 };
 
+exports.MainFunction = function MainFunction(block) {
+  this.type = 'main_function';
+  this.block = block;
+};
+
 exports.FunctionStmt = function FunctionStmt(name, params, block) {
   this.type = 'function';
   this.name = name;

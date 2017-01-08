@@ -562,3 +562,11 @@ tap.same(parser.parse(functionStr), [
       new nodes.FunctionCall('rand', [1, 2]), 3)
   )
 ]);
+
+functionStr = `Start\nPrint x\nEnd`;
+
+tap.same(parser.parse(functionStr), [
+  new nodes.MainFunction([
+    new nodes.PrintStmt(new nodes.Variable('x')),
+  ])
+]);
