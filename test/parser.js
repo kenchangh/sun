@@ -201,17 +201,17 @@ tap.same(parser.parse('x = "\'a\'"'), [
 ]);
 
 tap.same(parser.parse('Print "hello world"'), [
-  new nodes.KeywordAction('Print', 'hello world'),
+  new nodes.PrintStmt('hello world'),
 ]);
 
 
 tap.same(parser.parse('x = 3\nPrint x'), [
   new nodes.Operation('assignment', new nodes.Variable('x'), 3),
-  new nodes.KeywordAction('Print', new nodes.Variable('x')),
+  new nodes.PrintStmt(new nodes.Variable('x')),
 ]);
 
 tap.same(parser.parse('Print (5-1)*5/6+7'), [
-  new nodes.KeywordAction('Print', {
+  new nodes.PrintStmt({
     "left": {
       "left": {
         "left": {
@@ -233,7 +233,7 @@ tap.same(parser.parse('Print (5-1)*5/6+7'), [
 // Avoid testing Enter, slows down test cycle
 // tap.same(parser.parse('Enter x\nPrint x'), [
 //   new nodes.KeywordAction('Enter', new nodes.Variable('x')),
-//   new nodes.KeywordAction('Print', new nodes.Variable('x')),
+//   new nodes.PrintStmt(new nodes.Variable('x')),
 // ]);
 
 var ifElseStr;
@@ -245,7 +245,7 @@ EndIf
 
 tap.same(parser.parse(ifElseStr), [
   new nodes.IfElseStmt(1, [
-    new nodes.KeywordAction('Print', 1),
+    new nodes.PrintStmt(1),
   ], []),
 ]);
 
@@ -258,7 +258,7 @@ EndIf
 
 tap.same(parser.parse(ifElseStr), [
   new nodes.IfElseStmt(1, [
-    new nodes.KeywordAction('Print', 1),
+    new nodes.PrintStmt(1),
   ], []),
 ]);
 
@@ -270,8 +270,8 @@ EndIf
 
 tap.same(parser.parse(ifElseStr), [
   new nodes.IfElseStmt(1, [
-    new nodes.KeywordAction('Print', 1),
-    new nodes.KeywordAction('Print', 2),
+    new nodes.PrintStmt(1),
+    new nodes.PrintStmt(2),
   ], []),
 ]);
 
@@ -285,10 +285,10 @@ EndIf
 
 tap.same(parser.parse(ifElseStr), [
   new nodes.IfElseStmt(1, [
-    new nodes.KeywordAction('Print', 1),
-    new nodes.KeywordAction('Print', 2),
+    new nodes.PrintStmt(1),
+    new nodes.PrintStmt(2),
   ], [
-    new nodes.KeywordAction('Print', 3),
+    new nodes.PrintStmt(3),
   ]),
 ]);
 
@@ -305,12 +305,12 @@ EndIf
 
 tap.same(parser.parse(ifElseStr), [
   new nodes.IfElseStmt(1, [
-    new nodes.KeywordAction('Print', 1),
+    new nodes.PrintStmt(1),
     new nodes.IfElseStmt(2, [
-      new nodes.KeywordAction('Print', 2),
+      new nodes.PrintStmt(2),
     ])
   ], [
-    new nodes.KeywordAction('Print', 3),
+    new nodes.PrintStmt(3),
   ]),
 ]);
 
@@ -323,7 +323,7 @@ EndLoop:i
 tap.same(parser.parse(loopStr), [
   new nodes.LoopStmt(
     new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
-      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+      new nodes.PrintStmt(new nodes.Variable('i'))
     ]),
 ]);
 
@@ -335,7 +335,7 @@ LoopEnd:i
 tap.same(parser.parse(loopStr), [
   new nodes.LoopStmt(
     new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
-      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+      new nodes.PrintStmt(new nodes.Variable('i'))
     ]),
 ]);
 
@@ -347,7 +347,7 @@ Loop-end:i
 tap.same(parser.parse(loopStr), [
   new nodes.LoopStmt(
     new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
-      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+      new nodes.PrintStmt(new nodes.Variable('i'))
     ]),
 ]);
 
@@ -359,7 +359,7 @@ Loop-End:i
 tap.same(parser.parse(loopStr), [
   new nodes.LoopStmt(
     new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
-      new nodes.KeywordAction('Print', new nodes.Variable('i'))
+      new nodes.PrintStmt(new nodes.Variable('i'))
     ]),
 ]);
 
@@ -376,7 +376,7 @@ tap.same(parser.parse(loopStr), [
     new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
       new nodes.LoopStmt(
         new nodes.Variable('j'), new nodes.Variable('j'), 1, 10, [
-          new nodes.KeywordAction('Print', new nodes.Variable('j'))
+          new nodes.PrintStmt(new nodes.Variable('j'))
         ])
     ]),
 ]);
@@ -403,8 +403,7 @@ tap.same(parser.parse(whileStr), [
       new nodes.Variable('i'),
       10
     ), [
-      new nodes.KeywordAction(
-        'Print', new nodes.Variable('i')),
+      new nodes.PrintStmt(new nodes.Variable('i')),
     ]
   )
 ]);
@@ -421,8 +420,7 @@ tap.same(parser.parse(whileStr), [
       new nodes.Variable('i'),
       10
     ), [
-      new nodes.KeywordAction(
-        'Print', new nodes.Variable('i')),
+      new nodes.PrintStmt(new nodes.Variable('i')),
     ]
   )
 ])
@@ -431,7 +429,7 @@ tap.same(parser.parse(whileStr), [
 /* ARRAYS HERE */
 
 tap.same(parser.parse('Print A[i]'), [
-  new nodes.KeywordAction('Print',
+  new nodes.PrintStmt(
     new nodes.Variable('A', [
       new nodes.Variable('i')
     ])
@@ -439,7 +437,7 @@ tap.same(parser.parse('Print A[i]'), [
 ]);
 
 tap.same(parser.parse('Print A[i][1]'), [
-  new nodes.KeywordAction('Print',
+  new nodes.PrintStmt(
     new nodes.Variable('A', [
       new nodes.Variable('i'), 1
     ])
@@ -447,7 +445,7 @@ tap.same(parser.parse('Print A[i][1]'), [
 ]);
 
 tap.same(parser.parse('Print A[i]+A[j]'), [
-  new nodes.KeywordAction('Print',
+  new nodes.PrintStmt(
     new nodes.Operation('addition',
       new nodes.Variable('A', [
         new nodes.Variable('i')
@@ -475,7 +473,7 @@ End
 
 tap.same(parser.parse(functionStr), [
   new nodes.FunctionStmt('PrintLyrics', [], [
-    new nodes.KeywordAction('Print', "I'm a lumberjack and I'm okay")
+    new nodes.PrintStmt("I'm a lumberjack and I'm okay")
   ])
 ]);
 
@@ -488,8 +486,7 @@ tap.same(parser.parse(functionStr), [
   new nodes.FunctionStmt('PrintName', [
     new nodes.FunctionParam('name')
   ], [
-    new nodes.KeywordAction('Print',
-      new nodes.Variable('name'))
+    new nodes.PrintStmt(new nodes.Variable('name'))
   ])
 ]);
 
@@ -504,10 +501,8 @@ tap.same(parser.parse(functionStr), [
     new nodes.FunctionParam('name'),
     new nodes.FunctionParam('age'),
   ], [
-    new nodes.KeywordAction('Print',
-      new nodes.Variable('name')),
-    new nodes.KeywordAction('Print',
-      new nodes.Variable('age')),
+    new nodes.PrintStmt(new nodes.Variable('name')),
+    new nodes.PrintStmt(new nodes.Variable('age')),
   ])
 ]);
 

@@ -3,17 +3,17 @@ Enter n
 Loop:i=1 to n
 	If i % 3 == 0 AND i % 5 == 0
 	Then
-		Print "FizzBuzz"
+		Print 'FizzBuzz\n'
 	Else
 		If i % 3 == 0
 		Then
-			Print "Fizz"
+			Print 'Fizz\n'
 		Else
 			If i % 5 == 0
 			Then
-				Print "Buzz"
+				Print 'Buzz\n'
 			Else
-				Print i
+				Print i, '\n'
 			EndIf
 		EndIf
 	EndIf

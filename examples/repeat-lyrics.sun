@@ -5,6 +5,7 @@ End
 Function RepeatLyrics(n)
 	Loop:i=0 to n-1
 		PrintLyrics()
+		Print '\n'
 	Loop-end:i
 End
 

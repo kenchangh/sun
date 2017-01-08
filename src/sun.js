@@ -192,6 +192,12 @@ SunCompiler.prototype.executeEnter = function executeEnter(context, node) {
 /* istanbul ignore next */
 /* ignoring Print as have to test manually */
 SunCompiler.prototype.executePrint = function executePrint(val) {
+
+  // map to uppercased booleans for consistency
+  if (typeof val === 'boolean') {
+    val = val ? 'True' : 'False';
+  }
+
   if (this.debug) {
 
     this.outputBuffer.push(val);
@@ -204,7 +210,7 @@ SunCompiler.prototype.executePrint = function executePrint(val) {
 
   } else {
 
-    console.log(val);
+    process.stdout.write(val.toString());
 
   }
 }
@@ -312,12 +318,19 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       /* istanbul ignore else */
       if (node.keyword === 'Print') {
 
-        var val = this.parseNode(context, node.expression);
-        // unescape newlines
-        if (typeof val === 'string') {
-          val = val.replace(/\\n/g, '\n');
+        var values = node.expression.map(function(val) {
+          return this.parseNode(context, val);
+        }.bind(this));
+
+        var val;
+        for (var i = 0; i < values.length; i++) {
+          // unescape newlines
+          val = values[i];
+          if (typeof val === 'string') {
+            val = val.replace(/\\n/g, '\n');
+          }
+          this.executePrint(val);
         }
-        this.executePrint(val);
 
       } else if (node.keyword === 'Enter') {
 

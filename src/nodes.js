@@ -17,6 +17,12 @@ exports.KeywordAction = function KeywordAction(keyword, expression) {
   this.expression = expression;
 };
 
+// for use in testing only, syntactic sugar
+exports.PrintStmt = function PrintStmt() {
+  var args = Array.prototype.slice.call(arguments);
+  return new exports.KeywordAction('Print', args);
+}
+
 exports.IfElseStmt = function IfElseStmt(condition, ifBlock, elseBlock) {
   this.type = 'if_else'
   this.condition = condition;

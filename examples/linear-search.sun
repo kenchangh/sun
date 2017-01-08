@@ -9,8 +9,9 @@ found = False
 Loop:i=0 to 4
 	If item == A[i]
 	Then
-		Print item
-		Print i
+		Print 'Item: ', item, '\n'
+		Print 'Index: ', i, '\n'
+		Print found
 		found = True
 	EndIf
 Loop-end:i

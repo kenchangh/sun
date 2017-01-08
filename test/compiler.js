@@ -56,6 +56,16 @@ tap.throws(function() {
 });
 compiler.reset();
 
+// unescape newlines from source
+compiler.compile('Print "\\n"');
+tap.same(compiler.outputBuffer, ['\n']);
+compiler.reset();
+
+// should be uppercase True instead of true
+compiler.compile('x= True\nPrint x');
+tap.same(compiler.outputBuffer, ['True']);
+compiler.reset();
+
 compiler.compile('x = !1');
 tap.same(compiler.contexts, { global: { x: false } });
 compiler.reset();
@@ -319,13 +329,12 @@ End
 compiler.compile(functionStr);
 tap.same(compiler.functions, {
   PrintLyrics: new nodes.FunctionStmt('PrintLyrics', [], [
-    new nodes.KeywordAction('Print', "I'm a lumberjack and I'm okay")
+    new nodes.PrintStmt("I'm a lumberjack and I'm okay")
   ]),
   PrintName: new nodes.FunctionStmt('PrintName', [
     new nodes.FunctionParam('name')
   ], [
-    new nodes.KeywordAction('Print',
-      new nodes.Variable('name'))
+    new nodes.PrintStmt(new nodes.Variable('name'))
   ])
 });
 compiler.reset();

@@ -135,11 +135,15 @@ module.exports = {
     ],
 
     "keyword_stmt": [
-      ["keyword e", "$$ = new yy.KeywordAction($1, $2);"],
+      ["keyword e",  "$$ = new yy.KeywordAction($1, $2);"],
+      ["print_stmt", "$$ = new yy.KeywordAction('Print', $print_stmt)"]
+    ],
+
+    "print_stmt": [
+      ["PRINT list", "$$ = $list"],
     ],
 
     "keyword": [
-      ["PRINT",   "$$ = yytext;"],
       ["ENTER",   "$$ = yytext;"],
       ["RETURN",  "$$ = yytext;"],
     ],
