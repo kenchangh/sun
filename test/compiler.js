@@ -530,5 +530,26 @@ End
 `;
 compiler.compile(refStr);
 tap.same(Object.keys(compiler.references).length, 1);
-tap.same(compiler.references.PrintNameAndAge, ['name', 'age']);
+tap.same(compiler.references.PrintNameAndAge, [true, true]);
+compiler.reset();
+
+refStr = `
+Function MultiplyAndStore(*n, x)
+n = n * x
+End
+
+x = 5
+n = 6
+MultiplyAndStore(x, n)
+`;
+compiler.compile(refStr);
+tap.same(compiler.contexts, {
+  'MultiplyAndStore.0': {
+    x: 6,
+  },
+  global: {
+    x: 30,
+    n: 6,
+  }
+});
 compiler.reset();

@@ -64,7 +64,8 @@ function SunCompiler(debug) {
   this.contexts = {};
   this.callCounts = {};
   this.functions = {};
-  this.references = {};
+  this.references = [];
+  this.referenceDict = [];
   this.outputBuffer = [];
 
   // loading all the nativeFunctions
@@ -78,7 +79,8 @@ function SunCompiler(debug) {
     this.contexts = {};
     this.callCounts = {};
     this.functions = {};
-    this.references = {};
+    this.references = [];
+    this.referenceDict = [];
     this.outputBuffer = [];
   };
   this.setPrintHook = function setPrintHook(cb) {
@@ -90,6 +92,8 @@ function SunCompiler(debug) {
 }
 
 SunCompiler.prototype.createContext = function createContext(name, declParams, callParams) {
+  var funcName = name;
+
   if (callParams.length !== declParams.length) {
     throw new Error("Function '"+name+"' requires "+
       declParams.length+" arguments but called with "+
@@ -103,13 +107,20 @@ SunCompiler.prototype.createContext = function createContext(name, declParams, c
   }
 
   var variables = {};
+  var isReference;
   for (var i = 0; i < declParams.length; i++) {
-    variables[declParams[i].name] = callParams[i];
+    // dont load the context with variable if isReference
+    isReference = this.references[funcName][i];
+    if (!isReference) {
+      variables[declParams[i].name] = callParams[i];
+    }
   }
   this.contexts[name] = variables;
 
   // return value will be be stored here
   this.returns[name] = null;
+
+  this.referenceDict[name] = [];
 
   return name;
 };
@@ -234,17 +245,30 @@ function throwIfNonIntIndices(indices) {
   }
 }
 
-SunCompiler.prototype.getVariable = function getVariable(context, variable) {
-
-
+SunCompiler.prototype.resolveReference = function resolveReference(context, varName) {
+  // returns tuple of [context, varName]
   if (context !== 'global') {
-    var funcName = getFunctionNameFromContext(context);
-    if (this.references[funcName].indexOf(variable.name) !== -1) {
+    var funcName = context.split('.')[0];
+    var paramNames = this.functions[funcName].params.map(function(param) {
+      return param.name;
+    });
+    var argPosition = paramNames.indexOf(varName);
+    var globalVarName = this.referenceDict[context][argPosition];
+    if (globalVarName) {
       context = 'global';
+      varName = globalVarName;
     }
   }
+  return [context, varName];
+};
+
+SunCompiler.prototype.getVariable = function getVariable(context, variable) {
 
   var varName = variable.name;
+  var contextVarNameTuple = this.resolveReference(context, varName);
+  context = contextVarNameTuple[0];
+  varName = contextVarNameTuple[1];
+
   var scope = this.contexts[context];
   var val = scope[varName];
   if (val === undefined) {
@@ -274,9 +298,14 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
 };
 
 SunCompiler.prototype.setVariable = function setVariable(context, variable, expression) {
+
+  var varName = variable.name;
+  var contextVarNameTuple = this.resolveReference(context, varName);
+  context = contextVarNameTuple[0];
+  varName = contextVarNameTuple[1];
+
   var scope = this.contexts[context];
   var indices = variable.indices;
-  var varName = variable.name;
   var currentVal = scope[varName];
   var newVal = this.parseNode(context, expression);
 
@@ -318,10 +347,6 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
     this.contexts[context][varName] = newVal;
   }
 };
-
-function getFunctionNameFromContext(context) {
-  return context.split('.')[0];
-}
 
 SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
@@ -424,10 +449,9 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
       var funcName = node.name;
 
-      var references = node.params.filter(function(param) {
+      // bit field of references
+      var references = node.params.map(function(param) {
         return param.reference;
-      }).map(function(param) {
-        return param.name;
       });
       this.references[funcName] = references;
 
@@ -445,7 +469,9 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
         throw new Error("Function '"+funcName+"' is not declared");
       }
 
-      var callParams = node.params.map(function (param) {
+      this.referenceDict[context] = [];
+
+      var callParams = node.params.map(function (param, index) {
         return this.parseNode(context, param);
       }.bind(this));
 
@@ -456,6 +482,16 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       }
       var block = func.block;
       var context = this.createContext(funcName, func.params, callParams);
+
+      node.params.forEach(function (param, index) {
+        // store reference if pointer
+        if (param.type === 'variable' && this.references[funcName][index]) {
+          this.referenceDict[context][index] = param.name;
+        } else {
+          this.referenceDict[context][index] = null;
+        }
+      }.bind(this));
+
       this.parseBlock(context, block);
       return this.returns[context];
 
