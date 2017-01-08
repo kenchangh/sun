@@ -47,4 +47,5 @@ jspm_packages
 .yarn-integrity
 
 _site/
+build/
 

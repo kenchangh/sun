@@ -1,11 +1,9 @@
 var debug = require('debug')('perf');
-var grammar = require('./grammar');
-var Parser = require('jison').Parser;
 var nodes = require('./nodes');
 
-debug('Loading grammar...');
-var parser = new Parser(grammar);
-debug('Finished loading grammar');
+debug('Loading built parser...');
+var parser = require('../build/sun-parser').parser;
+debug('Loaded built parser');
 var yy = parser.yy;
 
 var oldParse = parser.parse;
