@@ -449,6 +449,12 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
       var funcName = node.name;
 
+      if (context !== 'global') {
+        throw new Error("Unable to nest function '" +
+          funcName + "' in " + "'" + context.split('.')[0] + "'" +
+          ', declare your functions on the global scope');
+      }
+
       // bit field of references
       var references = node.params.map(function(param) {
         return param.reference;

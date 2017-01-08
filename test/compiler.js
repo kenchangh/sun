@@ -519,6 +519,20 @@ tap.same(compiler.contexts, {
 });
 compiler.reset();
 
+// no nesting functions
+functionStr = `
+Function Func1()
+  Function Func2(name)
+    Print name
+  End
+End
+Func1()
+`;
+tap.throws(function() {
+  compiler.compile(functionStr);
+});
+compiler.reset();
+
 
 /* test call-by-reference here */
 var refStr;
