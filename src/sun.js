@@ -215,17 +215,9 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
   if (val === undefined) {
     throw new Error("First usage of variable '"+varName+"', declare the variable above this line first.");
   }
-  // if (node.indices && typeof val !== 'object') {
-  //   throw new Error("Cannot access elements of variable '"+varName+"'. It is not an array, it's a '"+typeof val+"'");
-  // }
 
   var indices = variable.indices;
   if (indices) {
-    // apply the indices until the end
-    // for (var i = 0; i < indices.length; i++) {
-    //   index = indices[i];
-    //   val = val[index];
-    // }
     indices = indices.map(function (index) {
       return this.parseNode(context, index);
     }.bind(this));
