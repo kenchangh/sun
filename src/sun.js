@@ -64,6 +64,7 @@ function SunCompiler(debug) {
   this.contexts = {};
   this.callCounts = {};
   this.functions = {};
+  this.references = {};
   this.outputBuffer = [];
 
   // loading all the nativeFunctions
@@ -77,6 +78,7 @@ function SunCompiler(debug) {
     this.contexts = {};
     this.callCounts = {};
     this.functions = {};
+    this.references = {};
     this.outputBuffer = [];
   };
   this.setPrintHook = function setPrintHook(cb) {
@@ -233,6 +235,15 @@ function throwIfNonIntIndices(indices) {
 }
 
 SunCompiler.prototype.getVariable = function getVariable(context, variable) {
+
+
+  if (context !== 'global') {
+    var funcName = getFunctionNameFromContext(context);
+    if (this.references[funcName].indexOf(variable.name) !== -1) {
+      context = 'global';
+    }
+  }
+
   var varName = variable.name;
   var scope = this.contexts[context];
   var val = scope[varName];
@@ -307,6 +318,10 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
     this.contexts[context][varName] = newVal;
   }
 };
+
+function getFunctionNameFromContext(context) {
+  return context.split('.')[0];
+}
 
 SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
@@ -407,8 +422,17 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
     } else if (type === 'function') {
 
+      var funcName = node.name;
+
+      var references = node.params.filter(function(param) {
+        return param.reference;
+      }).map(function(param) {
+        return param.name;
+      });
+      this.references[funcName] = references;
+
       // just storing for future calls
-      this.functions[node.name] = node;
+      this.functions[funcName] = node;
       return undefined;
 
     } else if (type === 'function_call') {

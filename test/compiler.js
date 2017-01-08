@@ -518,3 +518,17 @@ tap.same(compiler.contexts, {
   }
 });
 compiler.reset();
+
+
+/* test call-by-reference here */
+var refStr;
+
+refStr = `
+Function PrintNameAndAge(*name, *age)
+Print name
+End
+`;
+compiler.compile(refStr);
+tap.same(Object.keys(compiler.references).length, 1);
+tap.same(compiler.references.PrintNameAndAge, ['name', 'age']);
+compiler.reset();
