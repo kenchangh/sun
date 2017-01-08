@@ -1,8 +1,11 @@
 var debugPerf = require('debug')('perf');
 var debugTotalPerf = require('debug')('perf-total');
+
 var readlineSync = require('readline-sync');
 var parser = require('./parser');
 var operations = require('./operations');
+var nativeFunctions = require('./native-functions.js');
+
 var OPERATIONS_BY_OPERANDS = operations.OPERATIONS_BY_OPERANDS;
 var OPERATIONS_BY_TYPE = operations.OPERATIONS_BY_TYPE;
 var OPERATION_EXECUTIONS = operations.OPERATION_EXECUTIONS;
@@ -62,6 +65,13 @@ function SunCompiler(debug) {
   this.callCounts = {};
   this.functions = {};
   this.outputBuffer = [];
+
+  // loading all the nativeFunctions
+  this.nativeFunctions = {};
+  for (var func in nativeFunctions) {
+    this.nativeFunctions[func] = nativeFunctions[func];
+  }
+
   this.reset = function reset() {
     this.returns = {};
     this.contexts = {};
@@ -303,6 +313,10 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       if (node.keyword === 'Print') {
 
         var val = this.parseNode(context, node.expression);
+        // unescape newlines
+        if (typeof val === 'string') {
+          val = val.replace(/\\n/g, '\n');
+        }
         this.executePrint(val);
 
       } else if (node.keyword === 'Enter') {
@@ -374,13 +388,21 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
     } else if (type === 'function_call') {
 
       var funcName = node.name;
+      var func = this.functions[funcName];
+      var nativeFunc = this.nativeFunctions[funcName];
+
+      if (func === undefined && nativeFunc === undefined) {
+        throw new Error("Function '"+funcName+"' is not declared");
+      }
+
       var callParams = node.params.map(function (param) {
         return this.parseNode(context, param);
       }.bind(this));
-      var func = this.functions[funcName];
 
-      if (func === undefined) {
-        throw new Error("Function '"+funcName+"' is not declared");
+      // actual native JS function, run it instead
+      if (isFunction(nativeFunc)) {
+        var output = nativeFunc.apply(null, callParams);
+        return output;
       }
       var block = func.block;
       var context = this.createContext(funcName, func.params, callParams);

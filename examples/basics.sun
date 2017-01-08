@@ -1,4 +1,4 @@
-Print 'hello world'
+Print 'hello world\n'
 Print "Pick a number to increment: "
 Enter x
 x = x + 1
