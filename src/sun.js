@@ -409,6 +409,10 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
         var returnVal = this.parseNode(context, node.expression);
         this.returns[context] = returnVal;
 
+      } else if (node.keyword === 'Error') {
+
+        throw new Error(node.expression);
+
       }
 
     } else if (type === 'assignment') {

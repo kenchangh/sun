@@ -22,6 +22,7 @@ module.exports = {
       ["Return\\b",                         "return 'RETURN';"],
       ["Print\\b",                          "return 'PRINT';"],
       ["Enter\\b",                          "return 'ENTER';"],
+      ["Error\\b",                          "return 'ERROR';"],
       ["AND\\b",                            "return 'AND';"],
       ["OR\\b",                             "return 'OR';"],
       ["\"[^\"]*\"|\'[^\']*'",              "yytext = yytext.substr(1,yyleng-2); return 'STRING';"],
@@ -225,6 +226,7 @@ module.exports = {
     "keyword": [
       ["ENTER",   "$$ = yytext;"],
       ["RETURN",  "$$ = yytext;"],
+      ["ERROR",   "$$ = yytext;"],
     ],
 
     "variable": [

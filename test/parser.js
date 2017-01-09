@@ -230,11 +230,18 @@ tap.same(parser.parse('Print (5-1)*5/6+7'), [
   }),
 ]);
 
-// Avoid testing Enter, slows down test cycle
-// tap.same(parser.parse('Enter x\nPrint x'), [
-//   new nodes.KeywordAction('Enter', new nodes.Variable('x')),
-//   new nodes.PrintStmt(new nodes.Variable('x')),
-// ]);
+// testing all keywords here
+tap.same(parser.parse(
+`Enter x
+Print x
+Return x
+Error x`), [
+  new nodes.KeywordAction('Enter', new nodes.Variable('x')),
+  new nodes.PrintStmt(new nodes.Variable('x')),
+  new nodes.KeywordAction('Return', new nodes.Variable('x')),
+  new nodes.KeywordAction('Error', new nodes.Variable('x')),
+]);
+
 
 var ifElseStr;
 

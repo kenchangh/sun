@@ -61,6 +61,13 @@ compiler.compile('Print "\\n"');
 tap.same(compiler.outputBuffer, ['\n']);
 compiler.reset();
 
+
+try {
+  compiler.compile('Error "hey"');
+} catch(e) {
+  tap.equal(e.message, 'hey');
+}
+
 // should be uppercase True instead of true
 compiler.compile('x= True\nPrint x');
 tap.same(compiler.outputBuffer, ['True']);
