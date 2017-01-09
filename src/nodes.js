@@ -23,9 +23,15 @@ exports.PrintStmt = function PrintStmt() {
   return new exports.KeywordAction('Print', args);
 };
 
-exports.SwitchStmt = function SwitchStmt(caseOf, caseBlocks) {
+exports.SwitchStmt = function SwitchStmt(caseOf, caseBlocks, otherwiseBlock) {
+  this.type = 'switch';
   this.caseOf = caseOf;
   this.caseBlocks = caseBlocks;
+
+  if (!otherwiseBlock) {
+    otherwiseBlock = [];
+  }
+  this.otherwiseBlock = otherwiseBlock;
 };
 
 exports.ConditionBlock = function ConditionBlock(condition, block) {

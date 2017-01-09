@@ -150,7 +150,7 @@ module.exports = {
       ],
       [
         "CASEOF e NEWLINE case_blocks otherwise_block END_OF_CASE",
-        "$$ = new yy.SwitchStmt($e, $case_blocks);"
+        "$$ = new yy.SwitchStmt($e, $case_blocks, $otherwise_block);"
       ]
     ],
 

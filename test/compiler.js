@@ -635,3 +635,31 @@ compiler.reset();
 //   }
 // });
 // compiler.reset();
+
+
+/* test CaseOf here */
+var caseOfStr;
+
+caseOfStr = `
+option = 2
+CaseOf option
+  1: Print 'hi'
+  2: Print 'hey'
+  Otherwise: Print 'bye'
+EndOfCase
+`;
+compiler.compile(caseOfStr);
+tap.same(compiler.outputBuffer, ['hey']);
+compiler.reset();
+
+caseOfStr = `
+option = 3
+CaseOf option
+  1: Print 'hi'
+  2: Print 'hey'
+  Otherwise: Print 'bye'
+EndOfCase
+`;
+compiler.compile(caseOfStr);
+tap.same(compiler.outputBuffer, ['bye']);
+compiler.reset();

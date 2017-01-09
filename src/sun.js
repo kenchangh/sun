@@ -433,6 +433,19 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       }
       this.parseBlock(context, node.elseBlock);
 
+    } else if (type === 'switch') {
+
+      var caseOf = this.parseNode(context, node.caseOf);
+
+      for (var i = 0; i < node.caseBlocks.length; i++) {
+        var caseBlock = node.caseBlocks[i];
+        if (caseOf == caseBlock.condition) {
+          this.parseBlock(context, caseBlock.block);
+          return undefined;
+        }
+      }
+      this.parseBlock(context, node.otherwiseBlock);
+
     } else if (type === 'loop') {
 
       var varName = node.variable.name;
