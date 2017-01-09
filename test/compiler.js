@@ -251,12 +251,27 @@ tap.same(compiler.contexts, { global: { A: {'0': 1} } });
 compiler.reset();
 
 compiler.compile('A[0][2] = 1');
-tap.same(compiler.contexts, { global: { A: {'0,2': 1} } });
+tap.same(compiler.contexts, { global: { A: {'0|2': 1} } });
 compiler.reset();
 
 compiler.compile('A[0][2] = 1\nPrint A[0][2]');
-tap.same(compiler.contexts, { global: { A: {'0,2': 1} } });
+tap.same(compiler.contexts, { global: { A: {'0|2': 1} } });
 tap.same(compiler.outputBuffer, [1]);
+compiler.reset();
+
+// string keys, float keys, boolean keys will work as well
+compiler.compile(`
+A["key1"][0]["key 2"][6.9][True] = 1
+Print A["key1"][0]["key 2"][6.9][True]`);
+tap.same(compiler.contexts, {
+  global: {
+    A: { 'key1|0|key 2|6.9|True': 1 }
+  }
+});
+
+tap.throws(function() {
+  compiler.compile('A[0] = 1\nB[A] = 1');
+});
 compiler.reset();
 
 tap.throws(function() {
@@ -296,16 +311,6 @@ tap.same(compiler.contexts, {
   }
 })
 compiler.reset();
-
-tap.throws(function() {
-  // no non-integer indexes
-  compiler.compile('A["x"] = 1');
-});
-
-tap.throws(function() {
-  // no non-integer indexes
-  compiler.compile('A[2.5] = 1');
-});
 
 
 /* FUNCTIONS HERE */
@@ -568,33 +573,33 @@ tap.same(compiler.contexts, {
 });
 compiler.reset();
 
-refStr = `
-Function SquareAll(numbers, size, b)
-  Loop:i=0 to size-1
-    numbers[i] = numbers[i] * numbers[i]
-  LoopEnd:i
-End
-
-A[0] = 1
-A[1] = 2
-A[2] = 3
-b[0] = 2
-b[1] = 4
-b[2] = 6
-SquareAll(A, 3, b)
-`;
-compiler.compile(refStr);
-tap.same(compiler.contexts, {
-  'SquareAll.0': {
-    i: 3,
-    size: 3,
-  },
-  global: {
-    A: {
-      0: 1,
-      1: 4,
-      2: 9,
-    },
-  }
-});
-compiler.reset();
+// refStr = `
+// Function SquareAll(numbers, size, b)
+//   Loop:i=0 to size-1
+//     numbers[i] = numbers[i] * numbers[i]
+//   LoopEnd:i
+// End
+//
+// A[0] = 1
+// A[1] = 2
+// A[2] = 3
+// b[0] = 2
+// b[1] = 4
+// b[2] = 6
+// SquareAll(A, 3, b)
+// `;
+// compiler.compile(refStr);
+// tap.same(compiler.contexts, {
+//   'SquareAll.0': {
+//     i: 3,
+//     size: 3,
+//   },
+//   global: {
+//     A: {
+//       0: 1,
+//       1: 4,
+//       2: 9,
+//     },
+//   }
+// });
+// compiler.reset();

@@ -236,13 +236,27 @@ SunCompiler.prototype.executePrint = function executePrint(val) {
   }
 }
 
-function throwIfNonIntIndices(indices) {
-  for (var i = 0; i < indices.length; i++) {
-    var index = indices[i];
-    if (typeof index !== 'number' || isFloat(index)) {
-      throw new Error("Array index should be integers, found '"+index+"'");
+function throwIfIllegalIndices(indices) {
+  indices.forEach(function (index) {
+    if (typeof index === 'object') {
+      throw new Error("Array index cannot be an array");
     }
-  }
+  });
+}
+
+function boolToString(bool) {
+  return bool ? 'True' : 'False';
+}
+
+function indicesToKey(indices) {
+  indices = indices.map(function(index) {
+    if (typeof index === 'boolean') {
+      index = boolToString(index);
+    }
+    return index;
+  });
+  var INDEX_DELIMITER = '|';
+  return indices.join(INDEX_DELIMITER);
 }
 
 SunCompiler.prototype.resolveReference = function resolveReference(context, varName) {
@@ -280,13 +294,16 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
     indices = indices.map(function (index) {
       return this.parseNode(context, index);
     }.bind(this));
-    throwIfNonIntIndices(indices);
+    throwIfIllegalIndices(indices);
 
-    var key = indices.toString();
+    var key = indicesToKey(indices);
     val = scope[varName][key];
 
     if (val === undefined) {
       var elementAccess = indices.map(function(index) {
+        if (typeof index === 'boolean') {
+          index = boolToString(index);
+        }
         return '['+index+']';
       }).join('');
       throw new Error("There's no element at '"+varName+elementAccess+"'");
@@ -334,13 +351,13 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
     indices = indices.map(function(index) {
       return this.parseNode(context, index);
     }.bind(this));
-    throwIfNonIntIndices(indices);
+    throwIfIllegalIndices(indices);
 
     /* istanbul ignore else */
     if (scope[varName] === undefined) {
       this.contexts[context][varName] = {};
     }
-    var key = indices.toString();
+    var key = indicesToKey(indices);
     this.contexts[context][varName][key] = newVal;
 
   } else {
