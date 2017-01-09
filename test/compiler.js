@@ -516,6 +516,23 @@ tap.throws(function() {
 });
 compiler.reset();
 
+functionStr = `
+Function PrintName(name)
+Print name
+Start
+Print name
+End
+End
+
+Start
+PrintName('chan')
+End
+`;
+tap.throws(function() {
+  compiler.compile(functionStr);
+});
+compiler.reset();
+
 // variables in context different
 functionStr = `
 Function ReturnName(name)

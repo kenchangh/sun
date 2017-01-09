@@ -554,10 +554,6 @@ tap.same(parser.parse(functionStr), [
   ])
 ]);
 
-tap.same(parser.parse('rand'), [
-  new nodes.Variable('rand'),
-]);
-
 functionStr = `rand()`;
 
 tap.same(parser.parse(functionStr), [
@@ -639,9 +635,71 @@ tap.same(parser.parse(refStr), [
 
 
 /* CaseOf tests here */
-// var caseOfStr;
-//
-// caseOfStr = `
-// CaseOf option
-// EndOfCase
-// `;
+var caseOfStr;
+
+caseOfStr = `
+CaseOf option
+  1: Print 'hi'
+  2: Print 'hey'
+EndOfCase
+`;
+tap.same(parser.parse(caseOfStr), [
+  new nodes.SwitchStmt(new nodes.Variable('option'), [
+    new nodes.ConditionBlock(1, [ new nodes.PrintStmt('hi') ]),
+    new nodes.ConditionBlock(2, [ new nodes.PrintStmt('hey') ]),
+  ])
+]);
+
+caseOfStr = `
+CaseOf option
+  1: Print 'hi'
+  2: Print 'hey'
+  Otherwise: Print 'bye'
+EndOfCase
+`;
+tap.same(parser.parse(caseOfStr), [
+  new nodes.SwitchStmt(new nodes.Variable('option'), [
+    new nodes.ConditionBlock(1, [ new nodes.PrintStmt('hi') ]),
+    new nodes.ConditionBlock(2, [ new nodes.PrintStmt('hey') ]),
+  ], [ new nodes.PrintStmt('bye') ])
+]);
+
+caseOfStr = `
+CaseOf option
+  1:
+    Print 'hello'
+    Print 'world'
+  2:
+    Print 'hey'
+  Otherwise:
+    Print 'bye'
+EndOfCase
+`;
+tap.same(parser.parse(caseOfStr), [
+  new nodes.SwitchStmt(new nodes.Variable('option'), [
+    new nodes.ConditionBlock(1, [
+      new nodes.PrintStmt('hello'),
+      new nodes.PrintStmt('world')
+    ]),
+    new nodes.ConditionBlock(2, [ new nodes.PrintStmt('hey') ]),
+  ], [ new nodes.PrintStmt('bye') ])
+]);
+
+caseOfStr = `
+CaseOf option
+  1: Print 'hello'
+  2:
+    Print 'hey'
+    Print 'I was doing just fine before I met you'
+  Otherwise: Print 'bye'
+EndOfCase
+`;
+tap.same(parser.parse(caseOfStr), [
+  new nodes.SwitchStmt(new nodes.Variable('option'), [
+    new nodes.ConditionBlock(1, [ new nodes.PrintStmt('hello') ]),
+    new nodes.ConditionBlock(2, [
+      new nodes.PrintStmt('hey'),
+      new nodes.PrintStmt('I was doing just fine before I met you')
+    ]),
+  ], [ new nodes.PrintStmt('bye') ])
+]);

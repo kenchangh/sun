@@ -79,14 +79,23 @@ module.exports = {
     ],
 
     "stmt": [
+      ["compound_stmts",  "$$ = $1;"],
+      ["simple_stmts",    "$$ = $1;"],
+    ],
+
+    "compound_stmts": [
       ["function_stmt",   "$$ = $1;"],
       ["main_function",   "$$ = $1;"],
       ["if_stmt",         "$$ = $1;"],
-      ["keyword_stmt",    "$$ = $1;"],
-      ["assignment_stmt", "$$ = $1;"],
       ["loop_stmt",       "$$ = $1;"],
       ["while_stmt",      "$$ = $1;"],
-      ["e",               "$$ = $1;"],
+      ["switch_stmt",     "$$ = $1;"],
+    ],
+
+    "simple_stmts": [
+      ["assignment_stmt", "$$ = $1;"],
+      ["keyword_stmt",    "$$ = $1;"],
+      ["function_call",   "$$ = $1;"],
     ],
 
     "stmt_list": [
@@ -138,6 +147,10 @@ module.exports = {
       [
         "CASEOF e NEWLINE case_blocks END_OF_CASE",
         "$$ = new yy.SwitchStmt($e, $case_blocks);"
+      ],
+      [
+        "CASEOF e NEWLINE case_blocks otherwise_block END_OF_CASE",
+        "$$ = new yy.SwitchStmt($e, $case_blocks);"
       ]
     ],
 
@@ -147,7 +160,13 @@ module.exports = {
     ],
 
     "case_block": [
-      ["e : stmt_block", "$$ = new yy.ConditionBlock($e, $stmt_block);"]
+      ["base_e : simple_stmts NEWLINE",  "$$ = new yy.ConditionBlock($base_e, [$simple_stmts]);"],
+      ["base_e : stmt_block",    "$$ = new yy.ConditionBlock($base_e, $stmt_block);"]
+    ],
+
+    "otherwise_block": [
+      ["OTHERWISE : simple_stmts NEWLINE", "$$ = [$simple_stmts];"],
+      ["OTHERWISE : stmt_block", "$$ = $stmt_block;"]
     ],
 
     "if_stmt": [
@@ -232,9 +251,13 @@ module.exports = {
       ["list , e",          "$list.push($e); $$ = $list;"],
     ],
 
+    "function_call": [
+      ["identifier ( list )", "$$ = new yy.FunctionCall($identifier, $list)"],
+    ],
+
     "e": [
       ["variable",  "$$ = $1" ],
-      ["identifier ( list )", "$$ = new yy.FunctionCall($identifier, $list)"],
+      ["function_call", "$$ = $1;"],
       ["( e )",     "$$ = $e;"],
       ["e + e",     "$$ = new yy.Operation('addition', $1, $3);"],
       ["e - e",     "$$ = new yy.Operation('subtraction', $1, $3);"],
@@ -252,10 +275,14 @@ module.exports = {
       ["e <= e",    "$$ = new yy.Operation('lte', $1, $3);"],
       ["! e",       "$$ = new yy.Operation('inversion', $e);"],
       ["- e",       "$$ = new yy.Operation('negation', $e);", {"prec": "UMINS"}],
+      ["base_e", "$$ = $1"]
+    ],
+
+    "base_e": [
       ["BOOL",      "$$ = yytext === 'True' ? true : false;"],
       ["STRING",    "$$ = yytext"],
       ["INT",       "$$ = parseInt(yytext, 10);"],
       ["FLOAT",     "$$ = parseFloat(yytext);"],
-    ],
+    ]
   }
 }

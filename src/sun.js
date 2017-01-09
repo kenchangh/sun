@@ -466,6 +466,9 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
     } else if (type === 'main_function') {
 
+      if (context !== 'global') {
+        throw new Error('Cannot create main function in another function');
+      }
       var block = node.block;
       this.parseBlock('global', block);
 
