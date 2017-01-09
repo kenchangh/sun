@@ -204,7 +204,7 @@ var loopStr;
 
 loopStr = `Loop:i='a' to 10
   Print i
-EndLoop:i`
+LoopEnd:i`
 
 // checks for loop start point to be number
 tap.throws(function() {
@@ -214,7 +214,7 @@ compiler.reset();
 
 loopStr = `Loop:i=1 to 'a'
   Print i
-EndLoop:i`
+LoopEnd:i`
 
 // checks for loop start point to be number
 tap.throws(function() {
@@ -224,7 +224,7 @@ compiler.reset();
 
 loopStr = `Loop:i=1 to 10
   Print i
-EndLoop:i`
+LoopEnd:i`
 compiler.compile(loopStr);
 tap.same(compiler.outputBuffer, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 compiler.reset();
@@ -233,8 +233,8 @@ compiler.reset();
 loopStr = `Loop:i=1 to 10
   Loop:j=1 to 10
     Print j
-  EndLoop:j
-EndLoop:i`
+  LoopEnd:j
+LoopEnd:i`
 compiler.compile(loopStr);
 var arr = [];
 for (var i=1; i < 11; i++) {
@@ -253,7 +253,7 @@ whileStr = `i = 1
 While i <= 10
   Print i
   i = i + 1
-EndWhile`;
+WhileEnd`;
 compiler.compile(whileStr);
 tap.same(compiler.outputBuffer, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 compiler.reset();

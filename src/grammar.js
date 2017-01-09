@@ -9,10 +9,13 @@ module.exports = {
       ["ElseIf\\b",                         "return 'ELSE_IF';"],
       ["Else\\b",                           "return 'ELSE';"],
       ["EndIf\\b",                          "return 'ENDIF';"],
-      ["(EndLoop|LoopEnd|Loop-[Ee]nd)\\b",  "return 'END_LOOP';"],
+      ["CaseOf\\b",                         "return 'CASEOF';"],
+      ["EndOfCase\\b",                      "return 'END_OF_CASE';"],
+      ["Otherwise\\b",                      "return 'OTHERWISE';"],
+      ["(LoopEnd|Loop-[Ee]nd)\\b",          "return 'END_LOOP';"],
       ["Loop\\b",                           "return 'LOOP';"],
       ["to\\b",                             "return 'TO';"],
-      ["(EndWhile|WhileEnd)\\b",            "return 'END_WHILE';"],
+      ["WhileEnd\\b",                       "return 'END_WHILE';"],
       ["While\\b",                          "return 'WHILE';"],
       ["Start\\b",                          "return 'START';"],
       ["End\\b",                            "return 'END';"],
@@ -131,6 +134,22 @@ module.exports = {
       ],
     ],
 
+    "switch_stmt": [
+      [
+        "CASEOF e NEWLINE case_blocks END_OF_CASE",
+        "$$ = new yy.SwitchStmt($e, $case_blocks);"
+      ]
+    ],
+
+    "case_blocks": [
+      ["case_block", "$$ = [$case_block];"],
+      ["case_blocks case_block", "$case_blocks.push($case_block); $$ = $case_blocks;"],
+    ],
+
+    "case_block": [
+      ["e : stmt_block", "$$ = new yy.ConditionBlock($e, $stmt_block);"]
+    ],
+
     "if_stmt": [
       [
         "if_block ENDIF",
@@ -151,8 +170,8 @@ module.exports = {
     ],
 
     "if_block": [
-      ["IF e THEN stmt_block", "$$ = { condition: $e, block: $stmt_block };"],
-      ["IF e NEWLINE THEN stmt_block", "$$ = { condition: $e, block: $stmt_block };"],
+      ["IF e THEN stmt_block", "$$ = new yy.ConditionBlock($e, $stmt_block);"],
+      ["IF e NEWLINE THEN stmt_block", "$$ = new yy.ConditionBlock($e, $stmt_block);"],
     ],
 
     "elseif_blocks": [
@@ -164,7 +183,7 @@ module.exports = {
     ],
 
     "elseif_block": [
-      ["ELSE_IF e stmt_block", "$$ = { condition: $e, block: $stmt_block };"]
+      ["ELSE_IF e stmt_block", "$$ = new yy.ConditionBlock($e, $stmt_block);"]
     ],
 
     "else_block": [

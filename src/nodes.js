@@ -21,7 +21,12 @@ exports.KeywordAction = function KeywordAction(keyword, expression) {
 exports.PrintStmt = function PrintStmt() {
   var args = Array.prototype.slice.call(arguments);
   return new exports.KeywordAction('Print', args);
-}
+};
+
+exports.SwitchStmt = function SwitchStmt(caseOf, caseBlocks) {
+  this.caseOf = caseOf;
+  this.caseBlocks = caseBlocks;
+};
 
 exports.ConditionBlock = function ConditionBlock(condition, block) {
   this.condition = condition;

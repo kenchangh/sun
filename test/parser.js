@@ -364,18 +364,6 @@ var loopStr;
 
 loopStr = `Loop:i=1 to 10
   Print i
-EndLoop:i
-`;
-tap.same(parser.parse(loopStr), [
-  new nodes.LoopStmt(
-    new nodes.Variable('i'), new nodes.Variable('i'), 1, 10, [
-      new nodes.PrintStmt(new nodes.Variable('i'))
-    ]),
-]);
-
-// alternative declaration, LoopEnd
-loopStr = `Loop:i=1 to 10
-  Print i
 LoopEnd:i
 `;
 tap.same(parser.parse(loopStr), [
@@ -413,8 +401,8 @@ tap.same(parser.parse(loopStr), [
 loopStr = `Loop:i=1 to 10
   Loop:j=1 to 10
     Print j
-  EndLoop:j
-EndLoop:i
+  LoopEnd:j
+LoopEnd:i
 `;
 
 tap.same(parser.parse(loopStr), [
@@ -430,7 +418,7 @@ tap.same(parser.parse(loopStr), [
 // different variables for loop
 loopStr = `Loop:i=1 to 10
   Print i
-EndLoop:j
+LoopEnd:j
 `;
 tap.throws(function() {
   parser.parse(loopStr);
@@ -440,7 +428,7 @@ var whileStr;
 
 whileStr = `While i <= 10
   Print i
-EndWhile
+WhileEnd
 `;
 
 tap.same(parser.parse(whileStr), [
@@ -648,3 +636,12 @@ tap.same(parser.parse(refStr), [
     new nodes.PrintStmt(new nodes.Variable('name'))
   ])
 ]);
+
+
+/* CaseOf tests here */
+// var caseOfStr;
+//
+// caseOfStr = `
+// CaseOf option
+// EndOfCase
+// `;
