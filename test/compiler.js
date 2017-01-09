@@ -185,6 +185,21 @@ compiler.compile(ifElseStr);
 tap.same(compiler.contexts, { global: { x: 2 } });
 compiler.reset();
 
+// x2 for all
+ifElseStr = `
+x = 3
+If x == 1 Then
+  Print x*1
+ElseIf x == 2
+  Print x*2
+ElseIf x == 3
+  Print x*3
+EndIf
+`
+compiler.compile(ifElseStr);
+tap.same(compiler.outputBuffer, [9]);
+compiler.reset();
+
 var loopStr;
 
 loopStr = `Loop:i='a' to 10

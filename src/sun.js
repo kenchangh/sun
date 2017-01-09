@@ -422,9 +422,16 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
     } else if (type === 'if_else') {
 
-      var condition = this.parseNode(context, node.condition);
-      var block = condition ? node.ifBlock : node.elseBlock;
-      this.parseBlock(context, block);
+      for (var i = 0; i < node.conditionBlocks.length; i++) {
+        var conditionBlock = node.conditionBlocks[i];
+        var condition = this.parseNode(context, conditionBlock.condition);
+
+        if (condition) {
+          this.parseBlock(context, conditionBlock.block);
+          return undefined;
+        }
+      }
+      this.parseBlock(context, node.elseBlock);
 
     } else if (type === 'loop') {
 

@@ -244,9 +244,11 @@ EndIf
 `;
 
 tap.same(parser.parse(ifElseStr), [
-  new nodes.IfElseStmt(1, [
-    new nodes.PrintStmt(1),
-  ], []),
+  new nodes.IfElseStmt([
+    new nodes.ConditionBlock(1, [
+      new nodes.PrintStmt(1)
+    ])
+  ])
 ]);
 
 // alternative form of writing
@@ -257,9 +259,11 @@ EndIf
 `;
 
 tap.same(parser.parse(ifElseStr), [
-  new nodes.IfElseStmt(1, [
-    new nodes.PrintStmt(1),
-  ], []),
+  new nodes.IfElseStmt([
+    new nodes.ConditionBlock(1, [
+      new nodes.PrintStmt(1)
+    ])
+  ])
 ]);
 
 ifElseStr = `If 1 Then
@@ -269,10 +273,12 @@ EndIf
 `;
 
 tap.same(parser.parse(ifElseStr), [
-  new nodes.IfElseStmt(1, [
-    new nodes.PrintStmt(1),
-    new nodes.PrintStmt(2),
-  ], []),
+  new nodes.IfElseStmt([
+    new nodes.ConditionBlock(1, [
+      new nodes.PrintStmt(1),
+      new nodes.PrintStmt(2),
+    ])
+  ])
 ]);
 
 ifElseStr = `If 1 Then
@@ -284,12 +290,14 @@ EndIf
 `;
 
 tap.same(parser.parse(ifElseStr), [
-  new nodes.IfElseStmt(1, [
-    new nodes.PrintStmt(1),
-    new nodes.PrintStmt(2),
+  new nodes.IfElseStmt([
+    new nodes.ConditionBlock(1, [
+      new nodes.PrintStmt(1),
+      new nodes.PrintStmt(2),
+    ])
   ], [
-    new nodes.PrintStmt(3),
-  ]),
+    new nodes.PrintStmt(3)
+  ])
 ]);
 
 // nested if-s
@@ -304,14 +312,52 @@ EndIf
 `;
 
 tap.same(parser.parse(ifElseStr), [
-  new nodes.IfElseStmt(1, [
-    new nodes.PrintStmt(1),
-    new nodes.IfElseStmt(2, [
-      new nodes.PrintStmt(2),
+  new nodes.IfElseStmt([
+    new nodes.ConditionBlock(1, [
+      new nodes.PrintStmt(1),
+      new nodes.IfElseStmt([
+        new nodes.ConditionBlock(2, [ new nodes.PrintStmt(2) ])
+      ])
     ])
-  ], [
-    new nodes.PrintStmt(3),
-  ]),
+  ], [ new nodes.PrintStmt(3) ])
+]);
+
+ifElseStr = `
+If 1 Then
+  Print 1
+ElseIf 2
+  Print 2
+ElseIf 3
+  Print 3
+EndIf
+`;
+
+tap.same(parser.parse(ifElseStr), [
+  new nodes.IfElseStmt([
+    new nodes.ConditionBlock(1, [ new nodes.PrintStmt(1) ]),
+    new nodes.ConditionBlock(2, [ new nodes.PrintStmt(2) ]),
+    new nodes.ConditionBlock(3, [ new nodes.PrintStmt(3) ]),
+  ])
+]);
+
+ifElseStr = `
+If 1 Then
+  Print 1
+ElseIf 2
+  Print 2
+ElseIf 3
+  Print 3
+Else
+  Print 4
+EndIf
+`;
+
+tap.same(parser.parse(ifElseStr), [
+  new nodes.IfElseStmt([
+    new nodes.ConditionBlock(1, [ new nodes.PrintStmt(1) ]),
+    new nodes.ConditionBlock(2, [ new nodes.PrintStmt(2) ]),
+    new nodes.ConditionBlock(3, [ new nodes.PrintStmt(3) ]),
+  ], [ new nodes.PrintStmt(4) ])
 ]);
 
 var loopStr;

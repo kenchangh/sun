@@ -6,6 +6,7 @@ module.exports = {
       ["Function\\b",                       "return 'FUNCTION';"],
       ["If\\b",                             "return 'IF';"],
       ["Then\\b",                           "return 'THEN';"],
+      ["ElseIf\\b",                         "return 'ELSE_IF';"],
       ["Else\\b",                           "return 'ELSE';"],
       ["EndIf\\b",                          "return 'ENDIF';"],
       ["(EndLoop|LoopEnd|Loop-[Ee]nd)\\b",  "return 'END_LOOP';"],
@@ -131,10 +132,43 @@ module.exports = {
     ],
 
     "if_stmt": [
-      ["IF e THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, []);"],
-      ["IF e NEWLINE THEN stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $5, []);"],
-      ["IF e THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $4, $6);"],
-      ["IF e NEWLINE THEN stmt_block ELSE stmt_block ENDIF", "$$ = new yy.IfElseStmt($e, $5, $7);"],
+      [
+        "if_block ENDIF",
+        "$$ = new yy.IfElseStmt([$if_block], []);"
+      ],
+      [
+        "if_block else_block ENDIF",
+        "$$ = new yy.IfElseStmt([$if_block], $else_block);"
+      ],
+      [
+        "if_block elseif_blocks ENDIF",
+        "$$ = new yy.IfElseStmt([$if_block].concat($elseif_blocks), []);"
+      ],
+      [
+        "if_block elseif_blocks else_block ENDIF",
+        "$$ = new yy.IfElseStmt([$if_block].concat($elseif_blocks), $else_block);"
+      ],
+    ],
+
+    "if_block": [
+      ["IF e THEN stmt_block", "$$ = { condition: $e, block: $stmt_block };"],
+      ["IF e NEWLINE THEN stmt_block", "$$ = { condition: $e, block: $stmt_block };"],
+    ],
+
+    "elseif_blocks": [
+      ["elseif_block", "$$ = [$elseif_block];"],
+      [
+        "elseif_blocks elseif_block",
+        "$elseif_blocks.push($elseif_block); $$ = $elseif_blocks;"
+      ],
+    ],
+
+    "elseif_block": [
+      ["ELSE_IF e stmt_block", "$$ = { condition: $e, block: $stmt_block };"]
+    ],
+
+    "else_block": [
+      ["ELSE stmt_block", "$$ = $stmt_block;"],
     ],
 
     "assignment_stmt": [

@@ -23,10 +23,14 @@ exports.PrintStmt = function PrintStmt() {
   return new exports.KeywordAction('Print', args);
 }
 
-exports.IfElseStmt = function IfElseStmt(condition, ifBlock, elseBlock) {
-  this.type = 'if_else'
+exports.ConditionBlock = function ConditionBlock(condition, block) {
   this.condition = condition;
-  this.ifBlock = ifBlock;
+  this.block = block;
+};
+
+exports.IfElseStmt = function IfElseStmt(conditionBlocks, elseBlock) {
+  this.type = 'if_else'
+  this.conditionBlocks = conditionBlocks;
 
   if (!elseBlock) {
     elseBlock = [];
