@@ -28,10 +28,6 @@ function isFunction(functionToCheck) {
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
 
-function isFloat(n){
-  return Number(n) === n && n % 1 !== 0;
-}
-
 function executeOperation(type, a, b) {
 
   if (OPERATIONS_BY_TYPE['number'].indexOf(type) !== -1) {
@@ -301,7 +297,9 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
 
     if (val === undefined) {
       var elementAccess = indices.map(function(index) {
+        /* istanbul ignore if */
         if (typeof index === 'boolean') {
+          /* istanbul ignore next */
           index = boolToString(index);
         }
         return '['+index+']';

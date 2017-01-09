@@ -276,11 +276,11 @@ compiler.reset();
 
 // string keys, float keys, boolean keys will work as well
 compiler.compile(`
-A["key1"][0]["key 2"][6.9][True] = 1
-Print A["key1"][0]["key 2"][6.9][True]`);
+A["key1"][0]["key 2"][6.9][True][False] = 1
+Print A["key1"][0]["key 2"][6.9][True][False]`);
 tap.same(compiler.contexts, {
   global: {
-    A: { 'key1|0|key 2|6.9|True': 1 }
+    A: { 'key1|0|key 2|6.9|True|False': 1 }
   }
 });
 
