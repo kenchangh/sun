@@ -567,3 +567,34 @@ tap.same(compiler.contexts, {
   }
 });
 compiler.reset();
+
+refStr = `
+Function SquareAll(numbers, size, b)
+  Loop:i=0 to size-1
+    numbers[i] = numbers[i] * numbers[i]
+  LoopEnd:i
+End
+
+A[0] = 1
+A[1] = 2
+A[2] = 3
+b[0] = 2
+b[1] = 4
+b[2] = 6
+SquareAll(A, 3, b)
+`;
+compiler.compile(refStr);
+tap.same(compiler.contexts, {
+  'SquareAll.0': {
+    i: 3,
+    size: 3,
+  },
+  global: {
+    A: {
+      0: 1,
+      1: 4,
+      2: 9,
+    },
+  }
+});
+compiler.reset();
