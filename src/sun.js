@@ -31,11 +31,21 @@ function isFunction(functionToCheck) {
 function executeOperation(type, a, b) {
 
   if (OPERATIONS_BY_TYPE['number'].indexOf(type) !== -1) {
-    if (typeof a !== 'number') {
-      throw new Error("'"+a+"' is not a number");
-    }
-    if (b !== undefined && typeof b !== 'number') {
-      throw new Error("'"+b+"' is not a number");
+
+    if (type === 'addition') {
+      if (typeof a === 'number' && typeof b !== 'number') {
+        throw new Error("Cannot add '"+a+"'"+" with '"+b+"'");
+      }
+      if (typeof a === 'string' && typeof b !== 'string') {
+        throw new Error("Cannot concatenate '"+a+"'"+" with '"+b+"'");
+      }
+    } else {
+      if (typeof a !== 'number') {
+        throw new Error("'"+a+"' is not a number");
+      }
+      if (b !== undefined && typeof b !== 'number') {
+        throw new Error("'"+b+"' is not a number");
+      }
     }
 
     if (type === 'division' && b === 0) {

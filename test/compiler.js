@@ -39,14 +39,22 @@ tap.throws(function() {
 });
 
 tap.throws(function() {
-  // number cannot add string
-  compiler.compile('x = 1 + "asd"');
+  compiler.compile('x = 1 / "asd"');
 });
 compiler.reset();
 
 tap.throws(function() {
-  // number cannot add string
+  compiler.compile('x = "asd" * 1');
+});
+compiler.reset();
+
+tap.throws(function() {
   compiler.compile('x = "asd" + 1');
+});
+compiler.reset();
+
+tap.throws(function() {
+  compiler.compile('x = 1 + "1"');
 });
 compiler.reset();
 
@@ -124,6 +132,10 @@ compiler.reset();
 
 compiler.compile('x = 1 % 5');
 tap.same(compiler.contexts, { global: { x: 1 } });
+compiler.reset();
+
+compiler.compile('Print "hello "+"world"');
+tap.same(compiler.outputBuffer, ['hello world']);
 compiler.reset();
 
 compiler.compile('x = 1 + 1\nPrint x');
