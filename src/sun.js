@@ -80,11 +80,16 @@ function SunCompiler(options) {
   this.references = [];
   this.referenceDict = [];
   this.outputBuffer = [];
+  this.targetSrc = null;
 
   // loading all the nativeFunctions
   this.nativeFunctions = {};
   for (var func in nativeFunctions) {
     this.nativeFunctions[func] = nativeFunctions[func];
+  }
+
+  if (this.bootstrap) {
+    this._bootstrapSun();
   }
 
   this.reset = function reset() {
@@ -95,6 +100,7 @@ function SunCompiler(options) {
     this.references = [];
     this.referenceDict = [];
     this.outputBuffer = [];
+    this.targetSrc = null;
   };
   this.setPrintHook = function setPrintHook(cb) {
     this.printHook = cb;
@@ -153,17 +159,19 @@ SunCompiler.prototype._bootstrapSun = function _bootstrapSun(src) {
   var filepath = path.join(__dirname, 'sun.sun');
   var compilerSrcBuf = fs.readFileSync(filepath);
   var compilerSrc = compilerSrcBuf.toString();
-  console.log(compilerSrc)
-  compilerSrc = compilerSrc.replace(/\$SOURCE_CODE/, utils.escapeSource(src));
-  this._compile(compilerSrc);
+  this.bootstrapCompilerSrc = compilerSrc;
 };
 
 SunCompiler.prototype.compile = function compile(src) {
   if (this.bootstrap) {
-    this._bootstrapSun(src);
-    return undefined;
+    // stored for later usage, in case NotImplementedError happens
+    this.targetSrc = src;
+    var compilerSrc = this.bootstrapCompilerSrc;
+    compilerSrc = compilerSrc.replace(/\$SOURCE_CODE/, utils.escapeSource(src));
+    this._compile(compilerSrc);
+  } else {
+    this._compile(src);
   }
-  this._compile(src);
 };
 
 SunCompiler.prototype._compile = function _compile(src) {
@@ -201,7 +209,13 @@ SunCompiler.prototype._compile = function _compile(src) {
 
     /* istanbul ignore next */
     if (this.debug) {
-      throw e;
+
+      if (e instanceof utils.NotImplementedError) {
+        this._compile(this.targetSrc);
+        // console.log(e.message)
+      } else {
+        throw e;
+      }
     }
     /* istanbul ignore next */
     this.executePrint(e.message);
@@ -590,7 +604,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
     // expression base, STRING, INT, FLOAT, BOOL
     return node;
   } else {
-    throw new Error("Invalid node: '"+node+"'");
+    throw new Error("Invalid node: "+node);
   }
 }
 

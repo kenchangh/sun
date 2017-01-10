@@ -3,10 +3,34 @@ Start
 sourceCode = '$SOURCE_CODE'
 
 parseTree = parseSunSource(sourceCode)
+featuresUsed = getAllFeatures(parseTree)
 
-features[0] = 'variable'
-features[1] = 'keyword'
-features[2] = 'assignment'
-features[3] = 'operations'
+workingFeatures[0] = 'random'
+doExecute = True
+
+Loop:i=0 to size(featuresUsed)-1
+  featureUsed = featuresUsed[i]
+  featureExists = False
+
+  Loop:j=0 to size(workingFeatures)-1
+    workingFeature = workingFeatures[j]
+    If workingFeature == featureUsed
+    Then
+      featureExists = True
+    EndIf
+  LoopEnd:j
+
+  If !featureExists
+  Then
+    featureNotImplemented = featureUsed
+    doExecute = False
+  EndIf
+
+LoopEnd:i
+
+If !doExecute
+Then
+  throwNotImplementedError(featureNotImplemented)
+EndIf
 
 End

@@ -61,3 +61,10 @@ exports.unescapeSource = function unescapeSource(src) {
     .replace(/\\"/g, '"')
     .replace(/\\n/g, '\n');
 }
+
+function NotImplementedError(feature) {
+  this.name = 'NotImplementedError';
+  this.message = "Feature '"+feature+"' is not implemented";
+};
+NotImplementedError.prototype = Error.prototype;
+exports.NotImplementedError = NotImplementedError;
