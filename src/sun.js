@@ -2,6 +2,9 @@ var debugPerf = require('debug')('perf');
 var debugTotalPerf = require('debug')('perf-total');
 
 var readlineSync = require('readline-sync');
+var utils = require('./utils');
+var boolToString = utils.boolToString;
+var indicesToKey = utils.indicesToKey;
 var parser = require('./parser');
 var operations = require('./operations');
 var nativeFunctions = require('./native-functions.js');
@@ -144,6 +147,8 @@ SunCompiler.prototype.parseBlock = function parseBlock(context, block) {
 
 SunCompiler.prototype.compile = function compile(source) {
   try {
+    // bootstrapSun(source);
+
     debugTotalPerf('Compiling source...');
     debugPerf('Creating parse tree...');
     var parseTree = parser.parse(source);
@@ -211,8 +216,6 @@ SunCompiler.prototype.executeEnter = function executeEnter(context, node) {
   }
   var val = parseFloat(answer);
   val = isNaN(val) ? answer : val;
-  // this.context[varName] = val;
-  // console.log(node);
   this.setVariable(context, node, val);
 }
 
@@ -248,21 +251,6 @@ function throwIfIllegalIndices(indices) {
       throw new Error("Array index cannot be an array");
     }
   });
-}
-
-function boolToString(bool) {
-  return bool ? 'True' : 'False';
-}
-
-function indicesToKey(indices) {
-  indices = indices.map(function(index) {
-    if (typeof index === 'boolean') {
-      index = boolToString(index);
-    }
-    return index;
-  });
-  var INDEX_DELIMITER = '|';
-  return indices.join(INDEX_DELIMITER);
 }
 
 SunCompiler.prototype.resolveReference = function resolveReference(context, varName) {
@@ -535,7 +523,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
       // actual native JS function, run it instead
       if (isFunction(nativeFunc)) {
-        var output = nativeFunc.apply(null, callParams);
+        var output = nativeFunc.apply(this, callParams);
         return output;
       }
       var block = func.block;
@@ -553,6 +541,10 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       this.parseBlock(context, block);
       return this.returns[context];
 
+    } else if (type === 'native') {
+
+      return node.object;
+
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 
       var operand = this.parseNode(context, node.operand);
@@ -566,7 +558,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
     } else {
 
-      throw new Error("Unhandled node type: '"+node.type+"'");
+      throw new Error("Unhandled node: "+JSON.stringify(node));
 
     }
 

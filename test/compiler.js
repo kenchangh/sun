@@ -500,13 +500,6 @@ compiler.compile(functionStr);
 tap.same(compiler.outputBuffer, [120]);
 compiler.reset();
 
-functionStr = `Print rand()`;
-compiler.compile(functionStr);
-tap.type(compiler.nativeFunctions.rand, 'function');
-tap.equal(compiler.outputBuffer.length, 1);
-tap.type(compiler.outputBuffer[0], 'number');
-compiler.reset();
-
 functionStr = `
 Function PrintName(name)
 Print name

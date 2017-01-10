@@ -114,3 +114,8 @@ exports.Operation = function Operation(type) {
     throw new Error("Unhandled node type: '"+type+"'");
   }
 };
+
+exports.NativeObject = function NativeObject(obj) {
+  this.type = 'native';
+  this.object = obj;
+};

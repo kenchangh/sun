@@ -25,7 +25,10 @@ module.exports = {
       ["Error\\b",                          "return 'ERROR';"],
       ["AND\\b",                            "return 'AND';"],
       ["OR\\b",                             "return 'OR';"],
-      ["\"[^\"]*\"|\'[^\']*'",              "yytext = yytext.substr(1,yyleng-2); return 'STRING';"],
+      [
+        '"(?:\\\\?[\\s\\S])*?"|'+"'(?:\\\\?[\\s\\S])*?'",
+        "yytext = yytext.substr(1,yyleng-2); return 'STRING';"
+      ],
       ["(True|False)",                      "return 'BOOL'"],
       ["[0-9]+(?:\\.[0-9]+)?\\b",           "return 'FLOAT';"],
       ["[0-9]+\\b",                         "return 'INT';"],
