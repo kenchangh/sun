@@ -5,7 +5,7 @@ var nodes = require('../src/nodes');
 var compiler;
 
 /* test interface for SunCompiler here */
-compiler = new SunCompiler(true);
+compiler = new SunCompiler({ debug: true });
 
 compiler.setPrintHook(function() {});
 tap.ok(compiler.printHook);
@@ -26,9 +26,18 @@ compiler.compile('x = 1 + 1');
 tap.same(compiler.contexts, {});
 tap.same(compiler.outputBuffer, []);
 
-/* basics of operators and expressions */
 
-compiler = new SunCompiler(true); // true for debug flag
+compiler = new SunCompiler({ debug: true });
+runCompilerTests(compiler);
+
+compiler = new SunCompiler({ debug: true, bootstrap: true});
+runCompilerTests(compiler);
+
+
+// switch out compiler instances for all tests
+function runCompilerTests(compiler) {
+
+/* basics of operators and expressions */
 
 tap.throws(function() {
   compiler.parseNode('global', {type: 'random'});
@@ -675,3 +684,5 @@ EndOfCase
 compiler.compile(caseOfStr);
 tap.same(compiler.outputBuffer, ['bye']);
 compiler.reset();
+
+}

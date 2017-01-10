@@ -16,12 +16,6 @@ exports.indicesToKey = function indicesToKey(indices) {
   return indices.join(INDEX_DELIMITER);
 };
 
-function isBaseType(obj) {
-  return typeof obj === 'number' ||
-    typeof obj === 'string' ||
-    typeof obj === 'boolean';
-}
-
 /*
 flattenObject({ x: 1, y: 2 }) => { x: 1, y: 2 }
 flattenObject([ 1, 2 ])       => { 0: 1, 1: 2 }
@@ -36,11 +30,13 @@ exports.flattenObject = function _flattenObject(obj) {
   var toReturn = {};
 
   for (var i in obj) {
+    // istanbul ignore if
     if (!obj.hasOwnProperty(i)) continue;
 
     if (typeof obj[i] === 'object') {
       var flatObject = _flattenObject(obj[i]);
       for (var x in flatObject) {
+      // istanbul ignore if
         if (!flatObject.hasOwnProperty(x)) continue;
 
         toReturn[i +  INDEX_DELIMITER + x] = flatObject[x];

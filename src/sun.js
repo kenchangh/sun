@@ -1,3 +1,5 @@
+var fs = require('fs');
+var path = require('path');
 var debugPerf = require('debug')('perf');
 var debugTotalPerf = require('debug')('perf-total');
 
@@ -66,9 +68,11 @@ function executeOperation(type, a, b) {
   }
 }
 
-function SunCompiler(debug) {
-  // expose the context to public for testing
-  this.debug = debug;
+function SunCompiler(options) {
+  options = options || {};
+
+  this.debug = options.debug || false;
+  this.bootstrap = options.bootstrap || false;
   this.returns = {};
   this.contexts = {};
   this.callCounts = {};
@@ -145,13 +149,28 @@ SunCompiler.prototype.parseBlock = function parseBlock(context, block) {
   }
 }
 
-SunCompiler.prototype.compile = function compile(source) {
-  try {
-    // bootstrapSun(source);
+SunCompiler.prototype._bootstrapSun = function _bootstrapSun(src) {
+  var filepath = path.join(__dirname, 'sun.sun');
+  var compilerSrcBuf = fs.readFileSync(filepath);
+  var compilerSrc = compilerSrcBuf.toString();
+  console.log(compilerSrc)
+  compilerSrc = compilerSrc.replace(/\$SOURCE_CODE/, utils.escapeSource(src));
+  this._compile(compilerSrc);
+};
 
+SunCompiler.prototype.compile = function compile(src) {
+  if (this.bootstrap) {
+    this._bootstrapSun(src);
+    return undefined;
+  }
+  this._compile(src);
+};
+
+SunCompiler.prototype._compile = function _compile(src) {
+  try {
     debugTotalPerf('Compiling source...');
     debugPerf('Creating parse tree...');
-    var parseTree = parser.parse(source);
+    var parseTree = parser.parse(src);
     debugPerf('Created parse tree');
 
     debugPerf('Executing parse tree...');
@@ -523,7 +542,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
       // actual native JS function, run it instead
       if (isFunction(nativeFunc)) {
-        var output = nativeFunc.apply(this, callParams);
+        var output = nativeFunc.apply(this, [context].concat(callParams));
         return output;
       }
       var block = func.block;

@@ -1,0 +1,12 @@
+Start
+
+sourceCode = '$SOURCE_CODE'
+
+parseTree = parseSunSource(sourceCode)
+
+features[0] = 'variable'
+features[1] = 'keyword'
+features[2] = 'assignment'
+features[3] = 'operations'
+
+End

@@ -7,8 +7,9 @@ var NativeObject = require('./nodes').NativeObject;
 
 
 function NativeFunction(fn) {
-  return function() {
+  var wrapper = function() {
     var args = Array.prototype.slice.call(arguments);
+    var context = args.shift();
     var output = fn.apply(this, args);
 
     if (typeof output === 'object') {
@@ -16,12 +17,19 @@ function NativeFunction(fn) {
     }
     return output;
   };
+  // for access without need of SunCompiler context
+  wrapper.fn = fn;
+  return wrapper
 }
 
 exports.parseSunSource = new NativeFunction(function parseSunSource(src) {
   // used from within a source code
   // so need to unescape the unescape the string first
   return parser.parse(unescapeSource(src));
+});
+
+exports.size = new NativeFunction(function size(node) {
+  
 });
 
 exports.rand = function rand() {
