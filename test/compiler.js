@@ -30,8 +30,8 @@ tap.same(compiler.outputBuffer, []);
 compiler = new SunCompiler({ debug: true });
 runCompilerTests(compiler);
 
-compiler = new SunCompiler({ debug: true, bootstrap: true});
-runCompilerTests(compiler);
+// compiler = new SunCompiler({ debug: true, bootstrap: true});
+// runCompilerTests(compiler);
 
 
 // switch out compiler instances for all tests

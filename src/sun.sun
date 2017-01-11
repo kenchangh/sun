@@ -5,7 +5,7 @@ sourceCode = '$SOURCE_CODE'
 parseTree = parseSunSource(sourceCode)
 featuresUsed = getAllFeatures(parseTree)
 
-workingFeatures[0] = 'random'
+workingFeatures = Array('variable', 'keyword', 'assignment')
 doExecute = True
 
 Loop:i=0 to size(featuresUsed)-1

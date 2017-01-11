@@ -121,3 +121,33 @@ Print exists(features, 0)
 compiler.compile(src);
 tap.same(compiler.outputBuffer, ['True', 'False']);
 compiler.reset();
+
+
+src = `
+features['test'] = 2
+Print isArray(features)
+Print isArray(5)
+Print isArray("hey that's pretty good")
+`;
+compiler.compile(src);
+tap.same(compiler.outputBuffer, ['True', 'False', 'False']);
+compiler.reset();
+
+
+src = `
+features = Array(1, 2, 3, 4)
+Print isArray(features)
+`;
+compiler.compile(src);
+tap.same(compiler.outputBuffer, ['True']);
+tap.same(compiler.contexts, {
+  global: {
+    features: flattenObject({
+      0: 1,
+      1: 2,
+      2: 3,
+      3: 4,
+    })
+  }
+});
+compiler.reset();

@@ -10,8 +10,14 @@ function NativeFunction(fn) {
   var wrapper = function() {
     var args = Array.prototype.slice.call(arguments);
     var context = args.shift();
+    this.__context = context;
+    args = args.map(function(arg) {
+      if (typeof arg === 'object' && arg instanceof NativeObject) {
+        arg = arg.object;
+      }
+      return arg;
+    });
     var output = fn.apply(this, args);
-
     if (typeof output === 'object') {
       output = new NativeObject(flattenObject(output));
     }
@@ -30,8 +36,7 @@ exports.rand = function rand() {
 
 exports.parseSunSource = new NativeFunction(function parseSunSource(src) {
   // used from within a source code
-  // so need to unescape the unescape the string first
-  this.context = 'pass'
+  // so need to unescape the string first
   return parser.parse(unescapeSource(src));
 });
 
@@ -39,7 +44,6 @@ exports.getAllFeatures = new NativeFunction(function getAllFeatures(flatParseTre
   // getting flatParseTree from parseSunSource
   // so context doesn't really matter
   // unwrap if it's NativeObject
-  flatParseTree = this.parseNode('global', flatParseTree);
   var keys = Object.keys(flatParseTree);
   var typeKeys = keys.filter(function(key) {
     return key.split('|').find(function(index) {
@@ -74,10 +78,9 @@ exports.throwNotImplementedError = new NativeFunction(function(featureNotImpleme
   throw new utils.NotImplementedError(featureNotImplemented);
 });
 
-exports.Array = new NativeFunction(function Array() {
+exports.Array = new NativeFunction(function _Array() {
   var elements = Array.prototype.slice.call(arguments);
-  elements.forEach(function(element, index) {
-  });
+  return elements;
 });
 
 exports.isArray = new NativeFunction(function isArray(node) {
