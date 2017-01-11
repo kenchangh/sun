@@ -31,10 +31,15 @@ exports.rand = function rand() {
 exports.parseSunSource = new NativeFunction(function parseSunSource(src) {
   // used from within a source code
   // so need to unescape the unescape the string first
+  this.context = 'pass'
   return parser.parse(unescapeSource(src));
 });
 
 exports.getAllFeatures = new NativeFunction(function getAllFeatures(flatParseTree) {
+  // getting flatParseTree from parseSunSource
+  // so context doesn't really matter
+  // unwrap if it's NativeObject
+  flatParseTree = this.parseNode('global', flatParseTree);
   var keys = Object.keys(flatParseTree);
   var typeKeys = keys.filter(function(key) {
     return key.split('|').find(function(index) {
@@ -61,6 +66,20 @@ exports.size = new NativeFunction(function size(node) {
   return firstIndices.length;
 });
 
+exports.exists = new NativeFunction(function exists(array, key) {
+  return array[key] !== undefined;
+});
+
 exports.throwNotImplementedError = new NativeFunction(function(featureNotImplemented) {
   throw new utils.NotImplementedError(featureNotImplemented);
+});
+
+exports.Array = new NativeFunction(function Array() {
+  var elements = Array.prototype.slice.call(arguments);
+  elements.forEach(function(element, index) {
+  });
+});
+
+exports.isArray = new NativeFunction(function isArray(node) {
+  return typeof node === 'object';
 });

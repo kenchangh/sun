@@ -34,3 +34,53 @@ Then
 EndIf
 
 End
+
+
+Function parseNode(*context, node)
+
+  If isArray(node)
+  Then
+    type = node['type']
+
+    CaseOf type
+
+      'variable':
+        varName = node['name']
+        If exists(context, varName)
+        Then
+          Error "First usage of variable '"+varName+"', declare the variable above this line first."
+          Return context[varName]
+        EndIf
+
+      'keyword':
+        keyword = node['keyword']
+        expression = node['expression']
+
+        CaseOf keyword
+
+          'Print':
+            Print expression
+
+          'Enter':
+            varName = expression
+            Enter val
+            context[varName] = val
+
+          Otherwise:
+            Error 'Unrecognized keyword: '+keyword
+
+        EndOfCase
+
+      'assignment':
+        variable = node['left']
+        context[varName] = node['right']
+
+      Otherwise:
+        Error 'Unhandled node type: '+type
+
+    EndOfCase
+
+  Else
+    Return node
+  EndIf
+End

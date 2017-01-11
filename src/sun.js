@@ -163,13 +163,14 @@ SunCompiler.prototype._bootstrapSun = function _bootstrapSun(src) {
 };
 
 SunCompiler.prototype.compile = function compile(src) {
-  if (this.bootstrap) {
+  if (this.bootstrap && this.targetSrc) {
     // stored for later usage, in case NotImplementedError happens
     this.targetSrc = src;
     var compilerSrc = this.bootstrapCompilerSrc;
     compilerSrc = compilerSrc.replace(/\$SOURCE_CODE/, utils.escapeSource(src));
     this._compile(compilerSrc);
   } else {
+    this.targetSrc = null;
     this._compile(src);
   }
 };
@@ -210,8 +211,10 @@ SunCompiler.prototype._compile = function _compile(src) {
     /* istanbul ignore next */
     if (this.debug) {
 
-      if (e instanceof utils.NotImplementedError) {
-        this._compile(this.targetSrc);
+      if (e.name === 'NotImplementedError' && this.bootstrap) {
+        var targetSrc = this.targetSrc;
+        this.targetSrc = null;
+        this._compile(targetSrc);
         // console.log(e.message)
       } else {
         throw e;
@@ -442,7 +445,7 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
       } else if (node.keyword === 'Error') {
 
-        throw new Error(node.expression);
+        throw new Error(this.parseNode(context, node.expression));
 
       }
 

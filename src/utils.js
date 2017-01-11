@@ -66,5 +66,5 @@ function NotImplementedError(feature) {
   this.name = 'NotImplementedError';
   this.message = "Feature '"+feature+"' is not implemented";
 };
-NotImplementedError.prototype = Error.prototype;
+NotImplementedError.prototype = Error.prototype
 exports.NotImplementedError = NotImplementedError;

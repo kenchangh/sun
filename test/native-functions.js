@@ -62,10 +62,62 @@ tap.same(compiler.contexts, {
 });
 compiler.reset();
 
+
 // rand()
 var functionStr = `Print rand()`;
 compiler.compile(functionStr);
 tap.type(compiler.nativeFunctions.rand, 'function');
 tap.equal(compiler.outputBuffer.length, 1);
 tap.type(compiler.outputBuffer[0], 'number');
+compiler.reset();
+
+
+var actualSrc = escapeSource(`Function PrintLyrics()
+  Print "I'm a lumberjack and I'm okay"
+End
+`);
+var bootstrapSrc = `
+features = getAllFeatures(parseSunSource('${actualSrc}'))
+`;
+compiler.compile(bootstrapSrc);
+tap.same(compiler.contexts, {
+  global: {
+    features: flattenObject([
+      'function',
+      'keyword',
+    ])
+  }
+});
+
+var src;
+
+src = `
+features[0] = 1
+features[1] = 2
+features[2] = 3
+Print size(features)
+`;
+compiler.compile(src);
+tap.same(compiler.outputBuffer, [3]);
+compiler.reset();
+
+src = `
+features[0] = 1
+features[1] = 2
+features['hey'] = 3
+Print size(features)
+`;
+tap.throws(function() {
+  compiler.compile(src);
+});
+compiler.reset();
+
+
+src = `
+features['test'] = 2
+Print exists(features, 'test')
+Print exists(features, 0)
+`;
+compiler.compile(src);
+tap.same(compiler.outputBuffer, ['True', 'False']);
 compiler.reset();
