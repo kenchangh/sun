@@ -1,6 +1,6 @@
 Print 'hello world\n'
 Print "Pick a number to increment: "
 Enter x
-x = x + 1
+
 Print 'Number incremented: '
 Print x

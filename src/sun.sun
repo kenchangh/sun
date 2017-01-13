@@ -25,7 +25,6 @@ Loop:i=0 to size(featuresUsed)-1
     featureNotImplemented = featureUsed
     doExecute = False
   EndIf
-
 LoopEnd:i
 
 If !doExecute
@@ -33,10 +32,20 @@ Then
   throwNotImplementedError(featureNotImplemented)
 EndIf
 
+parseBlock(parseTree)
+
 End
 
 
-Function parseNode(*context, node)
+Function parseBlock(block)
+  Loop:i=0 to size(block)
+    node = block[i]
+    parseNode(node)
+  LoopEnd:i
+End
+
+
+Function parseNode(context, node)
 
   If isArray(node)
   Then
@@ -59,7 +68,9 @@ Function parseNode(*context, node)
         CaseOf keyword
 
           'Print':
-            Print expression
+            Loop:i=0 to size(expression)-1
+              Print expression[i]
+            LoopEnd:i
 
           'Enter':
             varName = expression

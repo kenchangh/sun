@@ -84,5 +84,6 @@ exports.Array = new NativeFunction(function _Array() {
 });
 
 exports.isArray = new NativeFunction(function isArray(node) {
+  // console.log(this.contexts)
   return typeof node === 'object';
 });

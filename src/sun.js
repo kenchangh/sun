@@ -7,6 +7,7 @@ var readlineSync = require('readline-sync');
 var utils = require('./utils');
 var boolToString = utils.boolToString;
 var indicesToKey = utils.indicesToKey;
+var flattenObject = utils.flattenObject;
 var parser = require('./parser');
 var operations = require('./operations');
 var nativeFunctions = require('./native-functions.js');
@@ -328,10 +329,14 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
     }.bind(this));
     throwIfIllegalIndices(indices);
 
-    var key = indicesToKey(indices);
-    val = scope[varName][key];
+    var queryKey = indicesToKey(indices);
+    val = scope[varName][queryKey];
+    var arrayKeys = Object.keys(scope[varName]);
+    var subArrayKeys = arrayKeys.filter(function(key) {
+      return (queryKey + '|') === key.substr(0, queryKey.length+1);
+    });
 
-    if (val === undefined) {
+    if (val === undefined && !subArrayKeys.length) {
       var elementAccess = indices.map(function(index) {
         /* istanbul ignore if */
         if (typeof index === 'boolean') {
@@ -341,6 +346,20 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
         return '['+index+']';
       }).join('');
       throw new Error("There's no element at '"+varName+elementAccess+"'");
+
+    } else if (subArrayKeys.length) {
+      var subArrayValues = subArrayKeys.map(function(key) {
+        return scope[varName][key];
+      });
+      subArrayKeys = subArrayKeys.map(function(key) {
+        return key.substr(queryKey.length+1);
+      });
+      var newArray = {};
+      subArrayKeys.forEach(function(key, index) {
+        newArray[key] = subArrayValues[index];
+      });
+      console.log(indices, newArray)
+      return newArray;
     }
   } else {
     val = scope[varName];

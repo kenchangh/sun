@@ -48,6 +48,14 @@ exports.flattenObject = function _flattenObject(obj) {
   return toReturn;
 }
 
+exports.expandObject = function expandObject(obj) {
+  var expanded = {};
+  var keys = Object.keys(obj);
+  var indicesList = keys.map(function(key) {
+    return key.split(INDEX_DELIMITER);
+  });
+};
+
 
 exports.escapeSource = function escapeSource(src) {
   return src
