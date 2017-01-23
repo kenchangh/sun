@@ -3,6 +3,7 @@ var path = require('path');
 var debugPerf = require('debug')('perf');
 var debugTotalPerf = require('debug')('perf-total');
 
+var merge = require('lodash.merge');
 var readlineSync = require('readline-sync');
 var utils = require('./utils');
 var boolToString = utils.boolToString;
@@ -325,42 +326,19 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
   var indices = variable.indices;
   if (indices) {
     indices = indices.map(function (index) {
-      return this.parseNode(context, index);
+      return utils.serializeTypes(this.parseNode(context, index));
     }.bind(this));
+
     throwIfIllegalIndices(indices);
+    val = utils.getPropWithIndices(scope[varName], indices);
 
-    var queryKey = indicesToKey(indices);
-    val = scope[varName][queryKey];
-    var arrayKeys = Object.keys(scope[varName]);
-    var subArrayKeys = arrayKeys.filter(function(key) {
-      return (queryKey + '|') === key.substr(0, queryKey.length+1);
-    });
-
-    if (val === undefined && !subArrayKeys.length) {
+    if (val === undefined) {
       var elementAccess = indices.map(function(index) {
-        /* istanbul ignore if */
-        if (typeof index === 'boolean') {
-          /* istanbul ignore next */
-          index = boolToString(index);
-        }
-        return '['+index+']';
-      }).join('');
+       return '['+index+']';
+     }).join('');
       throw new Error("There's no element at '"+varName+elementAccess+"'");
-
-    } else if (subArrayKeys.length) {
-      var subArrayValues = subArrayKeys.map(function(key) {
-        return scope[varName][key];
-      });
-      subArrayKeys = subArrayKeys.map(function(key) {
-        return key.substr(queryKey.length+1);
-      });
-      var newArray = {};
-      subArrayKeys.forEach(function(key, index) {
-        newArray[key] = subArrayValues[index];
-      });
-      console.log(indices, newArray)
-      return newArray;
     }
+
   } else {
     val = scope[varName];
   }
@@ -402,7 +380,7 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
 
     // actually parsing the index expressions
     indices = indices.map(function(index) {
-      return this.parseNode(context, index);
+      return utils.serializeTypes(this.parseNode(context, index));
     }.bind(this));
     throwIfIllegalIndices(indices);
 
@@ -410,8 +388,12 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
     if (scope[varName] === undefined) {
       this.contexts[context][varName] = {};
     }
-    var key = indicesToKey(indices);
-    this.contexts[context][varName][key] = newVal;
+    var object = utils.createNestedObject(indices, newVal);
+    var ref = this.contexts[context];
+    if (ref[varName]) {
+      object = merge(ref[varName], object);
+    }
+    ref[varName] = object;
 
   } else {
     this.contexts[context][varName] = newVal;

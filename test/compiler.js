@@ -294,12 +294,20 @@ tap.same(compiler.contexts, { global: { A: {'0': 1} } });
 compiler.reset();
 
 compiler.compile('A[0][2] = 1');
-tap.same(compiler.contexts, { global: { A: {'0|2': 1} } });
+tap.same(compiler.contexts, {
+  global: { A: { 0: { 2: 1 } } }
+});
 compiler.reset();
 
 compiler.compile('A[0][2] = 1\nPrint A[0][2]');
-tap.same(compiler.contexts, { global: { A: {'0|2': 1} } });
 tap.same(compiler.outputBuffer, [1]);
+compiler.reset();
+
+// dont overwrite previous object
+compiler.compile('A[0][2] = 1\nA[0][1] = 2');
+tap.same(compiler.contexts, {
+  global: { A: { 0: { 1: 2, 2: 1, } } },
+});
 compiler.reset();
 
 // string keys, float keys, boolean keys will work as well
@@ -308,9 +316,10 @@ A["key1"][0]["key 2"][6.9][True][False] = 1
 Print A["key1"][0]["key 2"][6.9][True][False]`);
 tap.same(compiler.contexts, {
   global: {
-    A: { 'key1|0|key 2|6.9|True|False': 1 }
+    A: { key1: { 0: { 'key 2': { 6.9: { True: { False: 1  } } } } } }
   }
 });
+tap.same(compiler.outputBuffer, [1]);
 
 tap.throws(function() {
   compiler.compile('A[0] = 1\nB[A] = 1');
@@ -326,6 +335,7 @@ compiler.reset();
 tap.throws(function() {
   // wrongly access elements of existing variable
   compiler.compile('A = 1\nPrint A[0]');
+  console.log(compiler.outputBuffer)
 });
 compiler.reset();
 

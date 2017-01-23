@@ -48,14 +48,37 @@ exports.flattenObject = function _flattenObject(obj) {
   return toReturn;
 }
 
-exports.expandObject = function expandObject(obj) {
-  var expanded = {};
-  var keys = Object.keys(obj);
-  var indicesList = keys.map(function(key) {
-    return key.split(INDEX_DELIMITER);
-  });
+exports.createNestedObject = function createNestedObject(indices, val) {
+  var object = {}
+  var ref;
+
+  for (var i = 0; i < indices.length; i++) {
+    var prevIndex = indices[i-1];
+    var index = indices[i];
+    ref = ref ? ref[prevIndex] : object;
+    ref[index] = {};
+  }
+  ref[index] = val;
+  return object;
+}
+
+exports.getPropWithIndices = function getPropWithIndices(object, indices) {
+  var ref = object;
+
+  for (var i = 0; i < indices.length; i++) {
+    var index = indices[i];
+    val = ref[index]
+    ref = ref[index];
+  }
+  return val;
 };
 
+exports.serializeTypes = function serializeTypes(object) {
+  if (typeof object === 'boolean') {
+    object = object ? 'True' : 'False';
+  }
+  return object;
+};
 
 exports.escapeSource = function escapeSource(src) {
   return src

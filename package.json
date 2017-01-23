@@ -23,6 +23,7 @@
   "dependencies": {
     "debug": "^2.6.0",
     "jison": "^0.4.17",
+    "lodash.merge": "^4.6.0",
     "readline-sync": "^1.4.5"
   }
 }
