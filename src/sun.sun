@@ -32,15 +32,17 @@ Then
   throwNotImplementedError(featureNotImplemented)
 EndIf
 
-parseBlock(parseTree)
+context = Array()
+
+parseBlock(context, parseTree)
 
 End
 
 
-Function parseBlock(block)
+Function parseBlock(context, block)
   Loop:i=0 to size(block)
     node = block[i]
-    parseNode(node)
+    parseNode(context, node)
   LoopEnd:i
 End
 

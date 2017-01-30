@@ -12,14 +12,6 @@ tap.ok(compiler.printHook);
 compiler.setEnterHook(function() {});
 tap.ok(compiler.enterHook);
 
-tap.throws(function() {
-  compiler.parseNode('global', null);
-});
-
-tap.throws(function() {
-  compiler.parseNode('global', []);
-});
-
 /* production interface for SunCompiler */
 compiler = new SunCompiler();
 compiler.compile('x = 1 + 1');
@@ -30,18 +22,14 @@ tap.same(compiler.outputBuffer, []);
 compiler = new SunCompiler({ debug: true });
 runCompilerTests(compiler);
 
-// compiler = new SunCompiler({ debug: true, bootstrap: true});
-// runCompilerTests(compiler);
+compiler = new SunCompiler({ debug: true, bootstrap: true});
+runCompilerTests(compiler);
 
 
 // switch out compiler instances for all tests
 function runCompilerTests(compiler) {
 
 /* basics of operators and expressions */
-
-tap.throws(function() {
-  compiler.parseNode('global', {type: 'random'});
-});
 
 tap.throws(function() {
   compiler.parseNode('global', null);

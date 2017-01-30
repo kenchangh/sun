@@ -159,8 +159,7 @@ SunCompiler.prototype.parseBlock = function parseBlock(context, block) {
 
 SunCompiler.prototype._bootstrapSun = function _bootstrapSun(src) {
   var filepath = path.join(__dirname, 'sun.sun');
-  var compilerSrcBuf = fs.readFileSync(filepath);
-  var compilerSrc = compilerSrcBuf.toString();
+  var compilerSrc = fs.readFileSync(filepath).toString();
   this.bootstrapCompilerSrc = compilerSrc;
 };
 
@@ -170,6 +169,7 @@ SunCompiler.prototype.compile = function compile(src) {
     this.targetSrc = src;
     var compilerSrc = this.bootstrapCompilerSrc;
     compilerSrc = compilerSrc.replace(/\$SOURCE_CODE/, utils.escapeSource(src));
+    // console.log(src);
     this._compile(compilerSrc);
   } else {
     this.targetSrc = null;
@@ -209,7 +209,7 @@ SunCompiler.prototype._compile = function _compile(src) {
     debugTotalPerf('Compiling source...');
 
   } catch (e) {
-
+    // fallback to native JS compiler
     if (e.name === 'NotImplementedError' && this.bootstrap) {
       var targetSrc = this.targetSrc;
       this.targetSrc = null;
@@ -334,8 +334,8 @@ SunCompiler.prototype.getVariable = function getVariable(context, variable) {
 
     if (val === undefined) {
       var elementAccess = indices.map(function(index) {
-       return '['+index+']';
-     }).join('');
+        return '['+index+']';
+      }).join('');
       throw new Error("There's no element at '"+varName+elementAccess+"'");
     }
 
@@ -356,6 +356,13 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
   var indices = variable.indices;
   var currentVal = scope[varName];
   var newVal = this.parseNode(context, expression);
+
+  if (varName === 'node') {
+    // Print expression doesnt output because
+    // the parseNode function returns undefined
+    // separate native objects?
+    // console.log('result of parseNode', expression, this.parseNode(context, expression))
+  }
 
   if (currentVal !== undefined &&
     typeof currentVal !== 'object' &&
@@ -402,9 +409,15 @@ SunCompiler.prototype.setVariable = function setVariable(context, variable, expr
 
 SunCompiler.prototype.parseNode = function parseNode(context, node) {
 
-  if (typeof node === 'object' &&
+  var isBootstrapped = this.bootstrap && this.targetSrc;
+  // console.log('condition', isBootstrapped, typeof node);
+
+  if (
+    typeof node === 'object' &&
     !Array.isArray(node) &&
-    node !== null) {
+    node !== null &&
+    !isBootstrapped
+  ) {
 
     var type = node.type;
 
@@ -580,10 +593,6 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       this.parseBlock(context, block);
       return this.returns[context];
 
-    } else if (type === 'native') {
-
-      return node.object;
-
     } else if (OPERATIONS_BY_OPERANDS[1].indexOf(type) !== -1) {
 
       var operand = this.parseNode(context, node.operand);
@@ -595,16 +604,14 @@ SunCompiler.prototype.parseNode = function parseNode(context, node) {
       var right = this.parseNode(context, node.right);
       return executeOperation(node.type, left, right);
 
+    } else if (type) {
+
+      throw new Error("Unhandled node type '"+type+"': "+JSON.stringify(node));
+
     } else {
-
-      throw new Error("Unhandled node: "+JSON.stringify(node));
-
+      // base Array
+      return node;
     }
-
-  } else if (Array.isArray(node)) {
-
-    throw new Error("Expecting node, not node list: "+
-      JSON.stringify(node));
 
   } else if (node !== null && node !== undefined) {
     // expression base, STRING, INT, FLOAT, BOOL

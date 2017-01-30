@@ -37,7 +37,7 @@ tap.same(keys, {
 compiler.compile('parseTree = parseSunSource("Print 1")');
 tap.same(compiler.contexts, {
   global: {
-    parseTree: flattenObject([ new nodes.PrintStmt(1) ])
+    parseTree: [ new nodes.PrintStmt(1) ]
   }
 });
 compiler.reset();
@@ -53,11 +53,11 @@ parseTree = parseSunSource('${actualSrc}')
 compiler.compile(bootstrapSrc);
 tap.same(compiler.contexts, {
   global: {
-    parseTree: flattenObject([
+    parseTree: [
       new nodes.FunctionStmt('PrintLyrics', [], [
         new nodes.PrintStmt("I'm a lumberjack and I'm okay")
       ])
-    ])
+    ]
   }
 });
 compiler.reset();
@@ -82,10 +82,10 @@ features = getAllFeatures(parseSunSource('${actualSrc}'))
 compiler.compile(bootstrapSrc);
 tap.same(compiler.contexts, {
   global: {
-    features: flattenObject([
+    features: [
       'function',
       'keyword',
-    ])
+    ]
   }
 });
 

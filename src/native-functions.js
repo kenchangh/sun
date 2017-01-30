@@ -11,17 +11,7 @@ function NativeFunction(fn) {
     var args = Array.prototype.slice.call(arguments);
     var context = args.shift();
     this.__context = context;
-    args = args.map(function(arg) {
-      if (typeof arg === 'object' && arg instanceof NativeObject) {
-        arg = arg.object;
-      }
-      return arg;
-    });
-    var output = fn.apply(this, args);
-    if (typeof output === 'object') {
-      output = new NativeObject(flattenObject(output));
-    }
-    return output;
+    return fn.apply(this, args);
   };
   // for access without need of SunCompiler context
   wrapper.fn = fn;
@@ -40,10 +30,11 @@ exports.parseSunSource = new NativeFunction(function parseSunSource(src) {
   return parser.parse(unescapeSource(src));
 });
 
-exports.getAllFeatures = new NativeFunction(function getAllFeatures(flatParseTree) {
-  // getting flatParseTree from parseSunSource
+exports.getAllFeatures = new NativeFunction(function getAllFeatures(parseTree) {
+  // flatten to make searches faster
   // so context doesn't really matter
   // unwrap if it's NativeObject
+  var flatParseTree = flattenObject(parseTree);
   var keys = Object.keys(flatParseTree);
   var typeKeys = keys.filter(function(key) {
     return key.split('|').find(function(index) {
@@ -58,16 +49,13 @@ exports.getAllFeatures = new NativeFunction(function getAllFeatures(flatParseTre
 
 exports.size = new NativeFunction(function size(node) {
   var keys = Object.keys(node);
-  var firstIndices = keys.map(function(key) {
-    var firstIndex = key.split('|')[0];
-    return parseInt(firstIndex, 10);
+  var allIntKeys = keys.every(function(key) {
+    return Number.isInteger(parseInt(key, 10));
   });
-  firstIndices.forEach(function(index) {
-    if (isNaN(index)) {
-      throw new Error('Can only get size of arrays, not dictionaries');
-    }
-  });
-  return firstIndices.length;
+  if (!allIntKeys) {
+    throw new Error("Array has non-integer keys");
+  }
+  return keys.length;
 });
 
 exports.exists = new NativeFunction(function exists(array, key) {
@@ -80,7 +68,11 @@ exports.throwNotImplementedError = new NativeFunction(function(featureNotImpleme
 
 exports.Array = new NativeFunction(function _Array() {
   var elements = Array.prototype.slice.call(arguments);
-  return elements;
+  var array = {};
+  elements.forEach(function (element, index) {
+    array[index] = element;
+  });
+  return array;
 });
 
 exports.isArray = new NativeFunction(function isArray(node) {
