@@ -3,4 +3,4 @@ Print "Pick a number to increment: "
 Enter x
 
 Print 'Number incremented: '
-Print x
+Print x+1

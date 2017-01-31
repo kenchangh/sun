@@ -1,21 +1,22 @@
+// Linear search example
 Print 'Enter 5 items: '
 Loop:i=0 to 4
-	Enter A[i]
+  Enter A[i]
 Loop-end:i
 
 Print 'Search item: '
 Enter item
 found = False
 Loop:i=0 to 4
-	If item == A[i]
-	Then
-		Print 'Item: ', item, '\n'
-		Print 'Index: ', i, '\n'
-		found = True
-	EndIf
+  If item == A[i]
+  Then
+    Print 'Item: ', item, '\n'
+    Print 'Index: ', i, '\n'
+    found = True
+  EndIf
 Loop-end:i
 
 If !found
 Then
-	Print 'Not found'
+  Print 'Not found'
 EndIf
