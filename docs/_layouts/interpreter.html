@@ -46,7 +46,30 @@
   }
   </style>
 
-  <div class="content col-md-12">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="editor-header">
+        <h4>Edit your code and hit run.</h4>
+        <button class="run-btn btn btn-primary">Run</button>
+      </div>
+      <div id="editor">{{ content }}</div>
+    </div>
+    <div class="col-md-6">
+      <div class="instructions">
+        <h1>Online Editor</h1>
+        <span>Write and compile code online!</span>
+        <ul>
+        {% for example in site.data.examples %}
+          {% assign exampleName = example.name | split: '.' %}
+          {% assign prettyName = exampleName[0] | capitalize %}
+          <li><a href="{{ site.baseurl }}/examples/{{ example.name }}/" title="{{ prettyName }}">{{ prettyName }}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="content col-md-12">
     <h1>Demo</h1>
     <div class="editor-content col-md-5">
       <div class="editor-header">
@@ -58,7 +81,7 @@
     <h4>Output</h4>
     <div class="io-terminal col-md-5">
     </div>
-  </div>
+  </div> -->
 
   <script src="{{ site.baseurl }}/public/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   <script src="{{ site.baseurl }}/public/js/sun.js" type="text/javascript" charset="utf-8"></script>
@@ -70,7 +93,7 @@ var session = editor.getSession();
 session.setTabSize(4);
 session.setUseSoftTabs(true);
 editor.setOptions({ minLines: 30, maxLines: 30 });
-editor.setTheme("ace/theme/monokai");
+editor.setTheme("ace/theme/chaos");
 
 function replaceAll(target, search, replacement) {
   return target.replace(new RegExp(search, 'g'), replacement);
