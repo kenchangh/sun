@@ -1,0 +1,45 @@
+- name: basics.sun
+  src: |
+    Print 'hello world\n'
+    Print "Pick a number to increment: "
+    Enter x
+
+    Print 'Number incremented: '
+    Print x+1
+- name: factorial.sun
+  src: |
+    Function Factorial(n)
+      If n == 1 Then
+        Return 1
+      EndIf
+      Return n * Factorial(n-1)
+    End
+
+    Print Factorial(5)
+- name: fizzbuzz.sun
+  src: "Print 'Enter a stopping point: '\nEnter n\nLoop:i=1 to n\n\tIf i % 3 == 0 AND i % 5 == 0\n\tThen\n\t\tPrint 'FizzBuzz\\n'\n\tElse\n\t\tIf i % 3 == 0\n\t\tThen\n\t\t\tPrint 'Fizz\\n'\n\t\tElse\n\t\t\tIf i % 5 == 0\n\t\t\tThen\n\t\t\t\tPrint 'Buzz\\n'\n\t\t\tElse\n\t\t\t\tPrint i, '\\n'\n\t\t\tEndIf\n\t\tEndIf\n\tEndIf\nLoopEnd:i\n"
+- name: linear-search.sun
+  src: |
+    Print 'Enter 5 items: '
+    Loop:i=0 to 4
+      Enter A[i]
+    Loop-end:i
+
+    Print 'Search item: '
+    Enter item
+    found = False
+    Loop:i=0 to 4
+      If item == A[i]
+      Then
+        Print 'Item: ', item, '\n'
+        Print 'Index: ', i, '\n'
+        found = True
+      EndIf
+    Loop-end:i
+
+    If !found
+    Then
+      Print 'Not found'
+    EndIf
+- name: repeat-lyrics.sun
+  src: "Function PrintLyrics()\n\tPrint \"I'm a lumberjack and I'm okay\"\nEnd\n\nFunction RepeatLyrics(n)\n\tLoop:i=0 to n-1\n\t\tPrintLyrics()\n\t\tPrint '\\n'\n\tLoop-end:i\nEnd\n\nRepeatLyrics(5)\n"

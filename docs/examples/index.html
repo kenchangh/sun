@@ -1,0 +1,11 @@
+---
+layout: default
+title: Examples
+---
+
+<h1>Examples</h1>
+{% for example in site.data.examples %}
+  <div>
+    {{ example.name }}
+  </div>
+{% endfor %}

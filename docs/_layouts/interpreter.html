@@ -1,25 +1,100 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html lang="en-us">
 
-<div class="post">
-  <h1 class="post-title">{{ page.title }}</h1>
-  <span class="post-date">{{ page.date | date_to_string }}</span>
-  {{ content }}
-</div>
+  {% include head.html %}
 
-<div class="related">
-  <h2>Related Posts</h2>
-  <ul class="related-posts">
-    {% for post in site.related_posts limit:3 %}
-      <li>
-        <h3>
-          <a href="{{ post.url }}">
-            {{ post.title }}
-            <small>{{ post.date | date_to_string }}</small>
-          </a>
-        </h3>
-      </li>
-    {% endfor %}
-  </ul>
-</div>
+  <body>
+
+  <style type="text/css" media="screen">
+  body {
+    background-color: #f6f6f6;
+  }
+  .content {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .editor-content {
+    padding-left: 0;
+    margin-right: 40px;
+  }
+  .editor-header {
+    display: inline-block;
+    width: 100%;
+    background-color: #f5f5f5;
+  }
+  .editor-header h4 {
+    float: left;
+  }
+  .editor-header .run-btn {
+    float: right;
+  }
+  #editor {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    font-size: 15px;
+    height: 100%;
+  }
+  .io-terminal {
+    border-radius: 4px;
+    background-color: #272822;
+    color: white;
+    overflow: auto;
+    min-height: 30px;
+    max-height: 200px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  </style>
+
+  <div class="content col-md-12">
+    <h1>Demo</h1>
+    <div class="editor-content col-md-5">
+      <div class="editor-header">
+        <h4>Edit your code and hit run.</h4>
+        <button class="run-btn btn btn-primary">Run</button>
+      </div>
+      <div id="editor">{{ content }}</div>
+    </div>
+    <h4>Output</h4>
+    <div class="io-terminal col-md-5">
+    </div>
+  </div>
+
+  <script src="{{ site.baseurl }}/public/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ site.baseurl }}/public/js/sun.js" type="text/javascript" charset="utf-8"></script>
+  <script src="{{ site.baseurl }}/public/js/ace.js" type="text/javascript" charset="utf-8"></script>
+
+  <script>
+var editor = ace.edit("editor");
+var session = editor.getSession();
+session.setTabSize(4);
+session.setUseSoftTabs(true);
+editor.setOptions({ minLines: 30, maxLines: 30 });
+editor.setTheme("ace/theme/monokai");
+
+function replaceAll(target, search, replacement) {
+  return target.replace(new RegExp(search, 'g'), replacement);
+}
+
+var compiler = new SunCompiler();
+var $ioTerminal = $('.io-terminal');
+compiler.setPrintHook(function(message) {
+  if (typeof message === 'string') {
+    message = replaceAll(message, '\n', '<br>');
+  }
+  $ioTerminal.append('<div class="output">'+message+'</div>');
+});
+compiler.setEnterHook(function(varName) {
+  return prompt('Enter '+varName+':');
+})
+
+$('.run-btn').click(function() {
+  $('.output').remove();
+  compiler.compile(editor.getValue());
+});
+
+  </script>
+
+  </body>
+
+</html>

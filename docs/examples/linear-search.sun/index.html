@@ -1,0 +1,5 @@
+---
+layout: interpreter
+title: Run online
+---
+{% for example in site.data.examples %}{% if example.name == 'linear-search.sun' %}{{ example.src | strip }}{% endif %}{% endfor %}

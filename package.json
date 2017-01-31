@@ -17,6 +17,7 @@
   "devDependencies": {
     "browserify": "^13.1.1",
     "gulp": "^3.9.1",
+    "js-yaml": "^3.7.0",
     "tap": "^8.0.1",
     "uglify-js": "^2.7.5"
   },
