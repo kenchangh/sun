@@ -1,85 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <title>Sun programming language</title>
-  <link rel="icon" href="/sun/images/sun-logo.ico">
-  <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
-  <link rel="stylesheet" href="/sun/css/bootstrap.min.css">
-
-  <style>
-  td.linenos { background-color: #f0f0f0; padding-right: 10px; }
-  span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }
-  pre { line-height: 125%; }
-  body .hll { background-color: #ffffcc }
-  body  { background: #f8f8f8; }
-  body .c { color: #408080; font-style: italic } /* Comment */
-  body .err { border: 1px solid #FF0000 } /* Error */
-  body .k { color: #008000; font-weight: bold } /* Keyword */
-  body .o { color: #666666 } /* Operator */
-  body .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-  body .cm { color: #408080; font-style: italic } /* Comment.Multiline */
-  body .cp { color: #BC7A00 } /* Comment.Preproc */
-  body .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-  body .c1 { color: #408080; font-style: italic } /* Comment.Single */
-  body .cs { color: #408080; font-style: italic } /* Comment.Special */
-  body .gd { color: #A00000 } /* Generic.Deleted */
-  body .ge { font-style: italic } /* Generic.Emph */
-  body .gr { color: #FF0000 } /* Generic.Error */
-  body .gh { color: #000080; font-weight: bold } /* Generic.Heading */
-  body .gi { color: #00A000 } /* Generic.Inserted */
-  body .go { color: #888888 } /* Generic.Output */
-  body .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
-  body .gs { font-weight: bold } /* Generic.Strong */
-  body .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-  body .gt { color: #0044DD } /* Generic.Traceback */
-  body .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
-  body .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
-  body .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
-  body .kp { color: #008000 } /* Keyword.Pseudo */
-  body .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
-  body .kt { color: #B00040 } /* Keyword.Type */
-  body .m { color: #666666 } /* Literal.Number */
-  body .s { color: #BA2121 } /* Literal.String */
-  body .na { color: #7D9029 } /* Name.Attribute */
-  body .nb { color: #008000 } /* Name.Builtin */
-  body .nc { color: #0000FF; font-weight: bold } /* Name.Class */
-  body .no { color: #880000 } /* Name.Constant */
-  body .nd { color: #AA22FF } /* Name.Decorator */
-  body .ni { color: #999999; font-weight: bold } /* Name.Entity */
-  body .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
-  body .nf { color: #0000FF } /* Name.Function */
-  body .nl { color: #A0A000 } /* Name.Label */
-  body .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
-  body .nt { color: #008000; font-weight: bold } /* Name.Tag */
-  body .nv { color: #19177C } /* Name.Variable */
-  body .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
-  body .w { color: #bbbbbb } /* Text.Whitespace */
-  body .mb { color: #666666 } /* Literal.Number.Bin */
-  body .mf { color: #666666 } /* Literal.Number.Float */
-  body .mh { color: #666666 } /* Literal.Number.Hex */
-  body .mi { color: #666666 } /* Literal.Number.Integer */
-  body .mo { color: #666666 } /* Literal.Number.Oct */
-  body .sa { color: #BA2121 } /* Literal.String.Affix */
-  body .sb { color: #BA2121 } /* Literal.String.Backtick */
-  body .sc { color: #BA2121 } /* Literal.String.Char */
-  body .dl { color: #BA2121 } /* Literal.String.Delimiter */
-  body .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
-  body .s2 { color: #BA2121 } /* Literal.String.Double */
-  body .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
-  body .sh { color: #BA2121 } /* Literal.String.Heredoc */
-  body .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
-  body .sx { color: #008000 } /* Literal.String.Other */
-  body .sr { color: #BB6688 } /* Literal.String.Regex */
-  body .s1 { color: #BA2121 } /* Literal.String.Single */
-  body .ss { color: #19177C } /* Literal.String.Symbol */
-  body .bp { color: #008000 } /* Name.Builtin.Pseudo */
-  body .fm { color: #0000FF } /* Name.Function.Magic */
-  body .vc { color: #19177C } /* Name.Variable.Class */
-  body .vg { color: #19177C } /* Name.Variable.Global */
-  body .vi { color: #19177C } /* Name.Variable.Instance */
-  body .vm { color: #19177C } /* Name.Variable.Magic */
-  body .il { color: #666666 } /* Literal.Number.Integer.Long */
+---
+layout: default
+---
+<style>
 body {
   font-family: 'Merriweather', sans-serif;
 }
@@ -159,16 +81,14 @@ body {
   text-align: center;
 }
   </style>
-</head>
-
-<body>
 
   <div class="header">
-    <img class="logo" src="/sun/images/sun.svg" alt="Sun programming language">
+    <img class="logo" src="{{ site.baseurl }}/public/images/sun.svg" alt="Sun programming language">
     <h1>sun</h1>
     <h2>A programming language for beginners</h2>
     <h3>Prototype rapidly and learn programming concepts</h3>
     <nav>
+    <a href="/sun/run-online">Run Online</a>
     <a href="/sun/examples">Examples</a>
     <a href="/sun/docs">Docs</a>
     <a href="https://github.com/mavenave/sun">GitHub</a>
@@ -184,14 +104,14 @@ body {
         Sun is designed to be as simple as possible for a beginner to dive into programming. It has all the basic types needed for the average person. Numbers, floats, strings and booleans. Nothing more, nothing less.
       </div>
       <div class="col-md-6 feature-code">
-        <pre><span></span><span class="c">// Input &amp; output</span>
+        <div class="highlight"><pre><span></span><span class="c">// Input &amp; output</span>
 <span class="k">Print</span><span class="w"> </span><span class="s">&#39;hello world\n&#39;</span><span class="w"></span>
 <span class="k">Print</span><span class="w"> </span><span class="s">&quot;Pick a number to increment: &quot;</span><span class="w"></span>
 <span class="k">Enter</span><span class="w"> </span><span class="nv">x</span><span class="w"></span>
 
 <span class="k">Print</span><span class="w"> </span><span class="s">&#39;Number incremented: &#39;</span><span class="w"></span>
 <span class="k">Print</span><span class="w"> </span><span class="nv">x</span><span class="o">+</span><span class="m">1</span><span class="w"></span>
-</pre>
+</pre></div>
       </div>
     </div>
 
@@ -201,7 +121,7 @@ body {
         Sun allows programmers to define functions with their own scope, so they do not fall into the pitfalls of using a global namespace. Functions can also have arguments which are pass-by-reference.
       </div>
       <div class="col-md-6 feature-code">
-        <pre><span></span><span></span><span class="c">// Factorial of n</span>
+        <div class="highlight"><pre><span></span><span></span><span class="c">// Factorial of n</span>
 <span class="nf">Function</span><span class="w"> </span><span class="nv">Factorial</span><span class="o">(</span><span class="nv">n</span><span class="o">)</span><span class="w"></span>
 <span class="w">  </span><span class="nf">If</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="nf">Then</span><span class="w"></span>
 <span class="w">    </span><span class="k">Return</span><span class="w"> </span><span class="m">1</span><span class="w"></span>
@@ -210,7 +130,7 @@ body {
 <span class="nf">End</span><span class="w"></span>
 
 <span class="k">Print</span><span class="w"> </span><span class="nv">Factorial</span><span class="o">(</span><span class="m">5</span><span class="o">)</span><span class="w"></span>
-</pre>
+</pre></div>
       </div>
     </div>
 
@@ -220,7 +140,7 @@ body {
         Arrays are designed to be easy to use for a learner. No need to declare an array and its size, just start using it. Arrays can also be used with string keys. It's pass-by-reference by default.
       </div>
       <div class="col-md-6 feature-code">
-        <pre><span></span><span class="c">// Linear search example</span>
+        <div class="highlight"><pre><span></span><span class="c">// Linear search example</span>
 <span class="k">Print</span><span class="w"> </span><span class="s">&#39;Enter 5 items: &#39;</span><span class="w"></span>
 <span class="nf">Loop</span>:i=0<span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="m">4</span><span class="w"></span>
 <span class="w">  </span><span class="k">Enter</span><span class="w"> </span><span class="nv">A</span>[i]<span class="w"></span>
@@ -242,7 +162,7 @@ body {
 <span class="nf">Then</span><span class="w"></span>
 <span class="w">  </span><span class="k">Print</span><span class="w"> </span><span class="s">&#39;Not found&#39;</span><span class="w"></span>
 <span class="nf">EndIf</span><span class="w"></span>
-        </pre>
+        </pre></div>
       </div>
     </div>
 
@@ -267,9 +187,3 @@ body {
       <a href="https://github.com/mavenave">GitHub</a>
     </div>
   </div>
-
-  <script src="/sun/js/jquery.min.js"></script>
-  <script src="/sun/js/bootstrap.min.js"></script>
-</body>
-
-</html>
