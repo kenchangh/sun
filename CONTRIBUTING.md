@@ -2,13 +2,13 @@
 
 ##Installation
 
-1. Install (nodejs)[https://nodejs.org/en/], a JavaScript environment for servers.
-2. Install (Gulp)[http://gulpjs.com/], the build tool we use.
+1. Install [nodejs](https://nodejs.org/en/), a JavaScript environment for servers.
+2. Install [Gulp](http://gulpjs.com/), the build tool we use.
 
 ##Installation (for documentation editors only)
 
-1. Install (Ruby)[https://www.ruby-lang.org/en/downloads/].
-2. Install (Jekyll)[https://jekyllrb.com/docs/installation/].
+1. Install [Ruby](https://www.ruby-lang.org/en/downloads/).
+2. Install [Jekyll](https://jekyllrb.com/docs/installation/).
 
 ##Building the docs
 
