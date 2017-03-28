@@ -8,7 +8,7 @@
     "test-cov": "tap test/*.js --cov --coverage-report=html --100 --nyc-arg='--exclude=build' --nyc-arg='--exclude=test'",
     "build": "browserify src/sun.js -s SunCompiler -i readline-sync | uglifyjs > docs/js/sun.js",
     "build-exe": "nexe -i bin/sun -o build/sun",
-    "serve": "gulp copy-examples && jekyll serve -s docs"
+    "serve": "jekyll serve -s docs"
   },
   "keywords": [
     "language"
