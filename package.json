@@ -6,7 +6,7 @@
   "scripts": {
     "test": "gulp; tap test/*.js",
     "test-cov": "tap test/*.js --cov --coverage-report=html --100 --nyc-arg='--exclude=build' --nyc-arg='--exclude=test'",
-    "build": "browserify src/sun.js -s SunCompiler -i readline-sync | uglifyjs > docs/js/sun.js",
+    "build": "browserify src/sun.js -s SunCompiler -i readline-sync | uglifyjs > docs/public/js/sun.js",
     "build-exe": "nexe -i bin/sun -o build/sun",
     "serve": "jekyll serve -s docs"
   },

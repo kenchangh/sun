@@ -216,8 +216,6 @@ SunCompiler.prototype._compile = function _compile(src) {
       this._compile(targetSrc);
       return;
       // console.log(e.message)
-    } else {
-      throw e;
     }
 
     /* istanbul ignore next */

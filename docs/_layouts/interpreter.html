@@ -2,12 +2,14 @@
 <html lang="en-us">
 
   {% include head.html %}
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
 
   <body>
 
   <style type="text/css" media="screen">
 
   html, body {
+    font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
     background-color: white;
     height: 100%;
   }
@@ -33,6 +35,7 @@
     color: white;
   }
   .editor-header h4 {
+    color: #E0E0E0;
     font-size: 16px;
   }
   #editor {
@@ -67,14 +70,24 @@
     padding-top: 20px;
     padding-bottom: 20px;
   }
-  .output_instructions {
+  .output {
     display: flex;
     align-items: center;
     justify-content: center;
   }
+  .output__message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px 30px;
+    background-color: #202020;
+    color: white;
+    font-size: 16px;
+  }
   .output__instructions {
     background-color: rgb(245, 245, 245);
-    padding: 10px 10px;
     padding: 10px 25px 20px;
     border-radius: 3px;
     margin-bottom: 10%;
@@ -82,12 +95,15 @@
   .output__instructions h1 {
     margin-bottom: 25px;
   }
+  .ace-ambiance .ace_gutter-layer {
+    color: #757575;
+  }
   </style>
 
   <div class="row">
     <div class="editor-content col-md-6">
       <div class="editor-header">
-        <h4>Edit your code and hit run.</h4>
+        <h4>Check out the <a href="{{ site.baseurl }}/examples" target="_blank">examples</a>.</h4>
         <span class="editor__tools">
           <div class="dropdown">
             <button class="btn btn-default" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -104,7 +120,7 @@
       </div>
       <div id="editor">{{ content }}</div>
     </div>
-    <div class="output output_instructions col-md-6">
+    <div class="output col-md-6">
       <div class="output__instructions">
         <h1>Online Editor</h1>
         <span>Write and compile code online!</span>
@@ -143,7 +159,7 @@ var editor = ace.edit("editor");
 var session = editor.getSession();
 session.setTabSize(4);
 session.setUseSoftTabs(true);
-editor.setTheme("ace/theme/chaos");
+editor.setTheme("ace/theme/ambiance");
 editor.setOptions({ fontSize: "12pt" });
 
 function replaceAll(target, search, replacement) {
@@ -151,19 +167,18 @@ function replaceAll(target, search, replacement) {
 }
 
 var compiler = new SunCompiler();
-var $ioTerminal = $('.io-terminal');
 compiler.setPrintHook(function(message) {
   if (typeof message === 'string') {
     message = replaceAll(message, '\n', '<br>');
   }
-  $ioTerminal.append('<div class="output">'+message+'</div>');
+  $('.output__message').append('<span>'+message+'</span>');
 });
 compiler.setEnterHook(function(varName) {
   return prompt('Enter '+varName+':');
 })
 
 $('.run-btn').click(function() {
-  $('.output').remove();
+  $('.output').html('<div class="output__message"></div>');
   compiler.compile(editor.getValue());
 });
 
@@ -175,7 +190,6 @@ $('.editor__options li a').click(function() {
   var $this = $(this);
   var option = $this.data('option');
   var on = $this.data('on');
-  console.log(on)
 
   if (option === 'vim' && on) {
     $this.data('on', false);
@@ -187,7 +201,7 @@ $('.editor__options li a').click(function() {
     appendCheck($this);
   } else if (option === 'lights' && on) {
     $this.data('on', false);
-    editor.setTheme("ace/theme/chaos");
+    editor.setTheme("ace/theme/ambiance");
     $this.find('.check').remove();
   } else if (option === 'lights' && !on) {
     $this.data('on', true);
